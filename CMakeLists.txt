@@ -6,8 +6,12 @@ project(rectangle)
 
 pico_sdk_init()
 
+include_directories(include)
+
 add_executable(rectangle
-    main.c
+    src/main.c
+    src/comms.c
+    src/logic.c
 )
 
 pico_add_extra_outputs(rectangle)
