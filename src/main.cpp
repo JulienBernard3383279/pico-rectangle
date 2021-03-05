@@ -45,7 +45,7 @@ int main() {
     gpio_put(LED_PIN, 1);
 
     initLogic(ParasolDashing::BAN, SlightSideB::BAN);
-    initInputs(pinMappings, 20);
+    initInputs(pinMappings, NUMBER_OF_INPUTS);
     initComms(gcDataPin, us);
 
     GCReport gcReport;
