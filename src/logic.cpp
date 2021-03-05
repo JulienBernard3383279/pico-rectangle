@@ -3,8 +3,13 @@
 #define coord(x) ((uint8_t)(128. + 80.*x + 0.5))
 #define oppositeCoord(x) -((uint8_t)x)
 
-const bool banParasolDashing = true;
-const bool banSlightSideB = true;
+bool banParasolDashing;
+bool banSlightSideB;
+
+void initLogic(ParasolDashing parasolDashingConfig, SlightSideB slightSideBConfig) {
+    banParasolDashing = parasolDashingConfig == ParasolDashing::BAN;
+    banSlightSideB = slightSideBConfig == SlightSideB::BAN;
+}
 
 // 2 IP declarations
 bool left_wasPressed = false;

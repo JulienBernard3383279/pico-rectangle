@@ -5,9 +5,9 @@
 #include "logic.hpp"
 #include "inputs.hpp"
 
-const uint32_t us = 125;
+#define LED_PIN 25
 
-const uint8_t ledPin = 25;
+const uint32_t us = 125;
 
 const uint8_t gcDataPin = 28;
 
@@ -40,10 +40,11 @@ int main() {
     // Clock at 125MHz
     set_sys_clock_khz(us*1000, true);
 
-    gpio_init(ledPin);
-    gpio_set_dir(ledPin, GPIO_OUT);
-    gpio_put(ledPin, 1);
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_put(LED_PIN, 1);
 
+    initLogic(ParasolDashing::BAN, SlightSideB::BAN);
     initInputs(pinMappings, 20);
     initComms(gcDataPin, us);
 
