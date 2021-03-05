@@ -1,14 +1,14 @@
 #include "hardware/structs/systick.h"
 #include "hardware/gpio.h"
 
-#include "comms.h"
+#include "comms.hpp"
 
 #define changeBit(r,b,v) r = (r & (~(1<<b))) | ((!!v)<<b)
 #define accessBit(buffer, offset) ((buffer[offset/8] & (0x0080 >> (offset%8))) != 0)
 
-const struct GCReport defaultReport = {
+const GCReport defaultReport = {
     .a=0, .b=0, .x=0, .y=0, .start=0, .pad0=0,
-    .dLeft=0, .dRight=0, .dDown=0, .dUp=0, .z=0, .r=0, .l=0, .pad1=1,
+    .dLeft=0, .dRight=0, .dUp=0, .dDown=0, .z=0, .r=0, .l=0, .pad1=1,
     .xStick=128,
     .yStick=128,
     .cxStick=128,
@@ -17,8 +17,8 @@ const struct GCReport defaultReport = {
     .analogR=0
 };
 
-static uint8_t gcDataPin;
-static uint32_t us;
+uint8_t gcDataPin;
+uint32_t us;
 
 void initComms(uint8_t dataPin, uint32_t microsecondCycles) {
 
@@ -38,15 +38,15 @@ void initComms(uint8_t dataPin, uint32_t microsecondCycles) {
 }
 
 // State machine declarations
-static uint32_t lowTimings[100];
-static uint32_t highTimings[100];
-static bool readings[100];
-static uint32_t readIndex=0;
-static uint32_t responseBitLength=0;
-static uint8_t responseBuffer[10] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00 };
-static uint8_t* responsePointer = responseBuffer;
-static uint32_t origin;
-static uint32_t target;
+uint32_t lowTimings[100];
+uint32_t highTimings[100];
+bool readings[100];
+uint32_t readIndex=0;
+uint32_t responseBitLength=0;
+uint8_t responseBuffer[10] = { 0x00, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00 };
+uint8_t* responsePointer = responseBuffer;
+uint32_t origin;
+uint32_t target;
 
 void awaitPoll() {
 
@@ -178,6 +178,6 @@ void respond(uint8_t* responsePointer, uint32_t responseBitLength) {
     changeBit(sio_hw->gpio_out, gcDataPin, 1);
 }
 
-void respondToPoll(struct GCReport *gcReport) {
+void respondToPoll(GCReport *gcReport) {
     respond((uint8_t*)gcReport, 64);
 }

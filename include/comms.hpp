@@ -14,7 +14,7 @@ struct GCReport {
     uint8_t analogR;
 };
 
-const extern struct GCReport defaultReport;
+const extern GCReport defaultReport;
 
 /* Must be called before calling any of the other functions */
 void initComms(uint8_t dataPin, uint32_t microsecondCycles);
@@ -26,6 +26,6 @@ void awaitPoll();
 void respond(uint8_t* responsePointer, uint32_t responseBitLength);
 
 /* Sends a Gamecube controller state to console (helper) */
-void respondToPoll(struct GCReport *gcReport);
+void respondToPoll(GCReport *gcReport);
 
 #endif

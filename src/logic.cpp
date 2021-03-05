@@ -1,39 +1,39 @@
-#include "logic.h"
-#include "comms.h"
+#include "logic.hpp"
+#include "comms.hpp"
 
 #define coord(x) ((uint8_t)(128. + 80.*x + 0.5))
 #define oppositeCoord(x) -((uint8_t)x)
 
-static const bool banParasolDashing = true;
-static const bool banSlightSideB = true;
+const bool banParasolDashing = true;
+const bool banSlightSideB = true;
 
 // 2 IP declarations
-static bool left_wasPressed = false;
-static bool right_wasPressed = false;
-static bool up_wasPressed = false;
-static bool down_wasPressed = false;
+bool left_wasPressed = false;
+bool right_wasPressed = false;
+bool up_wasPressed = false;
+bool down_wasPressed = false;
 
-static bool left_outlawUntilRelease = false;
-static bool right_outlawUntilRelease = false;
-static bool up_outlawUntilRelease = false;
-static bool down_outlawUntilRelease = false;
+bool left_outlawUntilRelease = false;
+bool right_outlawUntilRelease = false;
+bool up_outlawUntilRelease = false;
+bool down_outlawUntilRelease = false;
 
 struct Coords {
     uint8_t x;
     uint8_t y;
 };
 
-struct Coords coords(float xFloat, float yFloat) {
-    struct Coords r;
+Coords coords(float xFloat, float yFloat) {
+    Coords r;
     r.x = coord(xFloat);
     r.y = coord(yFloat);
     return r;
 }
 
-static const struct PinMapping *pinMappings_;
-static size_t pinMappingsLength_;
+const PinMapping *pinMappings_;
+size_t pinMappingsLength_;
 
-void initLogic(const struct PinMapping *pinMappings, size_t pinMappingsLength) {
+void initLogic(const PinMapping *pinMappings, size_t pinMappingsLength) {
     pinMappings_ = pinMappings;
     pinMappingsLength_ = pinMappingsLength;
 
@@ -45,11 +45,11 @@ void initLogic(const struct PinMapping *pinMappings, size_t pinMappingsLength) {
     }
 }
 
-static uint32_t inputSnapshot;
-static struct GCReport gcReport;
-static struct RectangleInput ri;
+uint32_t inputSnapshot;
+GCReport gcReport;
+RectangleInput ri;
 
-struct GCReport makeReport() {
+GCReport makeReport() {
     // Button to controller state translation
     inputSnapshot = sio_hw->gpio_in;
 
@@ -89,7 +89,7 @@ struct GCReport makeReport() {
     bool horizontal = ri.left || ri.right;
     bool readRight = ri.right;
 
-    struct Coords xy;
+    Coords xy;
 
     if (vertical && horizontal) {
         if (ri.l || ri.r) {
@@ -156,7 +156,7 @@ struct GCReport makeReport() {
     bool cVertical = ri.cUp != ri.cDown;
     bool cHorizontal = ri.cLeft != ri.cRight;
 
-    struct Coords cxy;
+    Coords cxy;
 
     if (ri.mx && ri.my) cxy = coords(0.0, 0.0);
     else if (cVertical && cHorizontal) cxy = coords(0.525, 0.85);

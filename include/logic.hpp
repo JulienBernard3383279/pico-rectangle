@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include "comms.hpp"
 
 #ifndef LOGIC_H
 #define LOGIC_H
@@ -17,9 +18,9 @@ struct PinMapping {
     uint8_t offset;
 };
 
-void initLogic(const struct PinMapping *pinMappings, size_t pinMappingsLength);
+void initLogic(const PinMapping *pinMappings, size_t pinMappingsLength);
 
 /* Reads input pins and makes a B0XX/F1 report according to the pin mapping provided during init */
-struct GCReport makeReport();
+GCReport makeReport();
 
 #endif

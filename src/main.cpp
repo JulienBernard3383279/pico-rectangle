@@ -1,14 +1,14 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#include "comms.h"
-#include "logic.h"
+#include "comms.hpp"
+#include "logic.hpp"
 
-static const uint32_t us = 125;
+const uint32_t us = 125;
 
-static const uint8_t ledPin = 25;
+const uint8_t ledPin = 25;
 
-static const uint8_t gcDataPin = 28;
+const uint8_t gcDataPin = 28;
 
 #define NUMBER_OF_INPUTS 20
 const struct PinMapping pinMappings[NUMBER_OF_INPUTS] = {
@@ -46,7 +46,7 @@ int main() {
     initLogic(pinMappings, 20);
     initComms(gcDataPin, us);
 
-    struct GCReport gcReport;
+    GCReport gcReport;
     
     while (1) {
         awaitPoll();
