@@ -10,7 +10,8 @@ The translation from GPIO input to Gamecube controller state mimicks that of the
 
 ### Comparison to atmega32u4 based controllers:
 - Up to 25 inputs + a console data line
-- No logic level shifter required (native 3.3V board)
+- No 5V input required (Voltage regulator accepts 3.3V)
+- No logic level shifter required (3.3V GPIO by default)
 - Extremely simple programming
 - 133MHz max (on paper) dual core MCU (clocked at 125MHz as of this commit) allows reacting to console poll rather than having to predict them, hence better latency (i.e matches Frame1 latency give or take a few cycles which is slightly better than that of B0XX/other atmega32u4 based controllers)
 - MCU speed (8+ times that of the atmega32u4) means it will have 1000Hz effective reporting over USB when I do the PC mode (instead of 125Hz/500Hz) and opens the door for further improvements.
