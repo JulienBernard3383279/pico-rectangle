@@ -1,5 +1,4 @@
 #include "logic.hpp"
-#include "comms.hpp"
 
 #define coord(x) ((uint8_t)(128. + 80.*x + 0.5))
 #define oppositeCoord(x) -((uint8_t)x)
@@ -30,34 +29,12 @@ Coords coords(float xFloat, float yFloat) {
     return r;
 }
 
-const PinMapping *pinMappings_;
-size_t pinMappingsLength_;
-
-void initLogic(const PinMapping *pinMappings, size_t pinMappingsLength) {
-    pinMappings_ = pinMappings;
-    pinMappingsLength_ = pinMappingsLength;
-
-    // Inputs init
-    for (int pinNo = 0; pinNo < pinMappingsLength; ++pinNo) {
-        gpio_init(pinMappings[pinNo].pin);
-        gpio_set_dir(pinMappings[pinNo].pin, GPIO_IN);
-        gpio_pull_up(pinMappings[pinNo].pin);
-    }
-}
-
-uint32_t inputSnapshot;
 GCReport gcReport;
 RectangleInput ri;
+GCReport makeReport(const RectangleInput &rectangleInput) {
 
-GCReport makeReport() {
-    // Button to controller state translation
-    inputSnapshot = sio_hw->gpio_in;
-
+    ri = rectangleInput; // local alterable copy
     gcReport = defaultReport;
-
-    for (int pinNo = 0; pinNo < pinMappingsLength_; ++pinNo) {
-        *((bool*)( (char*)&ri + pinMappings_[pinNo].offset)) = !(inputSnapshot & (1 << (pinMappings_[pinNo].pin)));
-    }
 
     /* 2IP No reactivation */
     

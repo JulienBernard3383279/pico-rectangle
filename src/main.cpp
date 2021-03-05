@@ -3,6 +3,7 @@
 
 #include "comms.hpp"
 #include "logic.hpp"
+#include "inputs.hpp"
 
 const uint32_t us = 125;
 
@@ -11,27 +12,27 @@ const uint8_t ledPin = 25;
 const uint8_t gcDataPin = 28;
 
 #define NUMBER_OF_INPUTS 20
-const struct PinMapping pinMappings[NUMBER_OF_INPUTS] = {
-    { 0, offsetof(struct RectangleInput, start) },
-    { 2, offsetof(struct RectangleInput, right) },
-    { 3, offsetof(struct RectangleInput, down) },
-    { 4, offsetof(struct RectangleInput, left) },
-    { 5, offsetof(struct RectangleInput, l) },
-    { 6, offsetof(struct RectangleInput, mx) },
-    { 7, offsetof(struct RectangleInput, my) },
-    { 12, offsetof(struct RectangleInput, cUp) },
-    { 13, offsetof(struct RectangleInput, cLeft) },
-    { 14, offsetof(struct RectangleInput, a) },
-    { 15, offsetof(struct RectangleInput, cDown) },
-    { 16, offsetof(struct RectangleInput, cRight) },
-    { 17, offsetof(struct RectangleInput, up) },
-    { 18, offsetof(struct RectangleInput, ms) },
-    { 19, offsetof(struct RectangleInput, z) },
-    { 20, offsetof(struct RectangleInput, ls) },
-    { 21, offsetof(struct RectangleInput, x) },
-    { 22, offsetof(struct RectangleInput, y) },
-    { 26, offsetof(struct RectangleInput, b) },
-    { 27, offsetof(struct RectangleInput, r) }
+const PinMapping pinMappings[NUMBER_OF_INPUTS] = {
+    { 0, &RectangleInput::start },
+    { 2, &RectangleInput::right },
+    { 3, &RectangleInput::down },
+    { 4, &RectangleInput::left },
+    { 5, &RectangleInput::l },
+    { 6, &RectangleInput::mx },
+    { 7, &RectangleInput::my },
+    { 12, &RectangleInput::cUp },
+    { 13, &RectangleInput::cLeft },
+    { 14, &RectangleInput::a },
+    { 15, &RectangleInput::cDown },
+    { 16, &RectangleInput::cRight },
+    { 17, &RectangleInput::up },
+    { 18, &RectangleInput::ms },
+    { 19, &RectangleInput::z },
+    { 20, &RectangleInput::ls },
+    { 21, &RectangleInput::x },
+    { 22, &RectangleInput::y },
+    { 26, &RectangleInput::b },
+    { 27, &RectangleInput::r }
 };
 
 int main() {
@@ -43,14 +44,16 @@ int main() {
     gpio_set_dir(ledPin, GPIO_OUT);
     gpio_put(ledPin, 1);
 
-    initLogic(pinMappings, 20);
+    initInputs(pinMappings, 20);
     initComms(gcDataPin, us);
 
     GCReport gcReport;
-    
+    RectangleInput ri;
+
     while (1) {
         awaitPoll();
-        gcReport = makeReport();
+        ri = getRectangleInput();
+        gcReport = makeReport(ri);
         respondToPoll(&gcReport);
     }
 

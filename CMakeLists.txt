@@ -12,6 +12,7 @@ add_executable(rectangle
     src/main.cpp
     src/comms.cpp
     src/logic.cpp
+    src/inputs.cpp
 )
 
 pico_add_extra_outputs(rectangle)
