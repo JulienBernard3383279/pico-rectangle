@@ -1,7 +1,7 @@
 #include "pico/stdlib.h"
 
-#ifndef COMMS_H
-#define COMMS_H
+#ifndef COMMS_HPP
+#define COMMS_HPP
 
 struct GCReport {
     uint8_t a : 1; uint8_t b : 1; uint8_t x:1; uint8_t y : 1; uint8_t start : 1; uint8_t pad0 : 3;
