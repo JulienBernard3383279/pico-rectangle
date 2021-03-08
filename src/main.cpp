@@ -4,8 +4,10 @@
 #include "comms.hpp"
 #include "logic.hpp"
 #include "inputs.hpp"
+#include "usb/lowlevel.hpp"
 
 #define LED_PIN 25
+#define USB_POWER_PIN 24
 
 const uint32_t us = 125;
 
@@ -40,9 +42,16 @@ int main() {
     // Clock at 125MHz
     set_sys_clock_khz(us*1000, true);
 
+    stdio_init_all();
+    
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    gpio_put(LED_PIN, 1);
+    gpio_put(LED_PIN, 0);
+
+    gpio_init(USB_POWER_PIN);
+    gpio_set_dir(USB_POWER_PIN, GPIO_IN);
+
+    if (gpio_get(USB_POWER_PIN)) usb_lowlevel_init();
 
     initLogic(ParasolDashing::BAN, SlightSideB::BAN);
     initInputs(pinMappings, NUMBER_OF_INPUTS);

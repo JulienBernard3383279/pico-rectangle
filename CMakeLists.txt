@@ -13,8 +13,9 @@ add_executable(rectangle
     src/comms.cpp
     src/logic.cpp
     src/inputs.cpp
+    src/usb/lowlevel.c
 )
 
-pico_add_extra_outputs(rectangle)
+target_link_libraries(rectangle pico_stdlib hardware_resets hardware_irq)
 
-target_link_libraries(rectangle pico_stdlib)
+pico_add_extra_outputs(rectangle)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
