@@ -26,6 +26,8 @@
 // Device descriptors
 #include "usb/lowlevel.h"
 
+#define min(a,b) (a>b?b:a)
+
 #define usb_hw_set hw_set_alias(usb_hw)
 #define usb_hw_clear hw_clear_alias(usb_hw)
 
@@ -380,14 +382,20 @@ void usb_handle_string_descriptor(volatile struct usb_setup_packet *pkt) {
  */
 void usb_handle_extended_compatibility_descriptor(volatile struct usb_setup_packet *pkt) {
 
-    
-    volatile uint8_t *buf = &ep0_buf[0];
+    /*volatile uint8_t *buf = &ep0_buf[0];
 
     for (int i = 0; i < EXT_COMP_DESC_SIZE; i++) {
         *buf++ = ((uint8_t*)&extendedCompatibilityIdFeatureDescriptor)[i];
     }
+    if (pkt->wLength > EXT_COMP_DESC_SIZE) {
+        for (int i =0; i < pkt->wLength - EXT_COMP_DESC_SIZE; i++) {
+            *buf++ = 0;
+        }
+    }*/
 
-    usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), &ep0_buf[0], EXT_COMP_DESC_SIZE);
+    usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), (uint8_t *) &extendedCompatibilityIdFeatureDescriptor, min(40, pkt->wLength)); //EXT_COMP_DESC_SIZE);
+
+    //usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), &ep0_buf[0], EXT_COMP_DESC_SIZE > pkt->wLength ? EXT_COMP_DESC_SIZE : pkt->wLength);
 }
 
 /**
@@ -445,9 +453,9 @@ void usb_handle_setup_packet(void) {
     usb_get_endpoint_configuration(EP0_IN_ADDR)->next_pid = 1u;
 
     /* Setup packet responses overrides */
-    if (/*req_direction == USB_DIR_IN &&
+    if (req_direction == USB_DIR_IN &&
         req_type == USB_REQ_TYPE_TYPE_VENDOR &&
-        req_recipient == USB_REQ_TYPE_RECIPIENT_DEVICE &&*/
+        req_recipient == USB_REQ_TYPE_RECIPIENT_DEVICE &&
         req == WINUSB_VENDOR_CODE /*&&
         (pkt->wIndex >> 8) == EXTENDED_COMPATIBILITY_ID*/ //TODO
         ) {
@@ -635,6 +643,9 @@ int usb_lowlevel_init(void) {
     while (!configured) {
         tight_loop_contents();
     }
+
+    ep1_in_handler(0, 0); // Start sending stuff
+    // When the transfer will be over we'll send stuff again, looping
 
     // Get ready to rx from host
     //usb_start_transfer(usb_get_endpoint_configuration(EP2_OUT_ADDR), NULL, 64);

@@ -93,7 +93,7 @@ static const struct usb_device_descriptor device_descriptor = {
         .bDeviceProtocol = 0,      // No protocol
         .bMaxPacketSize0 = 64,     // Max packet size for ep0
         .idVendor        = 0xA57E, // Your vendor id
-        .idProduct       = 0xE010, // Your product ID
+        .idProduct       = 0xE019, // Your product ID
         .bcdDevice       = 0,      // No device revision number
         .iManufacturer   = 1,      // Manufacturer string index
         .iProduct        = 2,      // Product string index
@@ -154,17 +154,17 @@ const struct t_ext_comp_desc{
 
 } __attribute__((packed)) extendedCompatibilityIdFeatureDescriptor =
 {
-	EXT_COMP_DESC_SIZE,
-	0x0100,
-	EXTENDED_COMPATIBILITY_ID,
-	NUM_INTERFACES_WITH_EXTENDED_COMPATIBILITY,
+	0x00000028, //LSB 40 (40 0 0 0)
+	0x0100, // LSB BCD (1 0)
+	0x0004, // LSB 4 ( 0 4 ) EXTENDED_COMPATIBILITY_ID,
+	1, //NUM_INTERFACES_WITH_EXTENDED_COMPATIBILITY,
 	{0, 0, 0, 0, 0, 0, 0},
 
 	{//Start of array initialization
 		{//Start of struct initialization
 		        0, //YOUR_INTERFACE_NUMBER_1
-			1,
-			"WINUSB\0", /** Other IDs define other compatible functions */
+			0x01, // Reserved
+			{0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00 },//"WINUSB\0\0", /** Other IDs define other compatible functions */
 			{0, 0, 0, 0, 0, 0, 0, 0}, /**< Some compatible IDs require this “sub compatible ID”  */
 			{0, 0, 0, 0, 0, 0},
 		},
