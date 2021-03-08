@@ -459,6 +459,8 @@ void usb_handle_setup_packet(void) {
         } else if (req == USB_REQUEST_SET_CONFIGURATION) {
             usb_set_device_configuration(pkt);
         } else {
+            //* "Acknowledge the request" ?
+            usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), NULL, 0);
             //printf("Other OUT request (0x%x)\r\n", pkt->bRequest);
         }
     } else if (req_direction == USB_DIR_IN) {
