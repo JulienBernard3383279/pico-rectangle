@@ -485,6 +485,8 @@ void usb_handle_setup_packet(void) {
                     //printf("Unhandled GET_DESCRIPTOR type 0x%x\r\n", descriptor_type);
             }
         } else {
+            //TODO Shouldn't just crash, should return SOMETHING
+
             //printf("Other IN request (0x%x)\r\n", pkt->bRequest);
         }
     }
@@ -580,6 +582,7 @@ void isr_usbctrl(void) {
     }
 
     if (status ^ handled) {
+        gpio_put(25,1);
         panic("Unhandled IRQ 0x%x\n", (uint) (status ^ handled));
     }
 }
@@ -611,7 +614,7 @@ void ep0_out_handler(uint8_t *buf, uint16_t len) {
 
 // Device specific functions
 
-static uint8_t mybuf[37] = {33, 1}; // 33, 1, 0, 0...
+static uint8_t mybuf[37] = {33, 0x10}; // 33, 0x10, 0, 0...
 
 uint8_t counter = 0;
 
@@ -620,13 +623,13 @@ uint8_t counter = 0;
 void ep1_in_handler(uint8_t *buf, uint16_t len) {
     uint8_t* gcReportPtr = build_usb_report();
 
-    // Optimization: only copy bytes 2 to 9
+    // Optimization for later: only copy bytes 2 to 9 ?
 
-    for (int i=2; i<10; i++) {
+    for (int i=0; i<37; i++) {
         mybuf[i] = gcReportPtr[i];
     }
 
-    mybuf[10] = counter++;
+    //mybuf[10] = counter++;
 
     struct usb_endpoint_configuration *ep = usb_get_endpoint_configuration(EP1_IN_ADDR);
     usb_start_transfer(ep, mybuf, 37);

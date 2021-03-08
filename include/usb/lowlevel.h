@@ -82,7 +82,7 @@ static const struct usb_endpoint_descriptor ep2_out = {
 };
 
 
-#define INSTALL_WINUSB 0
+#define INSTALL_WINUSB 1
 
 // Descriptors
 static const struct usb_device_descriptor device_descriptor = {
@@ -95,7 +95,7 @@ static const struct usb_device_descriptor device_descriptor = {
         .bMaxPacketSize0 = 64,     // Max packet size for ep0
         .idVendor        = 0x057E, // Your vendor id
         .idProduct       = 0x0337, // Your product ID
-        .bcdDevice       = 0x0100, //* Device revision number is 0 on purpose to avoid collision with official WUP-028
+        .bcdDevice       = 0x0102, //* Device revision number is != 0x0100 on purpose to avoid collision with official WUP-028
         .iManufacturer   = 1,      // Manufacturer string index
         .iProduct        = 2,      // Product string index
         .iSerialNumber   = 3,      //* Serial number index (used by some softwares as the device name... somehow)
@@ -164,8 +164,7 @@ const struct t_ext_comp_desc{
 	{
                 0, // Interface number 0
                 0x01, // Reserved
-                //{0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00 }, // "WINUSB\0\0"
-                "LIBUSB0\0",
+                {0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00 }, // "WINUSB\0\0"
                 {0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0},
 	}

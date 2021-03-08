@@ -3,7 +3,7 @@
 
 #include "pico/stdlib.h"
 
-struct GCReport {
+struct __attribute__((packed)) GCReport {
     uint8_t a : 1; uint8_t b : 1; uint8_t x:1; uint8_t y : 1; uint8_t start : 1; uint8_t pad0 : 3;
     uint8_t dLeft : 1; uint8_t dRight : 1; uint8_t dUp : 1; uint8_t dDown : 1; uint8_t z : 1; uint8_t r : 1; uint8_t l : 1; uint8_t pad1 : 1;
     uint8_t xStick;
