@@ -82,22 +82,23 @@ static const struct usb_endpoint_descriptor ep2_out = {
 };
 
 
+#define INSTALL_WINUSB 0
 
 // Descriptors
 static const struct usb_device_descriptor device_descriptor = {
         .bLength         = sizeof(struct usb_device_descriptor),
         .bDescriptorType = USB_DT_DEVICE,
-        .bcdUSB          = 0x0200, // USB 2.0 device
+        .bcdUSB          = 0x0200, //* USB 2.0 device (actually 1.1 but 2.0 identification necessary for WCID)
         .bDeviceClass    = 0,      // Specified in interface descriptor
         .bDeviceSubClass = 0,      // No subclass
         .bDeviceProtocol = 0,      // No protocol
         .bMaxPacketSize0 = 64,     // Max packet size for ep0
-        .idVendor        = 0xA57E, // Your vendor id
-        .idProduct       = 0xE019, // Your product ID
-        .bcdDevice       = 0,      // No device revision number
+        .idVendor        = 0x057E, // Your vendor id
+        .idProduct       = 0x0337, // Your product ID
+        .bcdDevice       = 0x0100, //* Device revision number is 0 on purpose to avoid collision with official WUP-028
         .iManufacturer   = 1,      // Manufacturer string index
         .iProduct        = 2,      // Product string index
-        .iSerialNumber   = 3,      // Serial number index (used by some softwares as the device name... somehow)
+        .iSerialNumber   = 3,      //* Serial number index (used by some softwares as the device name... somehow)
         .bNumConfigurations = 1    // One configuration
 };
 
@@ -123,18 +124,19 @@ static const struct usb_configuration_descriptor config_descriptor = {
         .bNumInterfaces  = 1,
         .bConfigurationValue = 1, // Configuration 1
         .iConfiguration = 0,      // No string
-        .bmAttributes = 0xc0,     // attributes: self powered, no remote wakeup
-        .bMaxPower = 0x32         // 100ma
+        .bmAttributes = 0xc0,     // attributes: self powered-device, no remote wakeup
+        .bMaxPower = 0xFA         // 500ma
 };
 
 
 
-/* WinUSB descriptors */
-// From https://www.silabs.com/community/mcu/32-bit/forum.topic.html/using_microsoft_osd-lMCD
+
+/* Automatic WinUSB assignment descriptors */
+
+// Built with the help of https://www.silabs.com/community/mcu/32-bit/forum.topic.html/using_microsoft_osd-lMCD
+// and https://github.com/pbatard/libwdi/wiki/WCID-Devices
 
 #define EXTENDED_COMPATIBILITY_ID 4
-#define EXT_COMP_DESC_SIZE sizeof(struct t_ext_comp_desc)
-#define NUM_INTERFACES_WITH_EXTENDED_COMPATIBILITY 1
 
 struct extended_compatibility_interface_descriptor {
 	uint8_t firstInterfaceNumber; /**< Interface number for which an extended compatibility feature descriptor is defined */
@@ -150,27 +152,22 @@ const struct t_ext_comp_desc{
 	uint16_t index;	/**< Command index - 0x04 for extended compatibility id */
 	uint8_t count;		/**< Number of interfaces for which an extended compatibility feature descriptor is defined */
 	uint8_t reserved1[7];
-	struct extended_compatibility_interface_descriptor ecid[NUM_INTERFACES_WITH_EXTENDED_COMPATIBILITY];
+	struct extended_compatibility_interface_descriptor ecid;
 
 } __attribute__((packed)) extendedCompatibilityIdFeatureDescriptor =
 {
-	0x00000028, //LSB 40 (40 0 0 0)
-	0x0100, // LSB BCD (1 0)
-	0x0004, // LSB 4 ( 0 4 ) EXTENDED_COMPATIBILITY_ID,
-	1, //NUM_INTERFACES_WITH_EXTENDED_COMPATIBILITY,
+	40, // length
+	0x0100, // bcdVersion
+	EXTENDED_COMPATIBILITY_ID, // 4 is extended compatibility command index
+	1, // one interface with extended compatibility, #0
 	{0, 0, 0, 0, 0, 0, 0},
-
-	{//Start of array initialization
-		{//Start of struct initialization
-		        0, //YOUR_INTERFACE_NUMBER_1
-			0x01, // Reserved
-			{0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00 },//"WINUSB\0\0", /** Other IDs define other compatible functions */
-			{0, 0, 0, 0, 0, 0, 0, 0}, /**< Some compatible IDs require this “sub compatible ID”  */
-			{0, 0, 0, 0, 0, 0},
-		},
-		/** You can add more interfaces (or functions with multiple interfaces)
-		 * which support extended compatibility here.
-		 */
+	{
+                0, // Interface number 0
+                0x01, // Reserved
+                //{0x57, 0x49, 0x4E, 0x55, 0x53, 0x42, 0x00, 0x00 }, // "WINUSB\0\0"
+                "LIBUSB0\0",
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0},
 	}
 };
 
@@ -182,9 +179,9 @@ static const char lang_descriptor[] = {
 };
 
 static const char *descriptor_strings[] = {
-        "SSBM Arte",
-        "Pico Frame1/B0XX",
-        "Pico Frame1/B0XX"
+        "Nintendo",
+        "WUP-028",
+        "15/07/2014" // Release number
 };
 
 #define WINUSB_VENDOR_CODE 0xAF

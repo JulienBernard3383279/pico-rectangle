@@ -6,17 +6,6 @@
 #define changeBit(r,b,v) r = (r & (~(1<<b))) | ((!!v)<<b)
 #define accessBit(buffer, offset) ((buffer[offset/8] & (0x0080 >> (offset%8))) != 0)
 
-const GCReport defaultReport = {
-    .a=0, .b=0, .x=0, .y=0, .start=0, .pad0=0,
-    .dLeft=0, .dRight=0, .dUp=0, .dDown=0, .z=0, .r=0, .l=0, .pad1=1,
-    .xStick=128,
-    .yStick=128,
-    .cxStick=128,
-    .cyStick=128,
-    .analogL=0,
-    .analogR=0
-};
-
 uint8_t gcDataPin;
 uint32_t us;
 

@@ -14,6 +14,7 @@ add_executable(rectangle
     src/logic.cpp
     src/inputs.cpp
     src/usb/lowlevel.c
+    src/usb/logic.cpp
 )
 
 target_link_libraries(rectangle pico_stdlib hardware_resets hardware_irq)

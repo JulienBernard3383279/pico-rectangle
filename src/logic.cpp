@@ -39,7 +39,7 @@ RectangleInput ri;
 GCReport makeReport(const RectangleInput &rectangleInput) {
 
     ri = rectangleInput; // local alterable copy
-    gcReport = defaultReport;
+    gcReport = defaultGcReport;
 
     /* 2IP No reactivation */
     

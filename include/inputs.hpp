@@ -1,7 +1,7 @@
-#include "pico/stdlib.h"
-
 #ifndef INPUTS_HPP
 #define INPUTS_HPP
+
+#include "pico/stdlib.h"
 
 struct RectangleInput {
     bool a; bool b; bool x; bool y; bool z;

@@ -1,10 +1,10 @@
+#ifndef LOGIC_HPP
+#define LOGIC_HPP
+
 #include "pico/stdlib.h"
 
 #include "comms.hpp"
 #include "inputs.hpp"
-
-#ifndef LOGIC_HPP
-#define LOGIC_HPP
 
 enum class ParasolDashing { BAN, DONT_BAN };
 enum class SlightSideB { BAN, DONT_BAN };

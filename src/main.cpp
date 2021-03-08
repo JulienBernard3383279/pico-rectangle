@@ -46,16 +46,16 @@ int main() {
     
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    gpio_put(LED_PIN, 0);
+    gpio_put(LED_PIN, 1);
 
     gpio_init(USB_POWER_PIN);
     gpio_set_dir(USB_POWER_PIN, GPIO_IN);
 
-    if (gpio_get(USB_POWER_PIN)) usb_lowlevel_init();
-
     initLogic(ParasolDashing::BAN, SlightSideB::BAN);
     initInputs(pinMappings, NUMBER_OF_INPUTS);
     initComms(gcDataPin, us);
+
+    if (gpio_get(USB_POWER_PIN)) usb_lowlevel_init();
 
     GCReport gcReport;
     RectangleInput ri;

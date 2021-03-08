@@ -1,7 +1,7 @@
-#include "pico/stdlib.h"
-
 #ifndef COMMS_HPP
 #define COMMS_HPP
+
+#include "pico/stdlib.h"
 
 struct GCReport {
     uint8_t a : 1; uint8_t b : 1; uint8_t x:1; uint8_t y : 1; uint8_t start : 1; uint8_t pad0 : 3;
@@ -14,7 +14,16 @@ struct GCReport {
     uint8_t analogR;
 };
 
-const extern GCReport defaultReport;
+const GCReport defaultGcReport = {
+    .a=0, .b=0, .x=0, .y=0, .start=0, .pad0=0,
+    .dLeft=0, .dRight=0, .dUp=0, .dDown=0, .z=0, .r=0, .l=0, .pad1=1,
+    .xStick=128,
+    .yStick=128,
+    .cxStick=128,
+    .cyStick=128,
+    .analogL=0,
+    .analogR=0
+};
 
 /* Must be called before calling any of the other functions */
 void initComms(uint8_t dataPin, uint32_t microsecondCycles);

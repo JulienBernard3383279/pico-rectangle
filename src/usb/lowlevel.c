@@ -26,6 +26,9 @@
 // Device descriptors
 #include "usb/lowlevel.h"
 
+// Interface to C++ world
+#include "usb/logic.h"
+
 #define min(a,b) (a>b?b:a)
 
 #define usb_hw_set hw_set_alias(usb_hw)
@@ -341,7 +344,6 @@ void usb_handle_config_descriptor(volatile struct usb_setup_packet *pkt) {
 
 /**
  * @brief Handle a BUS RESET from the host by setting the device address back to 0.
- *
  */
 void usb_bus_reset(void) {
     // Set address back to 0
@@ -352,9 +354,7 @@ void usb_bus_reset(void) {
 }
 
 /**
- * @brief Send the requested string descriptor to the host.
- *
- * @param pkt, the setup packet from the host.
+ * Redirects to proper prepare functions based on index 0 / 255 / other
  */
 void usb_handle_string_descriptor(volatile struct usb_setup_packet *pkt) {
     uint8_t i = pkt->wValue & 0xff;
@@ -377,26 +377,17 @@ void usb_handle_string_descriptor(volatile struct usb_setup_packet *pkt) {
 
 
 /**
- * @brief Custom, handle the extended compatibility descriptor request that's expected
+ * Custom, handle the extended compatibility descriptor request that's expected
  * to come in after the 0xEE string descriptor response
+ * Two kind of requests will end up here: those that query the header only (16 long)
+ * and those that query the full thing (40 i.e 16 + 24*1)
+ * They are indistinguishable except by length
+ * But it's just a question of truncation - the same buffer start is to be used
  */
 void usb_handle_extended_compatibility_descriptor(volatile struct usb_setup_packet *pkt) {
-
-    /*volatile uint8_t *buf = &ep0_buf[0];
-
-    for (int i = 0; i < EXT_COMP_DESC_SIZE; i++) {
-        *buf++ = ((uint8_t*)&extendedCompatibilityIdFeatureDescriptor)[i];
-    }
-    if (pkt->wLength > EXT_COMP_DESC_SIZE) {
-        for (int i =0; i < pkt->wLength - EXT_COMP_DESC_SIZE; i++) {
-            *buf++ = 0;
-        }
-    }*/
-
-    usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), (uint8_t *) &extendedCompatibilityIdFeatureDescriptor, min(40, pkt->wLength)); //EXT_COMP_DESC_SIZE);
-
-    //usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), &ep0_buf[0], EXT_COMP_DESC_SIZE > pkt->wLength ? EXT_COMP_DESC_SIZE : pkt->wLength);
+    usb_start_transfer(usb_get_endpoint_configuration(EP0_IN_ADDR), (uint8_t *) &extendedCompatibilityIdFeatureDescriptor, min(40, pkt->wLength));
 }
+
 
 /**
  * @brief Handles a SET_ADDR request from the host. The actual setting of the device address in
@@ -453,13 +444,12 @@ void usb_handle_setup_packet(void) {
     usb_get_endpoint_configuration(EP0_IN_ADDR)->next_pid = 1u;
 
     /* Setup packet responses overrides */
-    if (req_direction == USB_DIR_IN &&
+    if (INSTALL_WINUSB &&
+        req_direction == USB_DIR_IN &&
         req_type == USB_REQ_TYPE_TYPE_VENDOR &&
         req_recipient == USB_REQ_TYPE_RECIPIENT_DEVICE &&
-        req == WINUSB_VENDOR_CODE /*&&
-        (pkt->wIndex >> 8) == EXTENDED_COMPATIBILITY_ID*/ //TODO
-        ) {
-        gpio_put(25, 1);
+        req == WINUSB_VENDOR_CODE &&
+        pkt->wIndex == EXTENDED_COMPATIBILITY_ID) {
         usb_handle_extended_compatibility_descriptor(pkt);
     }
     
@@ -621,11 +611,23 @@ void ep0_out_handler(uint8_t *buf, uint16_t len) {
 
 // Device specific functions
 
-static uint8_t mybuf[37] = {33}; // 33, 0, 0, 0...
+static uint8_t mybuf[37] = {33, 1}; // 33, 1, 0, 0...
+
+uint8_t counter = 0;
 
 // Unsure why a buf/len is provided if this is device->host
 // Is it what we just sent ?
 void ep1_in_handler(uint8_t *buf, uint16_t len) {
+    uint8_t* gcReportPtr = build_usb_report();
+
+    // Optimization: only copy bytes 2 to 9
+
+    for (int i=2; i<10; i++) {
+        mybuf[i] = gcReportPtr[i];
+    }
+
+    mybuf[10] = counter++;
+
     struct usb_endpoint_configuration *ep = usb_get_endpoint_configuration(EP1_IN_ADDR);
     usb_start_transfer(ep, mybuf, 37);
 }
@@ -633,6 +635,7 @@ void ep1_in_handler(uint8_t *buf, uint16_t len) {
 void ep2_out_handler(uint8_t *buf, uint16_t len) {
     // We don't care about rumble commands
 }
+
 
 int usb_lowlevel_init(void) {
     //stdio_init_all();
@@ -648,10 +651,11 @@ int usb_lowlevel_init(void) {
     // When the transfer will be over we'll send stuff again, looping
 
     // Get ready to rx from host
-    //usb_start_transfer(usb_get_endpoint_configuration(EP2_OUT_ADDR), NULL, 64);
-    //idc about that //TODO
+    /* usb_start_transfer(usb_get_endpoint_configuration(EP2_OUT_ADDR), NULL, 64); */
+    // idc about that //TODO
 
-    // Everything is interrupt driven so just loop here
+    // So far, we should just see increments on EP1
+
     while (1) {
         tight_loop_contents();
     }
