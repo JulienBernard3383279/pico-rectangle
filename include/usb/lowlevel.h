@@ -185,6 +185,6 @@ static const char *descriptor_strings[] = {
 
 #define WINUSB_VENDOR_CODE 0xAF
 
-int usb_lowlevel_init(void);
+int initUsb(uint32_t us);
 
 #endif

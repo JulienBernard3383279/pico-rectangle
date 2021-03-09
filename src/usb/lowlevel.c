@@ -263,6 +263,9 @@ static inline bool ep_is_tx(struct usb_endpoint_configuration *ep) {
     return ep->descriptor->bEndpointAddress & USB_DIR_IN;
 }
 
+
+
+
 /**
  * @brief Starts a transfer on a given endpoint.
  *
@@ -277,10 +280,17 @@ void usb_start_transfer(struct usb_endpoint_configuration *ep, uint8_t *buf, uin
 
     //printf("Start transfer of len %d on ep addr 0x%x\n", len, ep->descriptor->bEndpointAddress);
 
+    //* Custom addition
+    //* For in endpoints, if the transfer hasn't gone out yet, replace the data_buffer, and don't flip the pid
+    //* i.e simply "replace" buffer
+    bool transferNotFired = false;
+    
     // Prepare buffer control register value
     uint32_t val = len | USB_BUF_CTRL_AVAIL;
 
     if (ep_is_tx(ep)) {
+        transferNotFired = *(ep->buffer_control) & USB_BUF_CTRL_FULL; // 1 << 15
+
         // Need to copy the data from the user buffer to the usb memory
         memcpy((void *) ep->data_buffer, (void *) buf, len);
         // Mark as full
@@ -289,10 +299,13 @@ void usb_start_transfer(struct usb_endpoint_configuration *ep, uint8_t *buf, uin
 
     // Set pid and flip for next transfer
     val |= ep->next_pid ? USB_BUF_CTRL_DATA1_PID : USB_BUF_CTRL_DATA0_PID;
-    ep->next_pid ^= 1u;
+    if (!transferNotFired) ep->next_pid ^= 1u;
 
     *ep->buffer_control = val;
 }
+
+ 
+
 
 /**
  * @brief Send device descriptor to host
@@ -620,19 +633,29 @@ static uint8_t mybuf[37] = {33, 0x10}; // 33, 0x10, 0, 0...
 
 uint8_t counter = 0;
 
-// Unsure why a buf/len is provided if this is device->host
-// Is it what we just sent ?
 void ep1_in_handler(uint8_t *buf, uint16_t len) {
-    uint8_t* gcReportPtr = build_usb_report();
+    
+    // <Inform of ep1 transfer completion>
+    inform_in_transfer_completed();
 
+    // <Delay until necessary>
+    wait_until_n_us_before_in_transfer(120);
+
+    //TODO Problem recovery / optimization left to do
+    //Stable enough for a v1 (never registered a <1000hz dip ever so far with -120us)
+    // /!\ -120us isn't 120us before transfer, it's 120us before transfer completion acknowledgment
+    // 120us -> stable 1000hz, 100 us -> occasional issues, 80 us -> everything goes to shit
+
+    uint8_t* gcReportPtr = build_usb_report();
+    
     // Optimization for later: only copy bytes 2 to 9 ?
+    // or pass buf directly
 
     for (int i=0; i<37; i++) {
         mybuf[i] = gcReportPtr[i];
     }
-
+    
     //mybuf[10] = counter++;
-
     struct usb_endpoint_configuration *ep = usb_get_endpoint_configuration(EP1_IN_ADDR);
     usb_start_transfer(ep, mybuf, 37);
 }
@@ -642,18 +665,20 @@ void ep2_out_handler(uint8_t *buf, uint16_t len) {
 }
 
 
-int usb_lowlevel_init(void) {
+int initUsb(uint32_t us) {
     //stdio_init_all();
     //printf("USB Device Low-Level hardware example\n");
     usb_device_init();
 
+    initUsbLogic(us);
+    
     // Wait until configured
     while (!configured) {
         tight_loop_contents();
     }
 
     ep1_in_handler(0, 0); // Start sending stuff
-    // When the transfer will be over we'll send stuff again, looping
+    // When the transfer's over we'll send stuff again, looping
 
     // Get ready to rx from host
     /* usb_start_transfer(usb_get_endpoint_configuration(EP2_OUT_ADDR), NULL, 64); */

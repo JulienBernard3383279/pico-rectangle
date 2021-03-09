@@ -55,7 +55,7 @@ int main() {
     initInputs(pinMappings, NUMBER_OF_INPUTS);
     initComms(gcDataPin, us);
 
-    if (gpio_get(USB_POWER_PIN)) usb_lowlevel_init();
+    if (gpio_get(USB_POWER_PIN)) initUsb(us);
 
     GCReport gcReport;
     RectangleInput ri;

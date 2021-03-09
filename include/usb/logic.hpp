@@ -34,4 +34,10 @@ const AdapterReport defaultAdapterReport = {
 
 extern "C" uint8_t* build_usb_report(void);
 
+extern "C" void inform_in_transfer_completed(void);
+
+extern "C" void wait_until_n_us_before_in_transfer(uint32_t n);
+
+extern "C" void initUsbLogic(uint32_t us);
+
 #endif
