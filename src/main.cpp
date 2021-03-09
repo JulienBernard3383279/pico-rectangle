@@ -55,8 +55,10 @@ int main() {
     initInputs(pinMappings, NUMBER_OF_INPUTS);
     initComms(gcDataPin, us);
 
-    if (gpio_get(USB_POWER_PIN)) initUsb(us);
+    // If powered through USB, USB mode
+    if (gpio_get(USB_POWER_PIN)) usbMode(us);
 
+    // Otherwise, console mode
     GCReport gcReport;
     RectangleInput ri;
 

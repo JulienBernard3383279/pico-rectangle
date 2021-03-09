@@ -439,14 +439,6 @@ void usb_set_device_configuration(volatile struct usb_setup_packet *pkt) {
 void usb_handle_setup_packet(void) {
     volatile struct usb_setup_packet *pkt = (volatile struct usb_setup_packet *) &usb_dpram->setup_packet;
 
-    /*struct usb_setup_packet {
-    uint8_t bmRequestType;
-    uint8_t bRequest;
-    uint16_t wValue;
-    uint16_t wIndex;
-    uint16_t wLength;
-    } __packed;*/
-
     uint8_t req_direction = pkt->bmRequestType & USB_DIR_MASK;
     uint8_t req_type = pkt->bmRequestType & USB_REQ_TYPE_TYPE_MASK;
     uint8_t req_recipient = pkt->bmRequestType & USB_REQ_TYPE_RECIPIENT_MASK;
@@ -627,18 +619,12 @@ void ep0_out_handler(uint8_t *buf, uint16_t len) {
 
 
 
-// Device specific functions
-
 static uint8_t mybuf[37] = {33, 0x10}; // 33, 0x10, 0, 0...
-
-uint8_t counter = 0;
 
 void ep1_in_handler(uint8_t *buf, uint16_t len) {
     
-    // <Inform of ep1 transfer completion>
     inform_in_transfer_completed();
 
-    // <Delay until necessary>
     wait_until_n_us_before_in_transfer(120);
 
     //TODO Problem recovery / optimization left to do
@@ -655,7 +641,6 @@ void ep1_in_handler(uint8_t *buf, uint16_t len) {
         mybuf[i] = gcReportPtr[i];
     }
     
-    //mybuf[10] = counter++;
     struct usb_endpoint_configuration *ep = usb_get_endpoint_configuration(EP1_IN_ADDR);
     usb_start_transfer(ep, mybuf, 37);
 }
@@ -665,9 +650,8 @@ void ep2_out_handler(uint8_t *buf, uint16_t len) {
 }
 
 
-int initUsb(uint32_t us) {
-    //stdio_init_all();
-    //printf("USB Device Low-Level hardware example\n");
+int usbMode(uint32_t us) {
+
     usb_device_init();
 
     initUsbLogic(us);
@@ -680,11 +664,7 @@ int initUsb(uint32_t us) {
     ep1_in_handler(0, 0); // Start sending stuff
     // When the transfer's over we'll send stuff again, looping
 
-    // Get ready to rx from host
-    /* usb_start_transfer(usb_get_endpoint_configuration(EP2_OUT_ADDR), NULL, 64); */
-    // idc about that //TODO
-
-    // So far, we should just see increments on EP1
+    // Everything is then interrupt driven
 
     while (1) {
         tight_loop_contents();

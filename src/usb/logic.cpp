@@ -41,10 +41,6 @@ uint8_t* build_usb_report(void) {
 }
 
 
-// 2**24 / (125*1000) = ~134
-// 134ms max full cycle
-// 2**32 / (125*1000) = ~34360
-
 static uint32_t lastCvr = 0;
 
 void inform_in_transfer_completed(void) {
@@ -52,7 +48,7 @@ void inform_in_transfer_completed(void) {
     lastCvr = reading;
 }
 
-// CVR MOVES BACKWARDS WHY DO I KEEP FORGETTING THIS ZDNIGIONUEFGOINUGFDINODFG
+// CVR MOVES BACKWARDS
 void wait_until_n_us_before_in_transfer(uint32_t n) {
     uint32_t target = (lastCvr - (1000-n)*us_) & 0x00FFFFFF;
 
