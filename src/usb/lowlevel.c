@@ -589,7 +589,6 @@ void isr_usbctrl(void) {
     }
 
     if (status ^ handled) {
-        gpio_put(25,1);
         panic("Unhandled IRQ 0x%x\n", (uint) (status ^ handled));
     }
 }
