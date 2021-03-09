@@ -28,8 +28,8 @@ void updateAdapterReportFromGcReport(GCReport gcReport) {
     adapterReport.yStick = gcReport.yStick;
     adapterReport.cxStick = gcReport.cxStick;
     adapterReport.cyStick = gcReport.cyStick;
-    adapterReport.analogL = gcReport.analogL; //TODO It's not a 1:1 translation
-    adapterReport.analogR = gcReport.analogR;
+    adapterReport.analogL = gcReport.analogL; // It's not a 1:1 translation but it aligns correctly
+    adapterReport.analogR = gcReport.analogR; // between console & USB
 }
 
 uint8_t* build_usb_report(void) {
