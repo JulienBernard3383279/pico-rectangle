@@ -58,6 +58,8 @@ There are multiple .uf2 files in a release (currently 2). Pick one according to 
 Removing either of these doesn't make your controller non SWT ruleset compliant. Don't use them if you don't want them. Use them if you want true functional equivalence to the Frame1/B0XX layouts.
 
 ### How to wire the board:
+
+Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin as per the following mapping:
 - Start to GP0 (pin 0)
 - Right to GP2 (pin 4)
 - Down to GP3 (pin 5)
@@ -78,8 +80,7 @@ Removing either of these doesn't make your controller non SWT ruleset compliant.
 - Y to GP22 (pin 29)
 - B to GP26 (pin 31)
 - R to GP27 (pin 32)
-- Ground to pins 33 and 38 (i.e 33 and 38 should be connected)
-- One pin of every switch to ground (the other pin being the signal)
+- Ground to pins 33 and 38 (i.e connect pin 33 to 38 together, then connect them to the console grounds and to your daisy chains of switch ground pins)
 - Gamecube data line to GP 28 (pin 34)
 - 3.3V to VSYS (pin 39)
 - Don't connect your 5V input
