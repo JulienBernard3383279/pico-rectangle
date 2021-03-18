@@ -1,0 +1,3 @@
+[submodule "pico-joybus-comms"]
+	path = pico-joybus-comms
+	url = https://github.com/JulienBernard3383279/pico-joybus-comms.git

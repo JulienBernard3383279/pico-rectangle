@@ -24,10 +24,7 @@ else()
     message("Git not found or not a git repo")
 endif()
 
-include_directories(include comms/include)
-
-#add_library(comms STATIC IMPORTED)
-#set_target_properties(comms PROPERTIES IMPORTED_LOCATION "./comms")
+include_directories(include pico-joybus-comms/include)
 
 add_executable(rectangle
     src/main.cpp
@@ -35,7 +32,7 @@ add_executable(rectangle
     src/inputs.cpp
     src/usb/lowlevel.c
     src/usb/logic.cpp
-    src/comms.cpp
+    pico-joybus-comms/src/joybusComms.cpp
 )
 
 target_link_libraries(rectangle pico_stdlib hardware_resets hardware_irq)

@@ -5,7 +5,7 @@
 #include "inputs.hpp"
 #include "usb/lowlevel.hpp"
 
-#include "comms2.hpp"
+#include "joybusComms.hpp"
 
 #define LED_PIN 25
 #define USB_POWER_PIN 24

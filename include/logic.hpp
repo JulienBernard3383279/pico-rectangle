@@ -5,7 +5,7 @@
 
 #include "inputs.hpp"
 
-#include "comms2.hpp"
+#include "joybusComms.hpp"
 
 enum class ParasolDashing { BAN, DONT_BAN };
 enum class SlightSideB { BAN, DONT_BAN };
