@@ -1,10 +1,11 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#include "comms.hpp"
 #include "logic.hpp"
 #include "inputs.hpp"
 #include "usb/lowlevel.hpp"
+
+#include "comms2.hpp"
 
 #define LED_PIN 25
 #define USB_POWER_PIN 24
