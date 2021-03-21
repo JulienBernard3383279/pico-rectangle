@@ -59,6 +59,8 @@ Removing either of these doesn't make your controller non SWT ruleset compliant.
 
 ### How to wire the board:
 
+![image](https://i.imgur.com/75a7UYr.png)
+
 Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin as per the following mapping:
 - Start to GP0 (pin 0)
 - Right to GP2 (pin 4)
