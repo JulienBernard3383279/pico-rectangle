@@ -115,8 +115,9 @@ GCReport makeReport(const RectangleInput &rectangleInput) {
     }
     else if (horizontal) {
         if (ri.mx == ri.my) xy = coords(1.0, 0.0);
-        else if (ri.mx) xy =  (ri.left && ri.right) ? coords(1.0, 0.0) : coords(0.6625, 0.0);
-        else xy = ((banSlightSideB && ri.b) || ri.left && ri.right) ? coords(1.0, 0.0) : coords(0.3375, 0.0);
+        else if (ri.mx) xy =  (rectangleInput.left && rectangleInput.right) ? coords(1.0, 0.0) : coords(0.6625, 0.0);
+        else xy = ((banSlightSideB && ri.b) || rectangleInput.left && rectangleInput.right) ? coords(1.0, 0.0) : coords(0.3375, 0.0);
+        // Read the original rectangleInput to bypass SOCD
     }
     else if (vertical) {
         if (ri.mx == ri.my) xy = coords(0.0, 1.0);
