@@ -77,7 +77,7 @@ GCReport makeReport(const RectangleInput &rectangleInput) {
         if (ri.l || ri.r) {
             if (ri.mx == ri.my) xy = coords(0.7, readUp ? 0.7 : 0.6875);
             else if (ri.mx) xy = coords(0.6375, 0.375);
-            else xy = (banParasolDashing && readUp) ? coords(0.875, 0.475) : coords(0.85, 0.5);
+            else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85);
         }
         else if (ri.b && (ri.mx != ri.my)) {
             if (ri.mx) {
