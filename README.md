@@ -16,6 +16,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 In particular, when communicating over USB, device using this software will use the 0x057E USB Vendor ID, that is affiliated with Nintendo. By uploading this software onto your board, you assert that you understand what that means and take entire responsability for it.
 
+### Regarding wiring
+
+Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release.
+
 ### Safety information
 
 Don't have this board plugged via USB and via its Gamecube port at the same time.
