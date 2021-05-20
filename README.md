@@ -16,10 +16,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 In particular, when communicating over USB, device using this software will use the 0x057E USB Vendor ID, that is affiliated with Nintendo. By uploading this software onto your board, you assert that you understand what that means and take entire responsability for it.
 
-### Regarding wiring
-
-Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release.
-
 ### Safety information
 
 Don't have this board plugged via USB and via its Gamecube port at the same time.
@@ -62,6 +58,8 @@ There are multiple .uf2 files in a release (currently 2). Pick one according to 
 Removing either of these doesn't make your controller non SWT ruleset compliant. Don't use them if you don't want them. Use them if you want true functional equivalence to the Frame1/B0XX layouts.
 
 ### How to wire the board:
+
+Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release. If you compile the source code anyway for whatever reason, clone the .git repository (`git clone pathToTheDotGitCopiedFromTheGreenTopRightButtonOfThisPage` in Git Bash) instead of only downloading a .zip, otherwise the automated update of the `joybusComms` git submodule - and its download in the first place - won't happen)
 
 ![image](https://i.imgur.com/75a7UYr.png)
 
