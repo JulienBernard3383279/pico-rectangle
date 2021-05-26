@@ -59,6 +59,8 @@ Removing either of these doesn't make your controller non SWT ruleset compliant.
 
 ### How to wire the board:
 
+Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release. If you compile the source code anyway for whatever reason, clone the .git repository (`git clone pathToTheDotGitCopiedFromTheGreenTopRightButtonOfThisPage` in Git Bash) instead of only downloading a .zip, otherwise the automated update of the `joybusComms` git submodule - and its download in the first place - won't happen)
+
 ![image](https://i.imgur.com/75a7UYr.png)
 
 Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin as per the following mapping:
