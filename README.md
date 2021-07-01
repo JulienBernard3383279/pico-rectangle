@@ -97,7 +97,7 @@ Everything but B/R doesn't work -> Did you connect pin 38 to ground ?
 
 ### Contact
 
-Discord: Arte#2458
+Discord: Arte#0027
 
 Twitter: https://twitter.com/SSBM_Arte
 
