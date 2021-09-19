@@ -5,6 +5,6 @@
 
 const int us = 125;
 
-#define USE_UART0 1
+#define USE_UART0 0
 
 #endif

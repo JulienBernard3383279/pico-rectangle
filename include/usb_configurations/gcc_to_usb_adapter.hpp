@@ -45,7 +45,7 @@ const AdapterReport defaultAdapterReport = {
 
 extern AdapterReport hidReport;
 
-void actuateReportFromGCState(GCReport); //TODO GCReport should be in somewhere global + remove joybus dependencies then
+void actuateReportFromGCState(GCReport);
 
 void enterMode(void actuateReportFunc(void));
 

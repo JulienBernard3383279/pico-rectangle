@@ -13,7 +13,7 @@ namespace Joybus
  * @short Enters the Joybus communication mode
  * 
  * @param dataPin GPIO number of the console data line pin
- * @param func Function to be called on //TODO to obtain the GCReport to be sent to the console
+ * @param func Function to be called to obtain the GCReport to be sent to the console
  */
 void enterMode(int dataPin, GCReport func(void));
 

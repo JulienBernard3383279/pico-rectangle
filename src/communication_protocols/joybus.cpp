@@ -185,7 +185,7 @@ void wait2Us() {
 void enterMode(int dataPin, GCReport func(void)) {
     initComms(dataPin);
     while (true) {
-        awaitPoll(); //TODO Check if timeout are as updated as for the PicoAdapter one
+        awaitPoll();
         wait2Us();
         respondToPoll(func());
     }

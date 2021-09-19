@@ -19,9 +19,6 @@
 // For the wait in the main loop
 #include "hardware/structs/systick.h"
 
-//TODO I don't remember what this is for
-#include "hardware/sync.h"
-
 void log_uart0(const char* str) {
     #if USE_UART0
     uart_puts(uart0, str);
