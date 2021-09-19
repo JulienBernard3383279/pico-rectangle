@@ -1,11 +1,7 @@
-/*
- * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+#ifndef USB__COMMON_HPP
+#define USB__COMMON_HPP
 
-#ifndef USB__COMMON_H
-#define USB__COMMON_H
+/* Adapted from dev_lowlevel */
 
 #include "pico/types.h"
 #include "hardware/structs/usb.h"
@@ -65,12 +61,12 @@ struct usb_setup_packet {
     uint16_t wValue;
     uint16_t wIndex;
     uint16_t wLength;
-} __packed;
+} __attribute__((packed));
 
 struct usb_descriptor {
     uint8_t bLength;
     uint8_t bDescriptorType;
-};
+} __attribute__((packed));
 
 struct usb_device_descriptor {
     uint8_t bLength;
@@ -87,7 +83,7 @@ struct usb_device_descriptor {
     uint8_t iProduct;
     uint8_t iSerialNumber;
     uint8_t bNumConfigurations;
-} __packed;
+} __attribute__((packed));
 
 struct usb_configuration_descriptor {
     uint8_t bLength;
@@ -98,7 +94,7 @@ struct usb_configuration_descriptor {
     uint8_t iConfiguration;
     uint8_t bmAttributes;
     uint8_t bMaxPower;
-} __packed;
+} __attribute__((packed));
 
 struct usb_interface_descriptor {
     uint8_t bLength;
@@ -110,7 +106,7 @@ struct usb_interface_descriptor {
     uint8_t bInterfaceSubClass;
     uint8_t bInterfaceProtocol;
     uint8_t iInterface;
-} __packed;
+} __attribute__((packed));
 
 struct usb_endpoint_descriptor {
     uint8_t bLength;
@@ -119,7 +115,7 @@ struct usb_endpoint_descriptor {
     uint8_t bmAttributes;
     uint16_t wMaxPacketSize;
     uint8_t bInterval;
-} __packed;
+} __attribute__((packed));
 
 struct usb_endpoint_descriptor_long {
     uint8_t bLength;
@@ -130,6 +126,16 @@ struct usb_endpoint_descriptor_long {
     uint8_t bInterval;
     uint8_t bRefresh;
     uint8_t bSyncAddr;
+} __attribute__((packed));
+
+struct usb_hid_descriptor {
+    uint8_t bLength;
+    uint8_t bDescriptorType;
+    uint16_t bcdHID;
+    uint8_t bCountryCode;
+    uint8_t bNumDescriptors;
+    uint8_t bDescriptorType2;
+    uint16_t bDescriptorLength;
 } __attribute__((packed));
 
 #endif

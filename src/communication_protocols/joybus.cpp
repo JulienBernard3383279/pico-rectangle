@@ -1,18 +1,23 @@
+#include "communication_protocols/joybus.hpp"
+
+#include "global.hpp"
+
 #include "hardware/structs/systick.h"
 #include "hardware/gpio.h"
-
-#include "comms.hpp"
 
 #define changeBit(r,b,v) r = (r & (~(1<<b))) | ((!!v)<<b)
 #define accessBit(buffer, offset) ((buffer[offset/8] & (0x0080 >> (offset%8))) != 0)
 
-uint8_t gcDataPin;
-uint32_t us;
+namespace CommunicationProtocols
+{
+namespace Joybus
+{
 
-void initComms(uint8_t dataPin, uint32_t microsecondCycles) {
+uint8_t gcDataPin;
+
+void initComms(uint8_t dataPin) {
 
     gcDataPin = dataPin;
-    us = microsecondCycles;
 
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
@@ -20,10 +25,6 @@ void initComms(uint8_t dataPin, uint32_t microsecondCycles) {
 
     // Configure timer
     systick_hw->csr = (1 << 2) | (1 << 0);
-
-    // 2^23 = 8388608
-    // 2^23/125 = 67108.864
-    // -> we can wait max 67ms with &0x8 checking, ~134ms all around
 }
 
 // State machine declarations
@@ -37,6 +38,7 @@ uint8_t* responsePointer = responseBuffer;
 uint32_t origin;
 uint32_t target;
 
+void respond(uint8_t* responsePointer, uint32_t responseBitLength);
 void awaitPoll() {
 
 stateLabel_InputInit:
@@ -144,7 +146,8 @@ void respond(uint8_t* responsePointer, uint32_t responseBitLength) {
     changeBit(sio_hw->gpio_out, gcDataPin, 1);
     gpio_set_dir(gcDataPin, GPIO_OUT);
 
-    origin = systick_hw->cvr;
+    origin = systick_hw->cvr - 2*us; // Test -2*us
+    while ((origin - systick_hw->cvr) & 0x00800000);
 
     for (uint32_t i=0; i<responseBitLength; i++) {
 
@@ -167,6 +170,26 @@ void respond(uint8_t* responsePointer, uint32_t responseBitLength) {
     changeBit(sio_hw->gpio_out, gcDataPin, 1);
 }
 
-void respondToPoll(GCReport *gcReport) {
-    respond((uint8_t*)gcReport, 64);
+void respondToPoll(GCReport gcReport) {
+    respond((uint8_t*)&gcReport, 64);
+}
+
+/* The Pico's speed, combined with the speed of this function (not checking SDI/pivot helps) makes it so building the report is so fast,
+if we don't answer ASAP, we'll start answering before the console is done asking. Answering meaning, pulling the line when they're pulling
+it too. This could be bad. So we delay starting to build the response state until we're ready to talk - that is, by 2us. */
+void wait2Us() {
+    target = systick_hw->cvr - 2*us;
+    ((target - systick_hw->cvr) & 0x00800000);
+}
+
+void enterMode(int dataPin, GCReport func(void)) {
+    initComms(dataPin);
+    while (true) {
+        awaitPoll(); //TODO Check if timeout are as updated as for the PicoAdapter one
+        wait2Us();
+        respondToPoll(func());
+    }
+}
+
+}
 }

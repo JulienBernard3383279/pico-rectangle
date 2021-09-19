@@ -1,40 +1,31 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(PICO_SDK_PATH "../../pico-sdk")
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 include(pico_sdk_import.cmake)
 
-project(rectangle CXX C)
+project(pico_rectangle CXX C)
 
 pico_sdk_init()
 
-# Adapted from https://cliutils.gitlab.io/modern-cmake/chapters/projects/submodule.html
-find_package(Git QUIET)
-if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-# Update submodules as needed
-    option(GIT_SUBMODULE "Check submodules during build" ON)
-    if(GIT_SUBMODULE)
-        message(STATUS "Submodule update")
-        execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-                        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                        RESULT_VARIABLE GIT_SUBMOD_RESULT)
-        if(NOT GIT_SUBMOD_RESULT EQUAL "0")
-            message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
-        endif()
-    endif()
-else()
-    message("Git not found or not a git repo")
-endif()
-
 include_directories(include pico-joybus-comms/include)
 
-add_executable(rectangle
+add_executable(pico_rectangle
     src/main.cpp
-    src/logic.cpp
-    src/inputs.cpp
-    src/usb/lowlevel.c
-    src/usb/logic.cpp
-    pico-joybus-comms/src/joybusComms.cpp
+    src/communication_protocols/joybus.cpp
+    src/communication_protocols/usb.cpp
+    src/usb_configurations/gcc_to_usb_adapter.cpp
+    src/usb_configurations/keyboard_8kro.cpp
+    src/usb_configurations/wired_fight_pad_pro.cpp
+    src/dac_algorithms/melee_F1.cpp
+    src/dac_algorithms/project_plus_F1.cpp
+    src/dac_algorithms/ultimate_F1.cpp
+    src/dac_algorithms/set_of_8_keys.cpp
+    src/dac_algorithms/wired_fight_pad_pro_default.cpp
+    src/gpio_to_button_sets/F1.cpp
 )
 
-target_link_libraries(rectangle pico_stdlib hardware_resets hardware_irq)
+target_link_libraries(pico_rectangle pico_stdlib hardware_resets hardware_irq)
 
-pico_add_extra_outputs(rectangle)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+pico_add_extra_outputs(pico_rectangle)

@@ -1,74 +1,89 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#include "logic.hpp"
-#include "inputs.hpp"
-#include "usb/lowlevel.hpp"
+#include <array>
 
-#include "joybusComms.hpp"
+#include "global.hpp"
+
+#include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/set_of_8_keys.hpp"
+#include "dac_algorithms/wired_fight_pad_pro_default.hpp"
+
+#include "gpio_to_button_sets/F1.hpp"
+
+#include "usb_configurations/gcc_to_usb_adapter.hpp"
+#include "usb_configurations/keyboard_8kro.hpp"
+#include "usb_configurations/wired_fight_pad_pro.hpp"
+
+#include "communication_protocols/joybus.hpp"
 
 #define LED_PIN 25
 #define USB_POWER_PIN 24
 
-const uint32_t us = 125;
-
 const uint8_t gcDataPin = 28;
-
-#define NUMBER_OF_INPUTS 20
-const PinMapping pinMappings[NUMBER_OF_INPUTS] = {
-    { 0, &RectangleInput::start },
-    { 2, &RectangleInput::right },
-    { 3, &RectangleInput::down },
-    { 4, &RectangleInput::left },
-    { 5, &RectangleInput::l },
-    { 6, &RectangleInput::mx },
-    { 7, &RectangleInput::my },
-    { 12, &RectangleInput::cUp },
-    { 13, &RectangleInput::cLeft },
-    { 14, &RectangleInput::a },
-    { 15, &RectangleInput::cDown },
-    { 16, &RectangleInput::cRight },
-    { 17, &RectangleInput::up },
-    { 18, &RectangleInput::ms },
-    { 19, &RectangleInput::z },
-    { 20, &RectangleInput::ls },
-    { 21, &RectangleInput::x },
-    { 22, &RectangleInput::y },
-    { 26, &RectangleInput::b },
-    { 27, &RectangleInput::r }
-};
 
 int main() {
 
-    // Clock at 125MHz
-    set_sys_clock_khz(us*1000, true);
-
+    set_sys_clock_khz(1000*us, true);
     stdio_init_all();
-    
+
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    gpio_put(LED_PIN, 1);
+    gpio_put(LED_PIN, 0);
 
     gpio_init(USB_POWER_PIN);
     gpio_set_dir(USB_POWER_PIN, GPIO_IN);
 
-    initLogic(ParasolDashing::BAN, SlightSideB::BAN);
-    initInputs(pinMappings, NUMBER_OF_INPUTS);
-    initComms(gcDataPin, us);
+    #ifdef USE_UART0
+    // Initialise UART 0
+    uart_init(uart0, 115200);
+ 
+    // Set the GPIO pin mux to the UART - 0 is TX, 1 is RX
+    gpio_set_function(0, GPIO_FUNC_UART);
+    gpio_set_function(1, GPIO_FUNC_UART);
+    #endif
 
-    // If powered through USB, USB mode
-    if (gpio_get(USB_POWER_PIN)) usbMode(us);
+    const uint8_t keyboardPin = 
+    #ifdef USE_UART0
+    5
+    #else
+    0
+    #endif
+    ;
 
-    // Otherwise, console mode
-    GCReport gcReport;
-    RectangleInput ri;
+    std::array<uint8_t, 3> modePins = { 7, 6, keyboardPin }; // DO NOT USE PIN GP15
 
-    while (1) {
-        awaitPoll();
-        ri = getRectangleInput();
-        gcReport = makeReport(ri);
-        respondToPoll(&gcReport);
+    for (uint8_t modePin : modePins) {
+        gpio_init(modePin);
+        gpio_set_dir(modePin, GPIO_IN);
+        gpio_pull_up(modePin);
     }
 
-    return 1;
+    /* Mode selection logic */
+
+    // Not plugged through USB =>  F1 / melee / joybus
+    if (!gpio_get(USB_POWER_PIN)) CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
+        return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+    });
+
+    // Else:
+    // 7 (L): F1 / melee / wired_fight_pad_pro
+    if (!gpio_get(7)) USBConfigurations::WiredFightPadPro::enterMode([](){
+        USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
+
+    // 6 (Left): F1 / wired_fight_pad_pro_default / wired_fight_pad_pro
+    if (!gpio_get(6)) USBConfigurations::WiredFightPadPro::enterMode([](){
+        DACAlgorithms::WiredFightPadProDefault::actuateWFPPReport(GpioToButtonSets::F1::defaultConversion());
+    });
+
+    // 0 (Start): F1 / 8 keys set / 8KRO keyboard
+    if (!gpio_get(keyboardPin)) USBConfigurations::Keyboard8KRO::enterMode([](){
+        DACAlgorithms::SetOf8Keys::actuate8KeysReport(GpioToButtonSets::F1::defaultConversion());
+    });
+
+    // Default: F1 / melee / adapter
+    USBConfigurations::GccToUsbAdapter::enterMode([](){
+        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
 }
