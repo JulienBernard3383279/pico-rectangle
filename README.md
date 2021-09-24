@@ -167,6 +167,6 @@ I intend to add Ultimate and P+/PM support shortly. The v1.0 release will happen
 
 ### Contact
 
-Discord: Arte#0027
+Discord: Arte#9281
 
 Twitter: https://twitter.com/SSBM_Arte
