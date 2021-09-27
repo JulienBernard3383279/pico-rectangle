@@ -45,13 +45,13 @@ int main() {
 
     const uint8_t keyboardPin = 
     #ifdef USE_UART0
-    5
+    3
     #else
     0
     #endif
     ;
 
-    std::array<uint8_t, 3> modePins = { 7, 6, keyboardPin }; // DO NOT USE PIN GP15
+    std::array<uint8_t, 3> modePins = { 5, 4, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -67,17 +67,17 @@ int main() {
     });
 
     // Else:
-    // 7 (L): F1 / melee / wired_fight_pad_pro
-    if (!gpio_get(7)) USBConfigurations::WiredFightPadPro::enterMode([](){
+    // 7 - GP5 - L: F1 / melee / wired_fight_pad_pro
+    if (!gpio_get(5)) USBConfigurations::WiredFightPadPro::enterMode([](){
         USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
     });
 
-    // 6 (Left): F1 / wired_fight_pad_pro_default / wired_fight_pad_pro
-    if (!gpio_get(6)) USBConfigurations::WiredFightPadPro::enterMode([](){
+    // 6 - GP4 - Left: F1 / wired_fight_pad_pro_default / wired_fight_pad_pro
+    if (!gpio_get(4)) USBConfigurations::WiredFightPadPro::enterMode([](){
         DACAlgorithms::WiredFightPadProDefault::actuateWFPPReport(GpioToButtonSets::F1::defaultConversion());
     });
 
-    // 0 (Start): F1 / 8 keys set / 8KRO keyboard
+    // 0 - 0 - Start: F1 / 8 keys set / 8KRO keyboard
     if (!gpio_get(keyboardPin)) USBConfigurations::Keyboard8KRO::enterMode([](){
         DACAlgorithms::SetOf8Keys::actuate8KeysReport(GpioToButtonSets::F1::defaultConversion());
     });
