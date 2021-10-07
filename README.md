@@ -1,6 +1,6 @@
 # Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.3)
 
-This is a modular and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols.
+This is a modular and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
 
 #### Supported controller representations:
 - Gamecube controller (Joybus)
@@ -49,15 +49,17 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 ### Modes
 
-As of this release, 5 modes are built-in.
+As of this release, 6 modes are built-in.
 
 - Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus). If you're not plugged into USB, you enter this mode.
 
-- Plugged into USB, nothing pressed => GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
+- Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
-- GP7 (by default, L) => Wired Fight Pad Pro with Melee logic (Melee F1 DAC algorithm + Wired Fight Pad Pro USB configuration).
+- GP6 (by default, MX) => Ultimate GCC to USB adapter mode (Ultimate DAC algorithm + Adapter USB configuration).
 
-- GP6 (by default, Left) => Wired Fight Pad Pro with dedicated logic (Wired Fight Pad Pro DAC algorithm + Wired Fight Pad Pro USB configuration). See lower for DAC algorithm explanation.
+- GP5 (by default, L) => Wired Fight Pad Pro with Melee logic (Melee F1 DAC algorithm + Wired Fight Pad Pro USB configuration).
+
+- GP4 (by default, Left) => Wired Fight Pad Pro with dedicated logic (Wired Fight Pad Pro DAC algorithm + Wired Fight Pad Pro USB configuration). See lower for DAC algorithm explanation.
 
 - GP0 (by default, Start) => 8KRO Keyboard (8 Keys set DAC algorithm + 8KRO Keyboard USB configuration). See lower for mapping.
 
@@ -163,7 +165,7 @@ Nothing but B/R works -> Did you connect pin 38 to ground ?
 
 ### Closing notes
 
-I intend to add Ultimate and P+/PM support shortly. The v1.0 release will happen after that. Until then, the project is in beta and default configurations (mode pins, keyboard mappings, wired fight pad pro mappings) may change. Before I can do the full release, everything has to be tested thoroughly, so any help with testing is appreciated.
+I intend to add P+/PM support shortly. The v1.0 release will happen after that. Until then, the project is in beta and default configurations (mode pins, keyboard mappings, wired fight pad pro mappings) may change. Before I can do the full release, everything has to be tested thoroughly, so any help with testing is appreciated. Especially the Ultimate mode !
 
 ### Contact
 
