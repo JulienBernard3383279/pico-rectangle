@@ -68,7 +68,7 @@ int main() {
     });
 
     // Else:
-    // 8 - GP6 - : F1 / ultimate / adapter
+    // 8 - GP6 - MX : F1 / ultimate / adapter
     if (!gpio_get(6)) USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
     });
