@@ -6,6 +6,7 @@
 #include "global.hpp"
 
 #include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/ultimate_F1.hpp"
 #include "dac_algorithms/set_of_8_keys.hpp"
 #include "dac_algorithms/wired_fight_pad_pro_default.hpp"
 
@@ -34,7 +35,7 @@ int main() {
     gpio_init(USB_POWER_PIN);
     gpio_set_dir(USB_POWER_PIN, GPIO_IN);
 
-    #ifdef USE_UART0
+    #if USE_UART0
     // Initialise UART 0
     uart_init(uart0, 115200);
  
@@ -44,14 +45,14 @@ int main() {
     #endif
 
     const uint8_t keyboardPin = 
-    #ifdef USE_UART0
+    #if USE_UART0
     3
     #else
     0
     #endif
     ;
 
-    std::array<uint8_t, 3> modePins = { 5, 4, keyboardPin }; // DO NOT USE PIN GP15
+    std::array<uint8_t, 4> modePins = { 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -67,6 +68,11 @@ int main() {
     });
 
     // Else:
+    // 8 - GP6 - : F1 / ultimate / adapter
+    if (!gpio_get(6)) USBConfigurations::GccToUsbAdapter::enterMode([](){
+        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
+
     // 7 - GP5 - L: F1 / melee / wired_fight_pad_pro
     if (!gpio_get(5)) USBConfigurations::WiredFightPadPro::enterMode([](){
         USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
