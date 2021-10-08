@@ -19,11 +19,13 @@ add_executable(pico_rectangle
     src/usb_configurations/keyboard_8kro.cpp
     src/usb_configurations/wired_fight_pad_pro.cpp
     src/dac_algorithms/melee_F1.cpp
+    src/dac_algorithms/NASB_Austin.cpp
     src/dac_algorithms/project_plus_F1.cpp
     src/dac_algorithms/ultimate_F1.cpp
     src/dac_algorithms/set_of_8_keys.cpp
     src/dac_algorithms/wired_fight_pad_pro_default.cpp
     src/gpio_to_button_sets/F1.cpp
+    src/gpio_to_button_sets/NASB_Austin.cpp
 )
 
 target_link_libraries(pico_rectangle pico_stdlib hardware_resets hardware_irq)

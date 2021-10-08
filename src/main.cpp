@@ -6,11 +6,13 @@
 #include "global.hpp"
 
 #include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/NASB_Austin.hpp"
 #include "dac_algorithms/ultimate_F1.hpp"
 #include "dac_algorithms/set_of_8_keys.hpp"
 #include "dac_algorithms/wired_fight_pad_pro_default.hpp"
 
 #include "gpio_to_button_sets/F1.hpp"
+#include "gpio_to_button_sets/NASB_Austin.hpp"
 
 #include "usb_configurations/gcc_to_usb_adapter.hpp"
 #include "usb_configurations/keyboard_8kro.hpp"
@@ -52,7 +54,7 @@ int main() {
     #endif
     ;
 
-    std::array<uint8_t, 4> modePins = { 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
+    std::array<uint8_t, 5> modePins = { 6, 5, 4, 1, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -81,6 +83,11 @@ int main() {
     // 6 - GP4 - Left: F1 / wired_fight_pad_pro_default / wired_fight_pad_pro
     if (!gpio_get(4)) USBConfigurations::WiredFightPadPro::enterMode([](){
         DACAlgorithms::WiredFightPadProDefault::actuateWFPPReport(GpioToButtonSets::F1::defaultConversion());
+    });
+
+    // 1 - 1 - ?: NASB_Austin / NASB_Austin / adapter
+    if (!gpio_get(1)) USBConfigurations::GccToUsbAdapter::enterMode([](){
+        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::NASB_Austin::getGCReport(GpioToButtonSets::NASB_Austin::defaultConversion()));
     });
 
     // 0 - 0 - Start: F1 / 8 keys set / 8KRO keyboard
