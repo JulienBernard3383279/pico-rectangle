@@ -1,7 +1,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 
-#include <array>
+#include <vector>
 
 #include "global.hpp"
 
@@ -17,6 +17,8 @@
 #include "usb_configurations/wired_fight_pad_pro.hpp"
 
 #include "communication_protocols/joybus.hpp"
+
+#include "other/runtime_remapping_mode.hpp"
 
 #define LED_PIN 25
 #define USB_POWER_PIN 24
@@ -52,7 +54,7 @@ int main() {
     #endif
     ;
 
-    std::array<uint8_t, 4> modePins = { 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 17, 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -68,6 +70,10 @@ int main() {
     });
 
     // Else:
+    // 22 - GP17 - Up : runtime remapping
+    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
+
+    
     // 8 - GP6 - MX : F1 / ultimate / adapter
     if (!gpio_get(6)) USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
