@@ -1,6 +1,6 @@
-# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.3)
+# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.5)
 
-This is a modular and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
+This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
 
 #### Supported controller representations:
 - Gamecube controller (Joybus)
@@ -29,7 +29,7 @@ Don't have this board plugged via USB and via its Gamecube port at the same time
 
 If you want to prevent this electrically, use Schottky diodes, or power VSYS with the 5v from the console and don't connect the console 3v. Be aware that doing this implies the controller won't work on consoles with broken rumble lines anymore.
 
-### Perks over atmega32u4 based controllers:
+### Perks of Raspberry Pico over atmega32u4 based controllers:
 
 - Up to 25 inputs + a console data line
 
@@ -49,11 +49,13 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 ### Modes
 
-As of this release, 6 modes are built-in.
+As of this release, 7 modes are built-in.
 
 - Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus). If you're not plugged into USB, you enter this mode.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
+
+- GP17 (by default, Up) => Runtime remapping. See dedicated paragraph.
 
 - GP6 (by default, MX) => Ultimate GCC to USB adapter mode (Ultimate DAC algorithm + Adapter USB configuration).
 
@@ -112,6 +114,28 @@ Note that this mode of operation requires the "WinUSB" driver to be associated w
 Note that polling rate enforcements using the HIDUSBF filter driver that apply to "standard" WUP-028s will apply to this board, so enforced rates less than 1000Hz you could have configured would decrease this controller's performance, which is 1000Hz by default.
 
 Automated WinUSB installation is very experimental. If you encounter any driver related issue, please contact me.
+
+### Runtime remapping information
+
+This project allows you to modify the default pin -> button mappings (i.e that of GpioToButtonSets::F1) in a persistent manner at runtime, i.e you don't need to download any development tools, modify the code and reprogram the board, follow these instructions once and your mappings will be changed forever and will persist even when you update the firmware.
+
+When plugging the board, press whichever button is mapped to GP17 (in the default pinout, it's Up). 3 seconds later, you'll enter remapping mode. Press the buttons in the following order: L Left Down Right MX MY Start CLeft CDown CUp A CRight R B Y X LS Z MS Up.
+
+Note that you must release GP17 before the 3 seconds expire, or it will be considered as the first button press (L).
+
+So, if for example you haven't followed the default pinout when soldering and would like to go back to the default B0XX/F1, you'll press the buttons in this order:
+
+![image](https://i.imgur.com/W3OoZ9s.png)
+
+Say you'd like to swap L/MX, and R/Z, you'd press the buttons in this order:
+
+![image](https://i.imgur.com/FIfXLcY.png)
+
+When plugging the board in, wait for 3+ seconds before starting to press any buttons.
+
+The remapping will be committed when you've pressed 20 different buttons. You must restart (i.e unplug/replug) to enter another mode. The pins you can map something to are GP 0-22 and GP 26-27, i.e all accessible pins EXCEPT GP28, that is dedicated to the GC Data pin.
+
+If it doesn't appear to work, double check all 20 of your buttons work. Note that runtime remapping doesn't change what buttons you need to press to enter a given mode, as it is the pin number that matters.
 
 ### How to program your board:
 
