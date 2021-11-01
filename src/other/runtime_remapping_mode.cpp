@@ -3,49 +3,61 @@
 #include "pico/time.h"
 #include <vector>
 #include <algorithm>
-
+#include "global.hpp"
 #include "persistence/pages/runtime_remapping.hpp"
 #include "persistence/functions.hpp"
 
-int findPressed(std::vector<int> eligiblePins) {
-    int mask = 0;
-    for (int pin : eligiblePins) {
+uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
+    /*uint32_t mask = 0;
+    for (uint32_t pin : eligiblePins) {
         mask += 1 << pin;
     }
 
-    int snapshot = sio_hw->gpio_in & mask;
+    uint32_t snapshot = sio_hw->gpio_in & mask;
 
-    for (int pin : eligiblePins) {
+    for (uint32_t pin : eligiblePins) {
         if (snapshot & (1 << pin) == 0) return pin;
+    }*/
+
+    for (uint32_t pin : eligiblePins) {
+        if (!gpio_get(pin)) return pin;
     }
+
     return -1;
 }
 
 namespace Other {
     void enterRuntimeRemappingMode() {
-        
-        std::vector<int> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
-        std::vector<int> pinsPressedInOrder;
+
+        std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
+        std::vector<uint32_t> pinsPressedInOrder {};
 
         sleep_ms(3000);
 
-        for (int pin : eligiblePins) {
+        gpio_put(LED_PIN, 1);
+        int led = 1;
+
+        for (uint32_t pin : eligiblePins) {
             gpio_init(pin);
             gpio_set_dir(pin, GPIO_IN);
             gpio_pull_up(pin);
         }
 
         while (pinsPressedInOrder.size() != 20) {
-            int pressedPin = findPressed(eligiblePins);
+            uint32_t pressedPin = findPressed(eligiblePins);
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
                 pinsPressedInOrder.push_back(pressedPin);
+                led = !led;
+                gpio_put(LED_PIN, led);
             }
         }
 
+        gpio_put(LED_PIN, 0);
+
         Persistence::Pages::RuntimeRemapping runtimeRemappingCheckout = Persistence::clone<Persistence::Pages::RuntimeRemapping>();
 
-        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.configured = true;
+        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.configured = 0;
 
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.lPin      = pinsPressedInOrder[0];  // L
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.leftPin   = pinsPressedInOrder[1];  // Left

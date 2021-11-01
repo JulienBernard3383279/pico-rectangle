@@ -11,7 +11,7 @@ struct RuntimeRemapping {
     static const int index = (int) PageIndexes::RUNTIME_REMAPPING;
 
     struct __attribute__((packed)) F1GpioToButtonSetRemapping {
-        bool configured;
+        uint8_t configured;
 
         uint8_t startPin;
         uint8_t rightPin;

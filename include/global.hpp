@@ -5,6 +5,11 @@
 
 const int us = 125;
 
+#define LED_PIN 25
+#define USB_POWER_PIN 24
+
+const uint8_t gcDataPin = 28;
+
 #define USE_UART0 0
 
 #endif

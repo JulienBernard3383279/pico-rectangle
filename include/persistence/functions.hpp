@@ -11,6 +11,10 @@ namespace Persistence {
 
 #define FLASH_OFFSET (1536 * 1024)
 
+inline bool isnt0xFF(uint32_t word) {
+    return word != 0xFF;
+}
+
 template<typename Page>
 const Page* read() {
     static_assert(sizeof(Page)<=FLASH_SECTOR_SIZE);

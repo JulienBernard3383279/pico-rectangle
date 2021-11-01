@@ -20,11 +20,6 @@
 
 #include "other/runtime_remapping_mode.hpp"
 
-#define LED_PIN 25
-#define USB_POWER_PIN 24
-
-const uint8_t gcDataPin = 28;
-
 int main() {
 
     set_sys_clock_khz(1000*us, true);
