@@ -181,6 +181,12 @@ Switches/buttons will have two pins. Connect one of them to Ground (daisy chaini
 - 3.3V to VSYS (pin 39)
 - Don't connect your 5V input
 
+The wire-color mapping of an *official* gamecube controller cable is as follows:
+- Black/White/Green: GND (connect together)
+- Red: Gamecube data line
+- Blue: 3.3V
+- Yellow: 5V
+
 ### Troubleshooting
 
 Console mode/B/R don't work -> Did you connect pin 33 to ground ?
