@@ -1,4 +1,4 @@
-# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.6)
+# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.6.1)
 
 This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
 
@@ -55,7 +55,7 @@ As of this release, 8 modes are built-in.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
-- GP26 (by default, B) => BOOTSEL mode. See "How to program your board".
+- GP16 (by default, CRight) => BOOTSEL mode. See "How to program your board".
 
 - GP17 (by default, Up) => Runtime remapping. See dedicated paragraph.
 
