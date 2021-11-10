@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include "pico/bootrom.h"
 #include "hardware/gpio.h"
 
 #include <vector>
@@ -49,7 +50,7 @@ int main() {
     #endif
     ;
 
-    std::vector<uint8_t> modePins = { 17, 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 26, 17, 6, 5, 4, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -64,11 +65,15 @@ int main() {
         return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
     });
 
+
     // Else:
+
+    // 31 - GP26 - BOOTSEL
+    if (!gpio_get(26)) reset_usb_boot(0, 0);
+
     // 22 - GP17 - Up : runtime remapping
     if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
 
-    
     // 8 - GP6 - MX : F1 / ultimate / adapter
     if (!gpio_get(6)) USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
