@@ -94,7 +94,7 @@ stateLabel_InputAwaitHigh:
         (readings[15] == true) && (readings[16] == false) &&
         (readings[17] == false) && (readings[18] == false) &&
         (readings[19] == false) && (readings[20] == false) &&
-        (readings[21] == false) && (readings[22] == false))
+        (readings[21] == false))
             return;
 
 stateLabel_InputAwaitLow:
