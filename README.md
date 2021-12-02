@@ -160,6 +160,8 @@ If it doesn't appear to work, double check all 20 of your buttons work. Note tha
 
 Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin following the mapping shown in the images above.
 
+Note that all "button" pin mappings can be modified later on using the runtime remapping feature, but the GameCube Data line can't and must be connected to GP28.
+
 ### Troubleshooting
 
 Console mode/B/R don't work -> Did you connect pin 33 to ground ?
