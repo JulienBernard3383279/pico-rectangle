@@ -149,45 +149,16 @@ If it doesn't appear to work, double check all 20 of your buttons work. Note tha
 
 ### How to wire the board:
 
-Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release. If you compile the source code anyway for whatever reason, clone the .git repository (`git clone pathToTheDotGitCopiedFromTheGreenTopRightButtonOfThisPage` in Git Bash) instead of only downloading a .zip.
+#### If you just have a GameCube cable :
+![image](https://i.imgur.com/qAwJQby.png)
 
-If you download the zip, it will still work, because I gave up on using submodules since nobody read this.
+#### If you are using a third party cable :
+![image](https://i.imgur.com/LDsh5hK.png)
 
-Still, you should clone the repository if you intend to modify anything, or you'll have to do it later to pull from upstream.
+#### If you are using a port that combines USB and GameCube like USB-C :
+![image](https://i.imgur.com/2dkaQai.png)
 
-![image](https://i.imgur.com/75a7UYr.png)
-
-Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin as per the following mapping:
-- Start to GP0 (pin 0)
-- Right to GP2 (pin 4)
-- Down to GP3 (pin 5)
-- Left to GP4 (pin 6)
-- L to GP5 (pin 7)
-- MX to GP6 (pin 9)
-- MY to GP7 (pin 10)
-- CStick Up to GP12 (pin 16)
-- CStick Left to GP13 (pin 17)
-- A to GP14 (pin 19)
-- CStick Down to GP15 (pin 20)
-- CStick Right to GP16 (pin 21)
-- Up to GP17 (pin 22)
-- MS to GP18 (pin 24)
-- Z to GP19 (pin 25)
-- LS to GP20 (pin 26)
-- X to GP21 (pin 27)
-- Y to GP22 (pin 29)
-- B to GP26 (pin 31)
-- R to GP27 (pin 32)
-- Ground to pins 33 and 38 (i.e connect pin 33 to 38 together, then connect them to the console grounds and to your daisy chains of switch ground pins)
-- Gamecube data line to GP 28 (pin 34)
-- 3.3V to VSYS (pin 39)
-- Don't connect your 5V input
-
-The wire-color mapping of an *official* gamecube controller cable is as follows:
-- Black/White/Green: GND (connect together)
-- Red: Gamecube data line
-- Blue: 3.3V
-- Yellow: 5V
+Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin following the mapping shown in the images above.
 
 ### Troubleshooting
 
