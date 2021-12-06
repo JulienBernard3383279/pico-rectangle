@@ -113,6 +113,9 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         xy = coords(0.0, 0.0);
     }
 
+    /* ledgedashMaxJumpTraj logic */
+    if (ledgedashMaxJumpTraj && (bs.left && bs.right)) xy.x = 1.0;
+
     if (horizontal && !readRight) xy.x = oppositeCoord(xy.x);
     if (vertical && !readUp) xy.y = oppositeCoord(xy.y);
 
