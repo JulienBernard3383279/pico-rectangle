@@ -6,6 +6,7 @@
 #include "global.hpp"
 
 #include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/project_plus_F1.hpp"
 #include "dac_algorithms/ultimate_F1.hpp"
 #include "dac_algorithms/set_of_8_keys.hpp"
 #include "dac_algorithms/wired_fight_pad_pro_default.hpp"
