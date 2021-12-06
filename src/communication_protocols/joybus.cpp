@@ -39,7 +39,7 @@ uint32_t origin;
 uint32_t target;
 
 void respond(uint8_t* responsePointer, uint32_t responseBitLength);
-void awaitPoll() {
+bool awaitPoll() {
 
 stateLabel_InputInit:
 
@@ -95,7 +95,7 @@ stateLabel_InputAwaitHigh:
         (readings[17] == false) && (readings[18] == false) &&
         (readings[19] == false) && (readings[20] == false) &&
         (readings[21] == false))
-            return;
+            return readings[23];
 
 stateLabel_InputAwaitLow:
 
