@@ -1,6 +1,6 @@
-# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.3)
+# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.6)
 
-This is a modular and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
+This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
 
 #### Supported controller representations:
 - Gamecube controller (Joybus)
@@ -29,7 +29,7 @@ Don't have this board plugged via USB and via its Gamecube port at the same time
 
 If you want to prevent this electrically, use Schottky diodes, or power VSYS with the 5v from the console and don't connect the console 3v. Be aware that doing this implies the controller won't work on consoles with broken rumble lines anymore.
 
-### Perks over atmega32u4 based controllers:
+### Perks of Raspberry Pico over atmega32u4 based controllers:
 
 - Up to 25 inputs + a console data line
 
@@ -49,11 +49,15 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 ### Modes
 
-As of this release, 6 modes are built-in.
+As of this release, 8 modes are built-in.
 
 - Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus). If you're not plugged into USB, you enter this mode.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
+
+- GP16 (by default, CRight) => BOOTSEL mode. See "How to program your board".
+
+- GP17 (by default, Up) => Runtime remapping. See dedicated paragraph.
 
 - GP6 (by default, MX) => Ultimate GCC to USB adapter mode (Ultimate DAC algorithm + Adapter USB configuration).
 
@@ -113,49 +117,50 @@ Note that polling rate enforcements using the HIDUSBF filter driver that apply t
 
 Automated WinUSB installation is very experimental. If you encounter any driver related issue, please contact me.
 
+### Runtime remapping information
+
+This project allows you to modify the default pin -> button mappings (i.e that of GpioToButtonSets::F1) in a persistent manner at runtime, i.e you don't need to download any development tools, modify the code and reprogram the board, follow these instructions once and your mappings will be changed forever and will persist even when you update the firmware.
+
+When plugging the board, press whichever button is mapped to GP17 (in the default pinout, it's Up). 3 seconds later, you'll enter remapping mode. Press the buttons in the following order: L Left Down Right MX MY Start CLeft CDown CUp A CRight R B Y X LS Z MS Up.
+
+Note that you must release GP17 before the 3 seconds expire, or it will be considered as the first button press (L).
+
+So, if for example you haven't followed the default pinout when soldering and would like to go back to the default B0XX/F1, you'll press the buttons in this order:
+
+![image](https://i.imgur.com/W3OoZ9s.png)
+
+Say you'd like to swap L/MX, and R/Z, you'd press the buttons in this order:
+
+![image](https://i.imgur.com/FIfXLcY.png)
+
+When plugging the board in, wait for 3+ seconds before starting to press any buttons.
+
+The remapping will be committed when you've pressed 20 different buttons. You must restart (i.e unplug/replug) to enter another mode. The pins you can map something to are GP 0-22 and GP 26-27, i.e all accessible pins EXCEPT GP28, that is dedicated to the GC Data pin.
+
+If it doesn't appear to work, double check all 20 of your buttons work. Note that runtime remapping doesn't change what buttons you need to press to enter a given mode, as it is the pin number that matters.
+
 ### How to program your board:
 
 - Download the latest release (on the right of the Github page)
 
-- Plug in your Raspberry Pico to your computer via USB while holding the "BOOTSEL" white button on the board.
+- Plug in your Raspberry Pico to your computer by holding pin GP26 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
 
 - The board should appear as an external drive. Put the .uf2 in there. The board should disconnect and be ready for use.
 
 ### How to wire the board:
 
-Provided you want to use the Frame1/B0XX like logic, I advise you to wire the board following "How to wire the board" section specifications. Otherwise, you will need to compile the project yourself after changing the pinout in `main.cpp`, and do it again every new release. If you compile the source code anyway for whatever reason, clone the .git repository (`git clone pathToTheDotGitCopiedFromTheGreenTopRightButtonOfThisPage` in Git Bash) instead of only downloading a .zip.
+#### If you just have a GameCube cable :
+![image](https://i.imgur.com/qAwJQby.png)
 
-If you download the zip, it will still work, because I gave up on using submodules since nobody read this.
+#### If you are using a third party cable :
+![image](https://i.imgur.com/LDsh5hK.png)
 
-Still, you should clone the repository if you intend to modify anything, or you'll have to do it later to pull from upstream.
+#### If you are using a port that combines USB and GameCube like USB-C :
+![image](https://i.imgur.com/2dkaQai.png)
 
-![image](https://i.imgur.com/75a7UYr.png)
+Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin following the mapping shown in the images above.
 
-Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin as per the following mapping:
-- Start to GP0 (pin 0)
-- Right to GP2 (pin 4)
-- Down to GP3 (pin 5)
-- Left to GP4 (pin 6)
-- L to GP5 (pin 7)
-- MX to GP6 (pin 9)
-- MY to GP7 (pin 10)
-- CStick Up to GP12 (pin 16)
-- CStick Left to GP13 (pin 17)
-- A to GP14 (pin 19)
-- CStick Down to GP15 (pin 20)
-- CStick Right to GP16 (pin 21)
-- Up to GP17 (pin 22)
-- MS to GP18 (pin 24)
-- Z to GP19 (pin 25)
-- LS to GP20 (pin 26)
-- X to GP21 (pin 27)
-- Y to GP22 (pin 29)
-- B to GP26 (pin 31)
-- R to GP27 (pin 32)
-- Ground to pins 33 and 38 (i.e connect pin 33 to 38 together, then connect them to the console grounds and to your daisy chains of switch ground pins)
-- Gamecube data line to GP 28 (pin 34)
-- 3.3V to VSYS (pin 39)
-- Don't connect your 5V input
+Note that all "button" pin mappings can be modified later on using the runtime remapping feature, but the GameCube Data line can't and must be connected to GP28.
 
 ### Troubleshooting
 

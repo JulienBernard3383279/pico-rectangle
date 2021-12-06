@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(PICO_SDK_PATH "../../pico-sdk")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 include(pico_sdk_import.cmake)
@@ -24,8 +23,9 @@ add_executable(pico_rectangle
     src/dac_algorithms/set_of_8_keys.cpp
     src/dac_algorithms/wired_fight_pad_pro_default.cpp
     src/gpio_to_button_sets/F1.cpp
+    src/other/runtime_remapping_mode.cpp
 )
 
-target_link_libraries(pico_rectangle pico_stdlib hardware_resets hardware_irq)
+target_link_libraries(pico_rectangle pico_stdlib pico_time pico_bootrom hardware_resets hardware_irq hardware_sync hardware_flash)
 
 pico_add_extra_outputs(pico_rectangle)
