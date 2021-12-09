@@ -64,7 +64,7 @@ int main() {
     // Not plugged through USB =>  Joybus
     if (!gpio_get(USB_POWER_PIN)) {
 
-        if (!gpio_get(7)) { // 10 - GP7 : F1 / P+
+        if ((!gpio_get(7)) || (!gpio_get(2))) { // 10-GP7 OR 4-GP2 : F1 / P+
             CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
                 return DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
             });
@@ -82,14 +82,14 @@ int main() {
     // 22 - GP17 - Up : runtime remapping
     if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
 
-    // 4 - GP2 - Right : F1 / P+ / adapter
+    // 4 - GP2 - Right : F1 / P+ / WFPP
     if (!gpio_get(2)) USBConfigurations::WiredFightPadPro::enterMode([](){
         USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
     });
 
-    // 10 - GP7 - MY : F1 / P+ / joybus
-    if (!gpio_get(7)) CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
-        return DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+    // 10 - GP7 - MY : F1 / P+ / adapter
+    if (!gpio_get(7)) USBConfigurations::GccToUsbAdapter::enterMode([](){
+        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
     });
 
     // 9 - GP6 - MX : F1 / ultimate / adapter
