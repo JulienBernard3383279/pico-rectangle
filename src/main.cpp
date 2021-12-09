@@ -61,11 +61,18 @@ int main() {
 
     /* Mode selection logic */
 
-    // Not plugged through USB =>  F1 / melee / joybus
-    if (!gpio_get(USB_POWER_PIN)) CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
-        return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
-    });
+    // Not plugged through USB =>  Joybus
+    if (!gpio_get(USB_POWER_PIN)) {
 
+        if (!gpio_get(7)) { // 10 - GP7 : F1 / P+
+            CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
+                return DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+            });
+        }
+        
+        // Else: F1 / Melee
+        CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()); });
+    }
 
     // Else:
 
