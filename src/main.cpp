@@ -75,7 +75,17 @@ int main() {
     // 22 - GP17 - Up : runtime remapping
     if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
 
-    // 8 - GP6 - MX : F1 / ultimate / adapter
+    // 4 - GP2 - Right : F1 / P+ / adapter
+    if (!gpio_get(2)) USBConfigurations::WiredFightPadPro::enterMode([](){
+        USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
+
+    // 10 - GP7 - MY : F1 / P+ / joybus
+    if (!gpio_get(7)) CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
+        return DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+    });
+
+    // 9 - GP6 - MX : F1 / ultimate / adapter
     if (!gpio_get(6)) USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
     });
