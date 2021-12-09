@@ -1,6 +1,6 @@
-# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.6)
+# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.7)
 
-This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, Ultimate, generic controller and generic keyboard.
+This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, P+, Ultimate, generic controller and generic keyboard.
 
 #### Supported controller representations:
 - Gamecube controller (Joybus)
@@ -51,13 +51,17 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 As of this release, 8 modes are built-in.
 
-- Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus). If you're not plugged into USB, you enter this mode.
+- Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus), unless you press GP2 or GP7 (by default Right and MY), in which case you enter P+ mode. If you're not plugged into USB, you enter this mode.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
 - GP16 (by default, CRight) => BOOTSEL mode. See "How to program your board".
 
 - GP17 (by default, Up) => Runtime remapping. See dedicated paragraph.
+
+- GP7 (by default, MY) => P+ GCC to USB adapter mode (P+ DAC algorithm + Adapter USB configuration).
+
+- GP2 (by default, Right) => Wired Fight Pad Pro with P+ logic (P+ DAC algorithm + Wired Fight Pad Pro USB configuration).
 
 - GP6 (by default, MX) => Ultimate GCC to USB adapter mode (Ultimate DAC algorithm + Adapter USB configuration).
 
