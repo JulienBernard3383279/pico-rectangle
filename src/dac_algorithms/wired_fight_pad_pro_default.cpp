@@ -28,11 +28,11 @@ void actuateWFPPReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     bool up = buttonSet.up && !(buttonSet.ms);
     bool down = buttonSet.down && !(buttonSet.ms);
 
-    bool dLeft = buttonSet.left && buttonSet.ms;
-    bool dRight = buttonSet.right && buttonSet.ms;
-    bool dUp = buttonSet.up && buttonSet.ms;
+    bool dLeft = buttonSet.left && buttonSet.ms || buttonSet.dLeft;
+    bool dRight = buttonSet.right && buttonSet.ms || buttonSet.dRight;
+    bool dUp = buttonSet.up && buttonSet.ms || buttonSet.dUp;
     bool dDown = buttonSet.down && buttonSet.ms;
-    
+
     USBConfigurations::WiredFightPadPro::hidReport = {
         .y=buttonSet.y,
         .b=buttonSet.b,

@@ -11,6 +11,7 @@ struct ButtonSet {
     bool start;
     bool left; bool right; bool up; bool down;
     bool cLeft; bool cRight; bool cUp; bool cDown;
+    bool dLeft; bool dUp; bool dRight;
 };
 
 ButtonSet defaultConversion();

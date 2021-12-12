@@ -159,6 +159,9 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         gcReport.dUp = bs.cUp;
         gcReport.dRight = bs.cRight;
     }
+    gcReport.dLeft  = gcReport.dLeft  || bs.dLeft ;
+    gcReport.dUp    = gcReport.dUp    || bs.dUp   ;
+    gcReport.dRight = gcReport.dRight || bs.dRight;
 
     /* Triggers */
     gcReport.analogL = bs.l ? 140 : bs.ms ? 94 : bs.ls ? 49 : 0;

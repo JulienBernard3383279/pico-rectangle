@@ -25,6 +25,9 @@ const PinMapping pinMappings[] = {
     { 5, &ButtonSet::l },
     { 6, &ButtonSet::mx },
     { 7, &ButtonSet::my },
+    { 8, &ButtonSet::dLeft },
+    { 9, &ButtonSet::dUp },
+    { 10, &ButtonSet::dRight },
     { 12, &ButtonSet::cUp },
     { 13, &ButtonSet::cLeft },
     { 14, &ButtonSet::a },
@@ -68,8 +71,10 @@ const PinMapping remappedPinMappings[] = {
 bool init = false;
 
 void initDefaultConversion() {
+    // Runtime remapping urned off when bonus Dpad
+    
     remapped = Persistence::isnt0xFF(Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.configured);
-    for (PinMapping pinMapping : remapped ? remappedPinMappings : pinMappings) {
+    for (PinMapping pinMapping : pinMappings) {
         gpio_init(pinMapping.pin);
         gpio_set_dir(pinMapping.pin, GPIO_IN);
         gpio_pull_up(pinMapping.pin);
@@ -79,7 +84,7 @@ void initDefaultConversion() {
 
 ButtonSet defaultConversion() {
 
-    if (!init) initDefaultConversion();
+    // if (!init) initDefaultConversion();
 
     if (remapped) gpio_put(LED_PIN, 1);
     
@@ -87,7 +92,7 @@ ButtonSet defaultConversion() {
 
     uint32_t inputSnapshot = sio_hw->gpio_in;
 
-    for (PinMapping pinMapping : remapped ? remappedPinMappings : pinMappings) {
+    for (PinMapping pinMapping : pinMappings) {
         f1ButtonSet.*(pinMapping.ptrToMember) = !(inputSnapshot & (1 << (pinMapping.pin)));
     }
 
