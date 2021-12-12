@@ -33,6 +33,9 @@ struct RuntimeRemapping {
         uint8_t yPin;
         uint8_t bPin;
         uint8_t rPin;
+        uint8_t dLeftPin;
+        uint8_t dUpPin;
+        uint8_t dRightPin;
     } f1GpioToButtonSetRemapping;
     
 };

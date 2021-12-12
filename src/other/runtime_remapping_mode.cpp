@@ -43,7 +43,7 @@ namespace Other {
             gpio_pull_up(pin);
         }
 
-        while (pinsPressedInOrder.size() != 20) {
+        while (pinsPressedInOrder.size() != 23) {
             uint32_t pressedPin = findPressed(eligiblePins);
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
@@ -79,6 +79,9 @@ namespace Other {
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.zPin      = pinsPressedInOrder[17]; // Z
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.msPin     = pinsPressedInOrder[18]; // MS
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.upPin     = pinsPressedInOrder[19]; // Up
+        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.dLeftPin   = pinsPressedInOrder[20]; // DLeft
+        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.dRightPin  = pinsPressedInOrder[21]; // DRight
+        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.dUpPin     = pinsPressedInOrder[22]; // DUp
 
         Persistence::commit(runtimeRemappingCheckout);
 

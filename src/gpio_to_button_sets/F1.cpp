@@ -65,7 +65,10 @@ const PinMapping remappedPinMappings[] = {
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.xPin, &ButtonSet::x },
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.yPin, &ButtonSet::y },
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.bPin, &ButtonSet::b },
-    { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.rPin, &ButtonSet::r }
+    { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.rPin, &ButtonSet::r },
+    { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.dLeftPin, &ButtonSet::dLeft },
+    { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.dUpPin, &ButtonSet::dUp },
+    { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.dRightPin, &ButtonSet::dRight }
 };
 
 bool init = false;
@@ -74,7 +77,7 @@ void initDefaultConversion() {
     // Runtime remapping urned off when bonus Dpad
     
     remapped = Persistence::isnt0xFF(Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.configured);
-    for (PinMapping pinMapping : pinMappings) {
+    for (PinMapping pinMapping : remapped ? remappedPinMappings : pinMappings) {
         gpio_init(pinMapping.pin);
         gpio_set_dir(pinMapping.pin, GPIO_IN);
         gpio_pull_up(pinMapping.pin);
@@ -84,7 +87,7 @@ void initDefaultConversion() {
 
 ButtonSet defaultConversion() {
 
-    // if (!init) initDefaultConversion();
+    if (!init) initDefaultConversion();
 
     if (remapped) gpio_put(LED_PIN, 1);
     
@@ -92,7 +95,7 @@ ButtonSet defaultConversion() {
 
     uint32_t inputSnapshot = sio_hw->gpio_in;
 
-    for (PinMapping pinMapping : pinMappings) {
+    for (PinMapping pinMapping : remapped ? remappedPinMappings : pinMappings) {
         f1ButtonSet.*(pinMapping.ptrToMember) = !(inputSnapshot & (1 << (pinMapping.pin)));
     }
 
