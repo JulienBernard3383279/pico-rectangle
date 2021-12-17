@@ -151,7 +151,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     gcReport.dUp = gcReport.dUp || bs.ms;
 
     /* Triggers */
-    gcReport.analogL = bs.l ? 140 : bs.ms ? 94 : bs.ls ? 49 : 0;
+    gcReport.analogL = bs.l ? 140 : bs.ls ? 49 : 0;
     gcReport.analogR = bs.r ? 140 : 0;
 
     /* Buttons */
