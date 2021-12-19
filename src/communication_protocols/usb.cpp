@@ -627,11 +627,13 @@ void usb_handle_setup_packet(void) {
                     break;
 
                 default:
-                    log_uart0("usb: other in request\n");
+                    log_uart0("usb: other GET_DESCRIPTOR in request\n");
                     usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), NULL, 0);
                     break;
             }
         } else {
+            log_uart0("usb: other non-GET_DESCRIPTOR in request\n");
+            usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), NULL, 0);
             // Unreachable
         }
     }
