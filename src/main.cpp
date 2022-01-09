@@ -1,7 +1,7 @@
 #include "pico/stdlib.h"
 #include "pico/bootrom.h"
 #include "hardware/gpio.h"
-
+#include "hardware/timer.h"
 #include <vector>
 
 #include "global.hpp"
@@ -59,10 +59,20 @@ int main() {
         gpio_pull_up(modePin);
     }
 
+    gpio_init(gcDataPin);
+    gpio_set_dir(gcDataPin, GPIO_IN);
+    gpio_pull_up(gcDataPin);
+
+    uint32_t origin = time_us_32();
+    while ( time_us_32() - origin < 500'000 ) {
+        if (!gpio_get(gcDataPin)) goto stateLabel__forceJoybusEntry;
+    }
+    
     /* Mode selection logic */
 
     // Not plugged through USB =>  Joybus
     if (!gpio_get(USB_POWER_PIN)) {
+        stateLabel__forceJoybusEntry:
 
         if ((!gpio_get(7)) || (!gpio_get(2))) { // 10-GP7 OR 4-GP2 : F1 / P+
             CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
