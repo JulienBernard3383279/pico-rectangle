@@ -59,6 +59,9 @@ int main() {
         gpio_pull_up(modePin);
     }
 
+    // 22 - GP17 - Up : runtime remapping
+    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
+    
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
     gpio_pull_up(gcDataPin);
@@ -94,9 +97,6 @@ int main() {
 
     // 21 - GP16 - BOOTSEL
     if (!gpio_get(16)) reset_usb_boot(0, 0);
-
-    // 22 - GP17 - Up : runtime remapping
-    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
 
     // 4 - GP2 - Right : F1 / P+ / WFPP
     if (!gpio_get(2)) USBConfigurations::WiredFightPadPro::enterMode([](){
