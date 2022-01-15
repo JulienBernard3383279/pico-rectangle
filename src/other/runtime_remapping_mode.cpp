@@ -28,7 +28,7 @@ uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
     return -1;
 }
 
-void updateScreen(char* text) {
+void updateScreen(const char* text) {
     pico_ssd1306::SSD1306 display = pico_ssd1306::SSD1306(i2c0, 0x3C, pico_ssd1306::Size::W128xH32);
     display.clear();
     drawText(&display, font_12x16, text, 0 ,0);
@@ -38,13 +38,12 @@ void updateScreen(char* text) {
 namespace Other {
     void enterRuntimeRemappingMode() {
         const char *buttons[20] = { "L", "Left", "Down", "Right", "Mod X", "Mod Y", "Start", "C-Left", "C-Down", "C-Up", "A", "C-Right", "R", "B", "Y", "X", "LS", "Z", "MS", "Up" };
-        char* three = "Three";
-        char* two = "Two";
-        char* one = "One";
+        const char* three = "Three";
+        const char* two = "Two";
+        const char* one = "One";
+        const char* restart = "Complete";
 
-        
-
-        std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
+        std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
 
         updateScreen(three);
@@ -60,11 +59,15 @@ namespace Other {
             gpio_pull_up(pin);
         }
 
+        updateScreen(buttons[pinsPressedInOrder.size()]);
         while (pinsPressedInOrder.size() != 20) {
             uint32_t pressedPin = findPressed(eligiblePins);
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
                 pinsPressedInOrder.push_back(pressedPin);
+            }
+            if ( pressedPin != -1 && pinsPressedInOrder.size() <= 19) {
+                updateScreen(buttons[pinsPressedInOrder.size()]);
             }
         }
 
@@ -94,6 +97,8 @@ namespace Other {
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.upPin     = pinsPressedInOrder[19]; // Up
 
         Persistence::commit(runtimeRemappingCheckout);
+
+        updateScreen(restart);
 
         while (1);
     }
