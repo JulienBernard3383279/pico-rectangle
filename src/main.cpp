@@ -22,6 +22,8 @@
 
 #include "other/runtime_remapping_mode.hpp"
 
+#include "hardware/i2c.h"
+
 int main() {
 
     set_sys_clock_khz(1000*us, true);
@@ -50,6 +52,14 @@ int main() {
     0
     #endif
     ;
+
+    //Start the OLED
+    i2c_init(i2c0, 1000000); //Use i2c port with baud rate of 1Mhz
+    //Set pins for I2C operation
+    gpio_set_function(12, GPIO_FUNC_I2C);
+    gpio_set_function(13, GPIO_FUNC_I2C);
+    gpio_pull_up(12);
+    gpio_pull_up(13);
 
     std::vector<uint8_t> modePins = { 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
 

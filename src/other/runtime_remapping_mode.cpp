@@ -6,6 +6,8 @@
 #include "global.hpp"
 #include "persistence/pages/runtime_remapping.hpp"
 #include "persistence/functions.hpp"
+#include "ssd1306/ssd1306.h"
+#include "ssd1306/TextRenderer.h"
 
 uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
     /*uint32_t mask = 0;
@@ -26,16 +28,31 @@ uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
     return -1;
 }
 
+void updateScreen(char* text) {
+    pico_ssd1306::SSD1306 display = pico_ssd1306::SSD1306(i2c0, 0x3C, pico_ssd1306::Size::W128xH32);
+    display.clear();
+    drawText(&display, font_12x16, text, 0 ,0);
+    display.sendBuffer();
+}
+
 namespace Other {
     void enterRuntimeRemappingMode() {
+        const char *buttons[20] = { "L", "Left", "Down", "Right", "Mod X", "Mod Y", "Start", "C-Left", "C-Down", "C-Up", "A", "C-Right", "R", "B", "Y", "X", "LS", "Z", "MS", "Up" };
+        char* three = "Three";
+        char* two = "Two";
+        char* one = "One";
+
+        
 
         std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
 
-        sleep_ms(3000);
-
-        gpio_put(LED_PIN, 1);
-        int led = 1;
+        updateScreen(three);
+        sleep_ms(1000);
+        updateScreen(two);
+        sleep_ms(1000);
+        updateScreen(one);
+        sleep_ms(1000);
 
         for (uint32_t pin : eligiblePins) {
             gpio_init(pin);
@@ -48,12 +65,8 @@ namespace Other {
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
                 pinsPressedInOrder.push_back(pressedPin);
-                led = !led;
-                gpio_put(LED_PIN, led);
             }
         }
-
-        gpio_put(LED_PIN, 0);
 
         Persistence::Pages::RuntimeRemapping runtimeRemappingCheckout = Persistence::clone<Persistence::Pages::RuntimeRemapping>();
 
