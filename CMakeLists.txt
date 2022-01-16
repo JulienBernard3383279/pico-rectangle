@@ -8,8 +8,6 @@ include(pico_sdk_import.cmake)
 
 project(pico_rectangle CXX C)
 
-set(PICO_ENABLE_CXX_EXCEPTIONS 1)
-
 pico_sdk_init()
 
 include_directories(include pico-joybus-comms/include)
