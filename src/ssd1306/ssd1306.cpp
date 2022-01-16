@@ -1,4 +1,5 @@
 #include "ssd1306/ssd1306.h"
+#include "ssd1306/TextRenderer.h"
 
 namespace pico_ssd1306 {
     SSD1306::SSD1306(i2c_inst *i2CInst, uint16_t Address, Size size) {
@@ -177,6 +178,12 @@ namespace pico_ssd1306 {
 
     void SSD1306::setBuffer(unsigned char * buffer) {
         this->frameBuffer.setBuffer(buffer);
+    }
+
+    void SSD1306::clearAndDrawText(const char* text) {
+        this->frameBuffer.clear();
+        drawText(this, font_12x16, text, 0 ,0);
+        SSD1306::sendBuffer();
     }
 
 }

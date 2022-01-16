@@ -74,7 +74,7 @@ int main() {
     }
 
     // 22 - GP17 - Up : runtime remapping
-    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
+    if (!gpio_get(17)) Other::enterRuntimeRemappingMode(&display);
     
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
@@ -142,9 +142,7 @@ int main() {
         DACAlgorithms::SetOf8Keys::actuate8KeysReport(GpioToButtonSets::F1::defaultConversion());
     });
 
-    display.clear();
-    drawText(&display, font_8x8, "Melee Adapter", 0 ,0);
-    display.sendBuffer();
+    display.clearAndDrawText("Melee Adapter");
     // Default: F1 / melee / adapter
     USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
