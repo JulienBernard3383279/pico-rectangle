@@ -34,12 +34,12 @@ namespace Other {
         std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
 
-        //display->clearAndDrawText(messages.three);
-        // sleep_ms(1000);
-        // display->clearAndDrawText(messages.two);
-        // sleep_ms(1000);
-        // display->clearAndDrawText(messages.one);
-        // sleep_ms(1000);
+        UI::updateState(&UI::states.countdownThree);
+        sleep_ms(1000);
+        UI::updateState(&UI::states.countdownTwo);
+        sleep_ms(1000);
+        UI::updateState(&UI::states.countdownOne);
+        sleep_ms(1000);
 
         for (uint32_t pin : eligiblePins) {
             gpio_init(pin);

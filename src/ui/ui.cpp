@@ -7,9 +7,18 @@
 
 namespace UI {
     UIOutput uiOutput = UIOutput::LED;
+    bool led = true;
+    States states = States();
 
     void updateState(State *state) {
+        if (uiOutput == UIOutput::SSD1306) {
+            pico_ssd1306::SSD1306 display = pico_ssd1306::SSD1306(i2c0, 0x3C, pico_ssd1306::Size::W128xH32);
+            display.clearAndDrawText(state->oledMessage);
+        }
 
+        if (uiOutput == UIOutput::LED) {
+            gpio_put(LED_PIN, state->ledMode);
+        }
     }
 
     void initUI() {
@@ -26,35 +35,11 @@ namespace UI {
 
         if (ret < 0) {
             uiOutput = UIOutput::LED;
+            i2c_deinit(i2c0);
+            // gpio_set_function(8, GPIO);
+            // gpio_set_function(9, GPIO_FUNC_I2C);
         } else {
             uiOutput = UIOutput::SSD1306;
-        }
-        
-         
-        if (uiOutput == UIOutput::LED) {
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 0);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 0);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 0);
-            sleep_ms(1000);
-            gpio_put(LED_PIN, 1);
-            sleep_ms(1000);
-        }
-
-        if (uiOutput == UIOutput::SSD1306) {
-            pico_ssd1306::SSD1306 display = pico_ssd1306::SSD1306(i2c0, 0x3C, pico_ssd1306::Size::W128xH32);
-            display.clearAndDrawText("Test");
-        }
+        } 
     }
 }
