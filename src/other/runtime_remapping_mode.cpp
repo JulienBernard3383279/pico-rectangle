@@ -7,7 +7,6 @@
 #include "persistence/pages/runtime_remapping.hpp"
 #include "persistence/functions.hpp"
 #include "ssd1306/ssd1306.h"
-#include "ssd1306/TextRenderer.h"
 
 uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
     /*uint32_t mask = 0;
