@@ -22,8 +22,7 @@
 
 #include "other/runtime_remapping_mode.hpp"
 
-#include "hardware/i2c.h"
-#include "ssd1306/ssd1306.h"
+#include "ui/ui.h"
 
 
 int main() {
@@ -37,6 +36,8 @@ int main() {
 
     gpio_init(USB_POWER_PIN);
     gpio_set_dir(USB_POWER_PIN, GPIO_IN);
+
+    UI::initUI();
 
     #if USE_UART0
     // Initialise UART 0
@@ -55,15 +56,6 @@ int main() {
     #endif
     ;
 
-    //Start the OLED
-    i2c_init(i2c0, 1000000); //Use i2c port with baud rate of 1Mhz
-    //Set pins for I2C operation
-    gpio_set_function(8, GPIO_FUNC_I2C);
-    gpio_set_function(9, GPIO_FUNC_I2C);
-    gpio_pull_up(8);
-    gpio_pull_up(9);
-    pico_ssd1306::SSD1306 display = pico_ssd1306::SSD1306(i2c0, 0x3C, pico_ssd1306::Size::W128xH32);
-
     std::vector<uint8_t> modePins = { 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
@@ -73,7 +65,7 @@ int main() {
     }
 
     // 22 - GP17 - Up : runtime remapping
-    if (!gpio_get(17)) Other::enterRuntimeRemappingMode(&display);
+    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
     
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
@@ -141,7 +133,6 @@ int main() {
         DACAlgorithms::SetOf8Keys::actuate8KeysReport(GpioToButtonSets::F1::defaultConversion());
     });
 
-    display.clearAndDrawText(messages.modeMeleeAdapter);
     // Default: F1 / melee / adapter
     USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));

@@ -12,15 +12,4 @@ const uint8_t gcDataPin = 28;
 
 #define USE_UART0 0
 
-class Messages {
-    public:
-        const char * modeMeleeAdapter = "Melee Adapter";
-        const char * three = "Three";
-        const char * two = "Two";
-        const char * one = "One";
-        const char * restart = "Restart";
-};
-
-Messages const messages;
-
 #endif

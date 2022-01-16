@@ -8,6 +8,8 @@ include(pico_sdk_import.cmake)
 
 project(pico_rectangle CXX C)
 
+set(PICO_ENABLE_CXX_EXCEPTIONS 1)
+
 pico_sdk_init()
 
 include_directories(include pico-joybus-comms/include)
@@ -26,9 +28,10 @@ add_executable(pico_rectangle
     src/dac_algorithms/wired_fight_pad_pro_default.cpp
     src/gpio_to_button_sets/F1.cpp
     src/other/runtime_remapping_mode.cpp
-    src/ssd1306/ssd1306.cpp
-    src/ssd1306/FrameBuffer.cpp
-    src/ssd1306/TextRenderer.cpp
+    src/ui/ssd1306/ssd1306.cpp
+    src/ui/ssd1306/FrameBuffer.cpp
+    src/ui/ssd1306/TextRenderer.cpp
+    src/ui/ui.cpp
 )
 
 target_link_libraries(pico_rectangle pico_stdlib pico_time pico_bootrom hardware_resets hardware_timer hardware_irq hardware_sync hardware_flash hardware_i2c)

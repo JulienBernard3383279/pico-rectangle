@@ -6,7 +6,7 @@
 #include "global.hpp"
 #include "persistence/pages/runtime_remapping.hpp"
 #include "persistence/functions.hpp"
-#include "ssd1306/ssd1306.h"
+#include "ui/ui.h"
 
 uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
     /*uint32_t mask = 0;
@@ -28,18 +28,18 @@ uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
 }
 
 namespace Other {
-    void enterRuntimeRemappingMode(pico_ssd1306::SSD1306* display) {
+    void enterRuntimeRemappingMode() {
         const char *buttons[20] = { "L", "Left", "Down", "Right", "Mod X", "Mod Y", "Start", "C-Left", "C-Down", "C-Up", "A", "C-Right", "R", "B", "Y", "X", "LS", "Z", "MS", "Up" };
 
         std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
 
-        display->clearAndDrawText(messages.three);
-        sleep_ms(1000);
-        display->clearAndDrawText(messages.two);
-        sleep_ms(1000);
-        display->clearAndDrawText(messages.one);
-        sleep_ms(1000);
+        //display->clearAndDrawText(messages.three);
+        // sleep_ms(1000);
+        // display->clearAndDrawText(messages.two);
+        // sleep_ms(1000);
+        // display->clearAndDrawText(messages.one);
+        // sleep_ms(1000);
 
         for (uint32_t pin : eligiblePins) {
             gpio_init(pin);
@@ -47,14 +47,14 @@ namespace Other {
             gpio_pull_up(pin);
         }
 
-        display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
+        //display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
         while (pinsPressedInOrder.size() != 20) {
             uint32_t pressedPin = findPressed(eligiblePins);
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
                 pinsPressedInOrder.push_back(pressedPin);
                 if (pinsPressedInOrder.size() <= 19) {
-                    display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
+                    //display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
                 }
             }
         }
@@ -86,7 +86,7 @@ namespace Other {
 
         Persistence::commit(runtimeRemappingCheckout);
 
-        display->clearAndDrawText(messages.restart);
+        //display->clearAndDrawText(messages.restart);
 
         while (1);
     }

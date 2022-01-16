@@ -3,12 +3,12 @@
 #ifndef SSD1306_TEXTRENDERER_H
 #define SSD1306_TEXTRENDERER_H
 
-#include "ssd1306/ssd1306.h"
+#include "ui/ssd1306/ssd1306.h"
 
-#include "ssd1306/5x8_font.h"
-#include "ssd1306/8x8_font.h"
-#include "ssd1306/12x16_font.h"
-#include "ssd1306/16x32_font.h"
+#include "ui/ssd1306/5x8_font.h"
+#include "ui/ssd1306/8x8_font.h"
+#include "ui/ssd1306/12x16_font.h"
+#include "ui/ssd1306/16x32_font.h"
 
 namespace pico_ssd1306{
 

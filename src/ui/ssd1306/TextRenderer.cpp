@@ -1,4 +1,4 @@
-#include "ssd1306/TextRenderer.h"
+#include "ui/ssd1306/TextRenderer.h"
 
 namespace pico_ssd1306 {
 

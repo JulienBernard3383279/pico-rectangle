@@ -1,4 +1,4 @@
-#include "ssd1306/FrameBuffer.h"
+#include "ui/ssd1306/FrameBuffer.h"
 
 FrameBuffer::FrameBuffer() {
     this->buffer = new unsigned char[FRAMEBUFFER_SIZE];

@@ -5,7 +5,7 @@
 
 #include <string.h>
 #include "hardware/i2c.h"
-#include "ssd1306/FrameBuffer.h"
+#include "ui/ssd1306/FrameBuffer.h"
 
 namespace pico_ssd1306 {
     /// Register addresses from datasheet
