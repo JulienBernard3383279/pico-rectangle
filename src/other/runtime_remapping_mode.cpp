@@ -30,19 +30,15 @@ uint32_t findPressed(std::vector<uint32_t> eligiblePins) {
 namespace Other {
     void enterRuntimeRemappingMode(pico_ssd1306::SSD1306* display) {
         const char *buttons[20] = { "L", "Left", "Down", "Right", "Mod X", "Mod Y", "Start", "C-Left", "C-Down", "C-Up", "A", "C-Right", "R", "B", "Y", "X", "LS", "Z", "MS", "Up" };
-        const char* three = "Three";
-        const char* two = "Two";
-        const char* one = "One";
-        const char* restart = "Complete";
 
         std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
 
-        display->clearAndDrawText(three);
+        display->clearAndDrawText(messages.three);
         sleep_ms(1000);
-        display->clearAndDrawText(two);
+        display->clearAndDrawText(messages.two);
         sleep_ms(1000);
-        display->clearAndDrawText(one);
+        display->clearAndDrawText(messages.one);
         sleep_ms(1000);
 
         for (uint32_t pin : eligiblePins) {
@@ -90,7 +86,7 @@ namespace Other {
 
         Persistence::commit(runtimeRemappingCheckout);
 
-        display->clearAndDrawText(restart);
+        display->clearAndDrawText(messages.restart);
 
         while (1);
     }

@@ -141,7 +141,7 @@ int main() {
         DACAlgorithms::SetOf8Keys::actuate8KeysReport(GpioToButtonSets::F1::defaultConversion());
     });
 
-    display.clearAndDrawText("Melee Adapter");
+    display.clearAndDrawText(messages.modeMeleeAdapter);
     // Default: F1 / melee / adapter
     USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
