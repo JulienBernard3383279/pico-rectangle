@@ -16,24 +16,20 @@ namespace UI {
         int ret;
         uint8_t rxdata;
 
-        try {
-            i2c_init(i2c0, 1000000);
-            gpio_set_function(8, GPIO_FUNC_I2C);
-            gpio_set_function(9, GPIO_FUNC_I2C);
-            gpio_pull_up(8);
-            gpio_pull_up(9);
+        i2c_init(i2c0, 1000000);
+        gpio_set_function(8, GPIO_FUNC_I2C);
+        gpio_set_function(9, GPIO_FUNC_I2C);
+        gpio_pull_up(8);
+        gpio_pull_up(9);
 
-            ret = i2c_read_blocking(i2c_default, 0x3C, &rxdata, 1, false);
+        ret = i2c_read_blocking_until(i2c_default, 0x3C, &rxdata, 1, false, make_timeout_time_ms(1000));
 
-            if (ret < 0) {
-                uiOutput = UIOutput::LED;
-            } else {
-                uiOutput = UIOutput::SSD1306;
-            }
-        }
-        catch (const char* message) {
+        if (ret < 0) {
             uiOutput = UIOutput::LED;
+        } else {
+            uiOutput = UIOutput::SSD1306;
         }
+        
          
         if (uiOutput == UIOutput::LED) {
             gpio_put(LED_PIN, 1);
