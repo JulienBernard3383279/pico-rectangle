@@ -53,9 +53,9 @@ namespace Other {
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
                 pinsPressedInOrder.push_back(pressedPin);
-            }
-            if ( pressedPin != -1 && pinsPressedInOrder.size() <= 19) {
-                display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
+                if (pinsPressedInOrder.size() <= 19) {
+                    display->clearAndDrawText(buttons[pinsPressedInOrder.size()]);
+                }
             }
         }
 
