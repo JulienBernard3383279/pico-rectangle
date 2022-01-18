@@ -186,9 +186,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 namespace EmulatedTravelTime {
 
     // The time unit is us
-
-    //const uint32_t travelTimeFor1 = 8'333;
-    const uint32_t travelTimeFor1 = 8'333; // Testing // 0.5f for 1 => 0.4f for 0 -> 0.8 (dash) and 0.9f to do -1 => 1 (dash dance)
+    const uint32_t travelTimeFor1 = 8'333; // 0.5f for 1 => 0.4f for 0 -> 0.8 (dash) and 0.9f to do -1 => 1 (dash dance)
 
     /* Algorithm explanation
 
