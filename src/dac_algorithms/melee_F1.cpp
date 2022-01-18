@@ -1,6 +1,12 @@
 #include "dac_algorithms/melee_F1.hpp"
 #include "communication_protocols/joybus.hpp"
 
+#include "hardware/timer.h"
+#include "pico/multicore.h"
+#include "string.h"
+
+#include <math.h>
+
 namespace DACAlgorithms {
 namespace MeleeF1 {
 
@@ -175,6 +181,117 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     gcReport.start = bs.start;
 
     return gcReport;
+}
+
+namespace EmulatedTravelTime {
+
+    // The time unit is us
+
+    //const uint32_t travelTimeFor1 = 8'333;
+    const uint32_t travelTimeFor1 = 8'333; // Testing // 0.5f for 1 => 0.4f for 0 -> 0.8 (dash) and 0.9f to do -1 => 1 (dash dance)
+
+    /* Algorithm explanation
+
+    A separate thread repeatedly reads the GPIO and generate the gamecube report. The thread handling the communications just reads the latest report.
+        
+    TravelTimeState describes the current movement for one stick: origin, destination, time of departure and travel time (time to reach the destination)
+    
+    When a button press/release is detected, a new GC report will be generated and updateTravelTimeEmulation will be called.
+    Provided the destination changed, it computes where the stick is currently, that is, [ (destination-origin)*(current time - time of departure)/travel time ]
+    and updates the origin to that spot
+    
+    It then computes the distance to be travelled (norm of destination - origin) and multiplies it by travelTimeFor1 to obtain the travel time of the movement
+    travelTimeFor1 is the time it takes to move a GC stick by 1 unit ie center -> full right (128 -> 208).
+
+    applyTravelTimeEmulation is called after every GPIO set check regardless of whether a press/release happened.
+    It updates the x/y value of the GCReport to be sent to where the stick is currently (the same formula as in updateTravelTimeEmulation) */
+
+    /* Note: the travel time should probably not be linear with distance, we take less than 2x the time to do0=>1 when doing -1=>1
+       and we take more than 0.5x the time to do 0=>0.5 than to do 0 => 1. sqrt may fit the bill */
+
+    struct TravelTimeState {
+        uint64_t timeOfDeparture = 0;
+        uint32_t travelTime = 1;
+        uint8_t xOrigin = 128; // Could be made more precise by using >uint8_t to keep track of sub-tick distances travelled
+        uint8_t yOrigin = 128;
+        uint8_t xDestination = 128;
+        uint8_t yDestination = 128;
+    };
+
+    void applyTravelTimeEmulation(uint8_t &x, uint8_t &y, const TravelTimeState &tts, uint64_t timestamp) {
+        // If the travel is complete, don't touch anything: the state build method returns the destination already
+        bool travelComplete = (int64_t)(timestamp - tts.timeOfDeparture) > (int64_t)(tts.travelTime);
+        if (!travelComplete) {
+            float travelCompletionRatio = (timestamp - tts.timeOfDeparture) / (float)tts.travelTime;
+            x = (uint8_t) ( (int)tts.xOrigin + ((int)tts.xDestination - (int)tts.xOrigin) * travelCompletionRatio + 0.5 );
+            y = (uint8_t) ( (int)tts.yOrigin + ((int)tts.yDestination - (int)tts.yOrigin) * travelCompletionRatio + 0.5 );
+        }
+    }
+    
+    void updateTravelTimeEmulation(const uint8_t x, const uint8_t y, TravelTimeState &tts, uint64_t timestamp) {
+        if (x != tts.xDestination || y != tts.yDestination) {
+            // Update origin, destination and time of departure
+            bool travelComplete = (int64_t)(timestamp - tts.timeOfDeparture) > (int64_t)(tts.travelTime);
+            if (travelComplete) {
+                tts.xOrigin = tts.xDestination;
+                tts.yOrigin = tts.yDestination;
+            }
+            else {
+                float travelCompletionRatio = (timestamp - tts.timeOfDeparture) / (float)tts.travelTime;
+                tts.xOrigin = (uint8_t) ( (int)tts.xOrigin + ((int)tts.xDestination - (int)tts.xOrigin) * travelCompletionRatio + 0.5 );
+                tts.yOrigin = (uint8_t) ( (int)tts.yOrigin + ((int)tts.yDestination - (int)tts.yOrigin) * travelCompletionRatio + 0.5 );
+            }
+            tts.xDestination = x;
+            tts.yDestination = y;
+            tts.timeOfDeparture = timestamp;
+
+            // Compute travel time to reach destination
+            double norm = sqrt( ((int)tts.yDestination-(int)tts.yOrigin)*((int)tts.yDestination-(int)tts.yOrigin) + ((int)tts.xDestination-(int)tts.xOrigin)*((int)tts.xDestination-(int)tts.xOrigin) );
+            if (norm != 0) {
+                tts.travelTime = (uint32_t) (norm*travelTimeFor1/80);
+            }
+        }
+    }
+
+    volatile GCReport core0GcReport;
+    void core1_entry() {
+        GpioToButtonSets::F1::ButtonSet(*getButtonSet)(void) = (GpioToButtonSets::F1::ButtonSet(*)(void)) multicore_fifo_pop_blocking();
+        volatile GCReport *gcReportPtr = (volatile GCReport*) multicore_fifo_pop_blocking();
+        
+        GpioToButtonSets::F1::ButtonSet previousButtonSet;
+        TravelTimeState travelTimeStateStick{};
+        TravelTimeState travelTimeStateCStick{};
+        GCReport localGcReport;
+
+        while (true) {
+            GpioToButtonSets::F1::ButtonSet buttonSet = getButtonSet();
+
+            uint64_t timestamp = time_us_64();
+            if ( memcmp((const void*)&buttonSet, (const void*)&previousButtonSet, sizeof(GpioToButtonSets::F1::ButtonSet)) ) {
+                localGcReport = DACAlgorithms::MeleeF1::getGCReport(buttonSet);
+                updateTravelTimeEmulation(localGcReport.xStick, localGcReport.yStick, travelTimeStateStick, timestamp);
+                updateTravelTimeEmulation(localGcReport.cxStick, localGcReport.cyStick, travelTimeStateCStick, timestamp);
+                previousButtonSet = buttonSet;
+            }
+
+            applyTravelTimeEmulation(localGcReport.xStick, localGcReport.yStick, travelTimeStateStick, timestamp);
+            applyTravelTimeEmulation(localGcReport.cxStick, localGcReport.cyStick, travelTimeStateCStick, timestamp);
+
+            memcpy ( (void*)gcReportPtr, (const void*) &localGcReport, sizeof(GCReport) );
+        }
+    }
+
+    void initialize(GpioToButtonSets::F1::ButtonSet(*func)(void)) {
+        multicore_launch_core1(core1_entry);
+        multicore_fifo_push_blocking((uint32_t)func);
+        multicore_fifo_push_blocking((uint32_t)&core0GcReport);
+    }
+
+    GCReport getGCReport() {
+        GCReport gcReport;
+        memcpy((void*)&gcReport, (const void*)&core0GcReport, sizeof(GCReport));
+        return gcReport;
+    }
 }
 
 }

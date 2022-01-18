@@ -90,7 +90,12 @@ int main() {
         }
         
         // Else: F1 / Melee
-        CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()); });
+        {
+            DACAlgorithms::MeleeF1::EmulatedTravelTime::initialize(GpioToButtonSets::F1::defaultConversion);
+            CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
+                return DACAlgorithms::MeleeF1::EmulatedTravelTime::getGCReport();
+            });
+        }
     }
 
     // Else:
@@ -129,7 +134,10 @@ int main() {
     });
 
     // Default: F1 / melee / adapter
-    USBConfigurations::GccToUsbAdapter::enterMode([](){
-        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
-    });
+    {
+        DACAlgorithms::MeleeF1::EmulatedTravelTime::initialize(GpioToButtonSets::F1::defaultConversion);
+        USBConfigurations::GccToUsbAdapter::enterMode([](){
+            USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::EmulatedTravelTime::getGCReport());
+        });
+    }
 }
