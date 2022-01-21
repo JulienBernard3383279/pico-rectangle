@@ -15,6 +15,7 @@
 #include "gpio_to_button_sets/F1.hpp"
 
 #include "usb_configurations/gcc_to_usb_adapter.hpp"
+#include "usb_configurations/hid_with_triggers.hpp"
 #include "usb_configurations/keyboard_8kro.hpp"
 #include "usb_configurations/wired_fight_pad_pro.hpp"
 
@@ -51,7 +52,7 @@ int main() {
     #endif
     ;
 
-    std::vector<uint8_t> modePins = { 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -97,6 +98,21 @@ int main() {
 
     // 21 - GP16 - BOOTSEL
     if (!gpio_get(16)) reset_usb_boot(0, 0);
+
+    // 27 - GP21 - X - Melee / HID
+    if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([](){
+        USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
+
+    // 29 - GP22 - Y - Ult / HID
+    if (!gpio_get(22)) USBConfigurations::HidWithTriggers::enterMode([](){
+        USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
+
+    // 26 - GP20 - LS - P+ / HID
+    if (!gpio_get(20)) USBConfigurations::HidWithTriggers::enterMode([](){
+        USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::ProjectPlusF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });
 
     // 4 - GP2 - Right : F1 / P+ / WFPP
     if (!gpio_get(2)) USBConfigurations::WiredFightPadPro::enterMode([](){
