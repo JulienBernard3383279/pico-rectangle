@@ -131,11 +131,11 @@ Note that you must release GP17 before the 3 seconds expire, or it will be consi
 
 So, if for example you haven't followed the default pinout when soldering and would like to go back to the default B0XX/F1, you'll press the buttons in this order:
 
-![image](https://i.imgur.com/W3OoZ9s.png)
+![image](img/remap_ex1.png)
 
 Say you'd like to swap L/MX, and R/Z, you'd press the buttons in this order:
 
-![image](https://i.imgur.com/FIfXLcY.png)
+![image](img/remap_ex2.png)
 
 When plugging the board in, wait for 3+ seconds before starting to press any buttons.
 
