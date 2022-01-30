@@ -154,13 +154,16 @@ If it doesn't appear to work, double check all 20 of your buttons work. Note tha
 ### How to wire the board:
 
 #### If you just have a GameCube cable :
-![image](https://i.imgur.com/qAwJQby.png)
+![image](img/pico_gcc_cable.png)
 
 #### If you are using a third party cable :
-![image](https://i.imgur.com/LDsh5hK.png)
+![image](img/3rd_party_cable.png)
 
-#### If you are using a port that combines USB and GameCube like USB-C :
-![image](https://i.imgur.com/2dkaQai.png)
+#### If you are using a generic USB-C breakout :
+![image](img/pico_usbc_breakout.png)
+
+#### If you are using a Model U breakout :
+![image](img/pico_model_u.png)
 
 Switches/buttons will have two pins. Connect one of them to Ground (daisy chaining advised) and the other to a Pico GPIO pin following the mapping shown in the images above.
 
