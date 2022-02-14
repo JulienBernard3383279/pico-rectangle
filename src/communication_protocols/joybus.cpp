@@ -23,6 +23,9 @@ void initComms(uint8_t dataPin) {
     gpio_set_dir(gcDataPin, GPIO_IN);
     gpio_pull_up(gcDataPin);
 
+    gpio_init(rumblePin);
+    gpio_set_dir(rumblePin, GPIO_OUT);
+
     // Configure timer
     systick_hw->csr = (1 << 2) | (1 << 0);
 }
@@ -185,7 +188,7 @@ void wait2Us() {
 void enterMode(int dataPin, GCReport func(void)) {
     initComms(dataPin);
     while (true) {
-        awaitPoll();
+        gpio_put(rumblePin, awaitPoll());
         wait2Us();
         respondToPoll(func());
     }

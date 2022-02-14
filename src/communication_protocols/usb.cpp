@@ -740,11 +740,12 @@ void ep_in_handler(uint8_t *buf, uint16_t len) {
 }
 
 void ep_out_handler(uint8_t *buf, uint16_t len) {
-    /*if (len==5) {
-        for (int i = 0; i<4; i++) {
+    if (len==5) {
+        gpio_put(rumblePin, !!buf[1]);
+        /*for (int i = 0; i<4; i++) {
             setRumble(i, buf[i+1]!=0);
-        }
-    }*/
+        }*/
+    }
     usb_start_transfer(usb_get_endpoint_configuration(ep_out_addr()), NULL, 5); //TODO Do something about the 5
 }
 
@@ -992,6 +993,9 @@ void enterMode(Configuration config, int headroomUs) {
 
     uint32_t target;
 
+    gpio_init(rumblePin);
+    gpio_set_dir(rumblePin, GPIO_OUT);
+    
     while (1) {
 
         while (!ep1_in_handler_happened); // TODO More clever algorithm ?
