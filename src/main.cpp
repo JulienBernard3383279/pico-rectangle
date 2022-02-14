@@ -60,6 +60,9 @@ int main() {
         gpio_pull_up(modePin);
     }
 
+    // 21 - GP16 - BOOTSEL
+    if (!gpio_get(16)) reset_usb_boot(0, 0);
+
     // 22 - GP17 - Up : runtime remapping
     if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
     
@@ -68,6 +71,7 @@ int main() {
     gpio_pull_up(gcDataPin);
 
     uint32_t origin = time_us_32();
+    while ( time_us_32() - origin < 100'000 );
     while ( time_us_32() - origin < 500'000 ) {
         if (!gpio_get(gcDataPin)) goto stateLabel__forceJoybusEntry;
     }
@@ -95,9 +99,6 @@ int main() {
     }
 
     // Else:
-
-    // 21 - GP16 - BOOTSEL
-    if (!gpio_get(16)) reset_usb_boot(0, 0);
 
     // 27 - GP21 - X - Melee / HID
     if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([](){
