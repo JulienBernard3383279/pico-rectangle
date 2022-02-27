@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "global.hpp"
-
+/*
 #include "dac_algorithms/melee_F1.hpp"
 #include "dac_algorithms/project_plus_F1.hpp"
 #include "dac_algorithms/ultimate_F1.hpp"
@@ -22,6 +22,11 @@
 #include "communication_protocols/joybus.hpp"
 
 #include "other/runtime_remapping_mode.hpp"
+*/
+
+#include "dac_algorithms/wired_fight_pad_pro_mast.hpp"
+#include "usb_configurations/wired_fight_pad_pro.hpp"
+
 
 int main() {
 
@@ -44,15 +49,17 @@ int main() {
     gpio_set_function(1, GPIO_FUNC_UART);
     #endif
 
+    /*
     const uint8_t keyboardPin = 
     #if USE_UART0
     3
     #else
     0
     #endif
-    ;
+    ;*/
 
-    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
+    //std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 16 }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -61,10 +68,10 @@ int main() {
     }
 
     // 21 - GP16 - BOOTSEL
-    if (!gpio_get(16)) reset_usb_boot(0, 0);
+    //if (!gpio_get(16)) reset_usb_boot(0, 0);
 
     // 22 - GP17 - Up : runtime remapping
-    if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
+    /*if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
     
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
@@ -74,12 +81,12 @@ int main() {
     while ( time_us_32() - origin < 100'000 );
     while ( time_us_32() - origin < 500'000 ) {
         if (!gpio_get(gcDataPin)) goto stateLabel__forceJoybusEntry;
-    }
+    }*/
     
     /* Mode selection logic */
 
     // Not plugged through USB =>  Joybus
-    if (!gpio_get(USB_POWER_PIN)) {
+    /*if (!gpio_get(USB_POWER_PIN)) {
         stateLabel__forceJoybusEntry:
 
         if ((!gpio_get(7)) || (!gpio_get(2))) { // 10-GP7 OR 4-GP2 : F1 / P+
@@ -148,5 +155,9 @@ int main() {
     // Default: F1 / melee / adapter
     USBConfigurations::GccToUsbAdapter::enterMode([](){
         USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    });*/
+
+    USBConfigurations::WiredFightPadPro::enterMode([](){
+        DACAlgorithms::WiredFightPadProMast::actuateWFPPReport(GpioToButtonSets::Mast::defaultConversion());
     });
 }

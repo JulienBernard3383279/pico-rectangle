@@ -25,7 +25,9 @@ add_executable(pico_rectangle
     src/dac_algorithms/ultimate_F1.cpp
     src/dac_algorithms/set_of_8_keys.cpp
     src/dac_algorithms/wired_fight_pad_pro_default.cpp
+    src/dac_algorithms/wired_fight_pad_pro_mast.cpp
     src/gpio_to_button_sets/F1.cpp
+    src/gpio_to_button_sets/Mast.cpp
     src/other/runtime_remapping_mode.cpp
 )
 
