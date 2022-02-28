@@ -59,16 +59,16 @@ int main() {
     ;*/
 
     //std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
-    std::vector<uint8_t> modePins = { 16 }; // DO NOT USE PIN GP15
 
-    for (uint8_t modePin : modePins) {
-        gpio_init(modePin);
-        gpio_set_dir(modePin, GPIO_IN);
-        gpio_pull_up(modePin);
-    }
+    gpio_init(16);
+    gpio_set_dir(16, GPIO_IN);
+    gpio_pull_up(16);
+
+    uint32_t origin = time_us_32();
+    while ( time_us_32() - origin < 100 );
 
     // 21 - GP16 - BOOTSEL
-    //if (!gpio_get(16)) reset_usb_boot(0, 0);
+    if (!gpio_get(16)) reset_usb_boot(0, 0);
 
     // 22 - GP17 - Up : runtime remapping
     /*if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
