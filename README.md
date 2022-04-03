@@ -109,6 +109,29 @@ In dedicated mode, Modifiers and LS/MS are repurposed. This means you can only a
 
 Image TODO
 
+Button mappings:
+
+- L => q
+- Left => w
+- Down => e
+- Right => r
+- MX => a
+- MY => s
+- Start => t
+- R => y
+- B => h
+- Y => u
+- X => j
+- LS => k
+- Z => i
+- MS => l
+- Up => o
+- C-Up => g
+- C-Left => f
+- C-Right => b
+- C-Down => c
+- A => v
+
 ### Adapter mode information
 
 In adapter mode, upon connecting the Raspberry Pi Pico to your PC after uploading the software at hand onto it, the Raspberry Pi Pico will identify as a "WUP-028" i.e a Gamecube controller to USB adapter. Things will behave as if the Gamecube controller this board emulates was plugged in port 1. You need to use the "GameCube Adapter for Wii U" in the Slippi Controllers tab (which is the default). You don't need to configure anything.
