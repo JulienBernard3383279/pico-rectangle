@@ -78,22 +78,6 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
             else xy = coords(0.51, 0.82);
         }
         /* Firefox angle logic */
-        else if (bs.b && (bs.mx != bs.my)) {
-            if (bs.mx) {
-                if (bs.cDown) xy = coords(0.82, 0.36);
-                else if (bs.cLeft) xy = coords(0.84, 0.5);
-                else if (bs.cUp) xy = coords(0.77, 0.55);
-                else if (bs.cRight) xy = coords(0.72, 0.61);
-                else xy = coords(0.7, 0.34);
-            }
-            else {
-                if (bs.cDown) xy = coords(0.34, 0.82);
-                else if (bs.cLeft) xy = coords(0.4, 0.84);
-                else if (bs.cUp) xy = coords(0.55, 0.77);
-                else if (bs.cRight) xy = coords(0.62, 0.72);
-                else xy = coords(0.28, 0.58);
-            }
-        }
         else if (bs.mx != bs.my) {
             if (bs.mx) {
                 if (bs.cDown) xy = coords(0.82, 0.36);
