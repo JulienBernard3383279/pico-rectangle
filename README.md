@@ -122,10 +122,10 @@ Button mappings:
 - B => h
 - Y => u
 - X => j
-- LS => k
-- Z => i
-- MS => l
-- Up => o
+- LS => i
+- Z => k
+- MS => o
+- Up => l
 - C-Up => g
 - C-Left => f
 - C-Right => b
