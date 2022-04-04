@@ -107,8 +107,6 @@ In dedicated mode, Modifiers and LS/MS are repurposed. This means you can only a
 
 ### 8KRO Keyboard mappings
 
-Image TODO
-
 Button mappings:
 
 - L => q
