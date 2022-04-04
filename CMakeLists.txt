@@ -27,8 +27,9 @@ add_executable(pico_rectangle
     src/dac_algorithms/wired_fight_pad_pro_default.cpp
     src/gpio_to_button_sets/F1.cpp
     src/other/runtime_remapping_mode.cpp
+    src/other/nunchuk.cpp
 )
 
-target_link_libraries(pico_rectangle pico_stdlib pico_time pico_bootrom hardware_resets hardware_timer hardware_irq hardware_sync hardware_flash)
+target_link_libraries(pico_rectangle pico_stdlib pico_time pico_bootrom hardware_resets hardware_timer hardware_irq hardware_sync hardware_flash hardware_i2c pico_multicore)
 
 pico_add_extra_outputs(pico_rectangle)

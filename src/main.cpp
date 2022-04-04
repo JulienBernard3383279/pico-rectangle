@@ -1,5 +1,6 @@
 #include "pico/stdlib.h"
 #include "pico/bootrom.h"
+#include "pico/multicore.h"
 #include "hardware/gpio.h"
 #include "hardware/timer.h"
 #include <vector>
@@ -14,6 +15,7 @@
 
 #include "gpio_to_button_sets/F1.hpp"
 
+#include "pico/time.h"
 #include "usb_configurations/gcc_to_usb_adapter.hpp"
 #include "usb_configurations/hid_with_triggers.hpp"
 #include "usb_configurations/keyboard_8kro.hpp"
@@ -22,6 +24,7 @@
 #include "communication_protocols/joybus.hpp"
 
 #include "other/runtime_remapping_mode.hpp"
+#include "other/nunchuk.hpp"
 
 int main() {
 
@@ -38,13 +41,21 @@ int main() {
     #if USE_UART0
     // Initialise UART 0
     uart_init(uart0, 115200);
- 
+
     // Set the GPIO pin mux to the UART - 0 is TX, 1 is RX
     gpio_set_function(0, GPIO_FUNC_UART);
     gpio_set_function(1, GPIO_FUNC_UART);
     #endif
 
-    const uint8_t keyboardPin = 
+    #if USE_NUNCHUK
+    init_nunchuk();
+    sleep_ms(25);
+    multicore_reset_core1();
+    multicore_launch_core1(fetch_nunchuk_reports);
+    #endif
+
+
+    const uint8_t keyboardPin =
     #if USE_UART0
     3
     #else
@@ -65,7 +76,7 @@ int main() {
 
     // 22 - GP17 - Up : runtime remapping
     if (!gpio_get(17)) Other::enterRuntimeRemappingMode();
-    
+
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
     gpio_pull_up(gcDataPin);
@@ -75,7 +86,7 @@ int main() {
     while ( time_us_32() - origin < 500'000 ) {
         if (!gpio_get(gcDataPin)) goto stateLabel__forceJoybusEntry;
     }
-    
+
     /* Mode selection logic */
 
     // Not plugged through USB =>  Joybus
@@ -93,7 +104,7 @@ int main() {
                 return DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
             });
         }
-        
+
         // Else: F1 / Melee
         CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()); });
     }

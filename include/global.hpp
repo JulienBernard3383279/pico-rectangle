@@ -12,5 +12,6 @@ const uint8_t gcDataPin = 28;
 const uint8_t rumblePin = 11;
 
 #define USE_UART0 0
+#define USE_NUNCHUK 1
 
 #endif

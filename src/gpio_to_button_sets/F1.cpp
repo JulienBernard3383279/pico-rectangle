@@ -82,7 +82,7 @@ ButtonSet defaultConversion() {
     if (!init) initDefaultConversion();
 
     if (remapped) gpio_put(LED_PIN, 1);
-    
+
     ButtonSet f1ButtonSet;
 
     uint32_t inputSnapshot = sio_hw->gpio_in;

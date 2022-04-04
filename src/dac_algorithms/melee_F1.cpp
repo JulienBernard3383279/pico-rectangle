@@ -1,5 +1,8 @@
 #include "dac_algorithms/melee_F1.hpp"
 #include "communication_protocols/joybus.hpp"
+#include "pico/stdlib.h"
+#include "global.hpp"
+#include "other/nunchuk.hpp"
 
 namespace DACAlgorithms {
 namespace MeleeF1 {
@@ -35,13 +38,13 @@ Coords coords(float xFloat, float yFloat) {
 
 
 GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
-    
+
     GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
 
     GCReport gcReport = defaultGcReport;
 
     /* 2IP No reactivation */
-    
+
     if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
     if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
     if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
@@ -61,7 +64,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     if (right_outlawUntilRelease) bs.right=false;
     if (up_outlawUntilRelease) bs.up=false;
     if (down_outlawUntilRelease) bs.down=false;
-    
+
     /* Stick */
 
     bool vertical = bs.up || bs.down;
@@ -133,8 +136,15 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     gcReport.xStick = xy.x;
     gcReport.yStick = xy.y;
 
+    // Since the C-stick code is rather tightly tied with the above block, we'll just overwrite
+    // the results here
+    #if USE_NUNCHUK
+    gcReport.xStick = nunchuk_report_data[0];
+    gcReport.yStick = nunchuk_report_data[1];
+    #endif
+
     /* C-Stick */
-    
+
     bool cVertical = bs.cUp != bs.cDown;
     bool cHorizontal = bs.cLeft != bs.cRight;
 
