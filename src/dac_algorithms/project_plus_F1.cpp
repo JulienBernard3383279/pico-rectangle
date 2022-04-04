@@ -8,7 +8,7 @@ namespace ProjectPlusF1 {
 #define oppositeCoord(x) -((uint8_t)x)
 
 bool trueZPress = true;
-bool ledgedashMaxJumpTraj = false;
+bool ledgedashFacilitationSOCD = false;
 bool LSisDTaunt = true;
 
 // 2 IP declarations
@@ -111,8 +111,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         xy = coords(0.0, 0.0);
     }
 
-    /* ledgedashMaxJumpTraj logic */
-    if (ledgedashMaxJumpTraj && (bs.left && bs.right)) xy.x = 1.0;
+    /* Ledgedash facilitation SOCD logic */
+    if (ledgedashFacilitationSOCD && (buttonSet.left && buttonSet.right)) xy.x = 1.0;
 
     if (horizontal && !readRight) xy.x = oppositeCoord(xy.x);
     if (vertical && !readUp) xy.y = oppositeCoord(xy.y);
@@ -147,7 +147,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         gcReport.dRight = bs.cRight;
     }
     gcReport.dUp = gcReport.dUp || bs.ms;
-    gcReport.dDown = gcReport.dDown || bs.ls;
+    gcReport.dDown = gcReport.dDown || (bs.ls && LSisDTaunt);
 
     /* Triggers */
     gcReport.analogL = bs.l ? 140 : 0;
