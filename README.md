@@ -51,7 +51,7 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 As of this release, 8 modes are built-in.
 
-- Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus), unless you also press GP2 or GP7 (by default Right and MY), in which case you enter P+ mode, or GP6 (by default MX), in which case you enter Ultimate mode. If you're not plugged into USB, you enter this mode.
+- Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus), unless you press GP2 or GP7 (by default Right and MY), in which case you enter P+ mode, or GP6 (by default MX), in which case you enter Ultimate mode. If you're not plugged into USB, you enter this mode.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
@@ -171,7 +171,8 @@ If it doesn't appear to work, double check all 20 of your buttons work. Note tha
 - Plug in your Raspberry Pico to your computer by holding pin GP26 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
 
 - The board should appear as an external drive. Put the .uf2 in there. The board should disconnect and be ready for use.
-  - If you reconnect the board in BOOTSEL mode, you may not see the .uf2 file anymore. This is normal, expected behavior.
+
+If you reconnect the board in BOOTSEL mode, you won't see the .uf2 file anymore. This is normal, expected behavior.
 
 ### How to wire the board:
 
