@@ -1,6 +1,9 @@
 name: CMake
 
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, edited, closed, reopened]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -62,3 +65,6 @@ jobs:
       run: cmake ..
       run: make
 
+    - name: List things
+      working-directory: ${{github.workspace}}/build
+      run: ls -R
