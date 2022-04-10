@@ -23,6 +23,9 @@ jobs:
       # But there's syntactic toolchain differences, especially with gnu coreutils, so we'll leave that for later.
         os: [ubuntu-latest]
 
+    # TODO: The pico-sdk checkout can probably be cached, as well as the apt update (probably changes more frequently) and cmake install (less frequent changes).
+    # Doing this could save on a lot of the Action setup time, at the cost of some of the Cache Size (so less artifacts could be stored).
+    # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
     steps:
     - uses: actions/checkout@v2
       name: Checkout repository
