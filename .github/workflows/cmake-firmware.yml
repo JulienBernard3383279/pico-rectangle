@@ -1,4 +1,4 @@
-name: CMake
+name: CMake Firmware
 
 on:
   push:
@@ -6,15 +6,10 @@ on:
     types: [opened, edited, closed, reopened]
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  # BUILD_TYPE: Release
   PICO_SDK_DIR: ./pico-sdk
 
 jobs:
   build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ${{ matrix.os }}
     strategy:
@@ -33,8 +28,12 @@ jobs:
         repository: raspberrypi/pico-sdk
         path: ${{ env.PICO_SDK_DIR }}
     # From https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/
+    # CMake assumes the sdk path is relative to the `build` directory.
     - name: Set pico-sdk path in CMakeLists.
-      run: sed 's/#set(PICO_SDK_PATH "..\/..\/pico-sdk"/set(PICO_SDK_PATH ".\/pico-sdk"/' -i CMakeLists.txt
+      run: |
+        sed 's/#set(PICO_SDK_PATH "..\/..\/pico-sdk"/set(PICO_SDK_PATH "..\/pico-sdk"/' -i CMakeLists.txt
+        cat CMakeLists.txt
+
     # From https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf
     - name: Update apt and install cmake
       run: |
@@ -46,17 +45,7 @@ jobs:
       # We'll use this as our working directory for all subsequent commands
       run: cmake -E make_directory ${{github.workspace}}/build
 
-    # - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      # shell: bash
-      # working-directory: ${{github.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source 
-      # and build directories, but this is only available with CMake 3.13 and higher.  
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      # run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
-
-    - name: Build
+    - name: CMake and Make the Firmware
       working-directory: ${{github.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
@@ -68,4 +57,4 @@ jobs:
 
     - name: List things
       working-directory: ${{github.workspace}}/build
-      run: ls -R
+      run: ls -laR
