@@ -52,15 +52,17 @@ jobs:
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
 
-    - name: CMake and Make the Firmware
+    - name: CMake the Firmware
       working-directory: ${{github.workspace}}/build
       shell: bash
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      # run: cmake --build . --config $BUILD_TYPE
       # From Step 3: https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/edit
-      run: |
-        cmake .. 
-        make
+      run: cmake ..
+
+    - name: Final `make`
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      # From Step 3: https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/edit
+      run: make
 
     - name: List things
       working-directory: ${{github.workspace}}/build
