@@ -21,6 +21,9 @@ bool right_outlawUntilRelease = false;
 bool up_outlawUntilRelease = false;
 bool down_outlawUntilRelease = false;
 
+    
+bool cancel = false;
+   
 struct Coords {
     uint8_t x;
     uint8_t y;
@@ -42,8 +45,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     /* 2IP No reactivation */
     
-    if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
-    if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
+    if (bs.left && bs.right) cancel=true;   
+    if (!bs.left || !bs.right) cancel=false;
     if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
     if (down_wasPressed && bs.up && bs.down && !up_wasPressed) down_outlawUntilRelease=true;
 
@@ -57,8 +60,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     up_wasPressed = bs.up;
     down_wasPressed = bs.down;
 
-    if (left_outlawUntilRelease) bs.left=false;
-    if (right_outlawUntilRelease) bs.right=false;
+    if (cancel) bs.left=false, bs.right=false;
     if (up_outlawUntilRelease) bs.up=false;
     if (down_outlawUntilRelease) bs.down=false;
     
