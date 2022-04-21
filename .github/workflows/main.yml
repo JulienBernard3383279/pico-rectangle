@@ -1,0 +1,77 @@
+name: CMake Firmware
+
+on:
+  push:
+  pull_request:
+    types: [opened, edited, closed, reopened]
+
+env:
+  PICO_SDK_DIR: ./pico-sdk
+  FIRMWARE_ARTIFACT_PATH: ./build/
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id || github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-firmware:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+      # Can support other os', such as windows-latest and macos-latest.
+      # os: [ubuntu-latest, windows-latest]
+      # But there's syntactic toolchain differences, especially with gnu coreutils, so we'll leave that for later.
+        os: [ubuntu-latest]
+
+    # TODO: The pico-sdk checkout can probably be cached, as well as the apt update (probably changes more frequently) and cmake install (less frequent changes).
+    # Doing this could save on a lot of the Action setup time, at the cost of some of the Cache Size (so less artifacts could be stored).
+    # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout repository
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+    - uses: actions/checkout@master
+      name: Checkout pico sdk
+      with:
+        repository: raspberrypi/pico-sdk
+        path: ${{ env.PICO_SDK_DIR }}
+    # From https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/
+    # CMake assumes the sdk path is relative to the `build` directory.
+    - name: Set pico-sdk path in CMakeLists.
+      run: |
+        sed 's/#set(PICO_SDK_PATH "..\/..\/pico-sdk"/set(PICO_SDK_PATH "..\/pico-sdk"/' -i CMakeLists.txt
+        cat CMakeLists.txt
+    # From https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf
+    - name: Update apt and install cmake
+      run: |
+        sudo apt update -y
+        sudo apt install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: CMake the Firmware
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      # From Step 3: https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/edit
+      run: cmake ..
+
+    - name: Final `make`
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      # From Step 3: https://docs.google.com/document/d/1-Lx3X7zIwRscp6N76_usy5fdwulo6-chML3Xjfz3zaY/edit
+      run: make
+
+    - name: List things
+      working-directory: ${{github.workspace}}/build
+      run: ls -laR
+
+    # Note: Artifacts are uploaded as a ZIP, which currently cannot be customized. https://github.com/actions/upload-artifact#zipped-artifact-downloads
+    # This generally reduces the uf2 file size between 30-60%.
+    # TODO: Tweak artifact retention limit. 90 days is the default and the max, but users can always push an empty commit to their PR to build and download the latest uf2!
+    - name: Upload firmware artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pico_rectangle_${{ github.sha }}.uf2
+        path: ${{github.workspace}}/build/pico_rectangle.uf2
+        if-no-files-found: error
