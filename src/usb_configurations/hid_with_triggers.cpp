@@ -62,9 +62,9 @@ void actuateReportFromGCState(const GCReport &gcReport) {
     hidReport.xStick = ((gcReport.xStick - 128) << 8) + 127;
     hidReport.yStick = -(((gcReport.yStick - 128) << 8) + 127);
     hidReport.cxStick = ((gcReport.cxStick - 128) << 8) + 127;
-    hidReport.cyStick = ((gcReport.cyStick - 128) << 8) + 127;
-    hidReport.analogL = ((gcReport.analogL - 128) << 8) + 128; // Why ?
-    hidReport.analogR = ((gcReport.analogR - 128) << 8) + 128; // That's a good question
+    hidReport.cyStick = -(((gcReport.cyStick - 128) << 8) + 127);
+    // hidReport.analogL = ((gcReport.analogL - 128) << 8) + 128; Why ?
+    // hidReport.analogR = ((gcReport.analogR - 128) << 8) + 128; That's a good question
 }
 
 void enterMode(void actuateReportFunc(void)) {
