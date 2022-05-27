@@ -44,7 +44,7 @@ void actuateReportFromGCState(GCReport gcReport) {
     hidReport.r = gcReport.z;
     hidReport.zl = gcReport.l;
     hidReport.zr = gcReport.r;
-    hidReport.home = gcReport.start;
+    hidReport.plus = gcReport.start;
     hidReport.hat = hatFromDpad(gcReport);
     hidReport.xStick = gcReport.xStick;
     hidReport.yStick = -gcReport.yStick;
