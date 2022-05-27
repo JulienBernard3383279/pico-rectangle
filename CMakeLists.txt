@@ -30,6 +30,13 @@ add_executable(
   src/other/runtime_remapping_mode.cpp
 )
 
-target_link_libraries(pico_rectangle pico_stdlib pico_time pico_bootrom hardware_resets hardware_timer hardware_irq hardware_sync hardware_flash)
+pico_generate_pio_header(pico_rectangle ${CMAKE_CURRENT_LIST_DIR}/pio/my_pio.pio)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_LIST_DIR}/generated/my_pio.pio.h
+        DEPENDS ${CMAKE_CURRENT_LIST_DIR}/my_pio.pio
+        COMMAND Pioasm ${CMAKE_CURRENT_LIST_DIR}/my_pio.pio ${CMAKE_CURRENT_LIST_DIR}/generated/my_pio.pio.h
+        )
+
+target_link_libraries(pico_rectangle pico_stdlib hardware_pio pico_time pico_bootrom hardware_resets hardware_timer hardware_irq hardware_sync hardware_flash)
 
 pico_add_extra_outputs(pico_rectangle)
