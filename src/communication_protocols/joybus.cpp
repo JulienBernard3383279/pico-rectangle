@@ -41,6 +41,9 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
     gpio_set_dir(dataPin, GPIO_IN);
     gpio_pull_up(dataPin);
 
+    gpio_init(rumblePin);
+    gpio_set_dir(rumblePin, GPIO_OUT);
+
     sleep_us(100); // Stabilize voltages
 
     PIO pio = pio0;
@@ -92,6 +95,8 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
         else if (buffer[0] == 0x40) { // Maybe poll //TODO Check later inputs...
             buffer[0] = pio_sm_get_blocking(pio, 0);
             buffer[0] = pio_sm_get_blocking(pio, 0);
+            gpio_put(rumblePin, buffer[0] & 1);
+
             GCReport gcReport = func();
 
             uint32_t result[5];
