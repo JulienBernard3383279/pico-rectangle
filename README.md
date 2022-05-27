@@ -141,6 +141,10 @@ The logic is that of the Frame1, with the slight side B and parasol dashing nerf
 
 ### Wired Fight Pad Pro mode logic
 
+This is a "Wired Fight Pad Pro":
+
+![image](img/wfpp.png)
+
 With the Melee F1 DAC algorithm, Start is mapped to Home. L, R and Z are respectively mapped to ZL, ZR and R. -, +, L and Photo are inaccessible. The purpose of this mode is to allow playing on a PC setup with other people that are using vanilla Gamecube controllers through an adapter, as Slippi can't handle multiple adapters at once. There may be slight analog discrepancies occuring as a result of using the Standard Controller mode (max 1 tick).
 
 In dedicated mode, Modifiers and LS/MS are repurposed. This means you can only access cardinals and diagonals on the control stick.
@@ -223,7 +227,10 @@ The remapping will be committed when you've pressed 20 different buttons. You mu
 If it doesn't appear to work, double check all 20 of your buttons work. Note that runtime remapping doesn't change what buttons you need to press to enter a given mode, as it is the pin number that matters.
 
 <a name="howToWireTheBoard"/>
+
 ### How to wire the board:
+
+Note: big thanks to Crane for the schematics !
 
 #### If you just have a GameCube cable :
 ![image](img/pico_gcc_cable.png)
