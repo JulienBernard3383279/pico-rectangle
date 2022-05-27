@@ -1,4 +1,4 @@
-# Frame1/B0XX layout style open-source digital controller software for the Raspberry Pi Pico (v0.8)
+# Frame1/B0XX layout style public-source digital controller software for the Raspberry Pi Pico (v0.8)
 
 This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols, with several digital to controller representation conversion modes built-in: Melee, P+, Ultimate, generic controller and generic keyboard.
 
@@ -22,6 +22,9 @@ This project doesn't utilize TinyUSB, but instead implements the USB protocol it
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 In particular, when communicating over USB, device using this software may use the 0x057E USB Vendor ID, that is affiliated with Nintendo, and other proprietary USB vendor IDs. By uploading this software onto your board, you assert that you understand what that means and take entire responsability for it.
+
+This project is free to use for personal use. You may not sell devices with this firmware uploaded or suggest to people to use this firmware with a device you sell, past the first 50 devices sold. You may not reuse part of this firmware in a firmware that will be used commercially without my consent.
+Should you want to use this firmware or firmware deriving from it commercially, contact me.
 
 ### Safety information
 
