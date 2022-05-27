@@ -34,6 +34,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 In particular, when communicating over USB, device using this software may use the 0x057E USB Vendor ID, that is affiliated with Nintendo, and other proprietary USB vendor IDs. By uploading this software onto your board, you assert that you understand what that means and take entire responsability for it.
 
 <a name="firmwareexplanation"/>
+
 ### Firmware explanation
 
 The job of a digital controller firmware can be split in three questions:
@@ -67,6 +68,7 @@ If you want to modify or extend the firmware, you shouldn't need to modify `usb_
 This project doesn't utilize TinyUSB, but instead implements the USB protocol itself to manage runtime-dependant descriptors. This is largely based on the dev_lowlevel pico-example project, although fully migrated to C++, with some extensions such as WCID compatibility and multi-packet control transfers.
 
 <a name="safetyInformation"/>
+
 ### Safety information
 
 Don't have this board plugged via USB and via its Gamecube port at the same time. This would feed the USB 5v to the 3v line of the console and likely damage it.
@@ -74,6 +76,7 @@ Don't have this board plugged via USB and via its Gamecube port at the same time
 If you want to prevent this electrically, use Schottky diodes, or power VSYS with the 5v from the console and don't connect the console 3v. Be aware that doing this implies the controller won't work on consoles with broken rumble lines anymore.
 
 <a name="raspberryPicoPerks"/>
+
 ### Raspberry Pico Perks
 
 - Up to 25 inputs + a console data line
@@ -93,6 +96,7 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 - Very cheap ($4~5) and widely available
 
 <a name="howToProgramYourBoard"/>
+
 ### How to program your board:
 
 - Download the latest release (on the right of the Github page)
@@ -104,6 +108,7 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 If you reconnect the board in BOOTSEL mode, you won't see the .uf2 file anymore. This is normal, expected behavior.
 
 <a name="modes"/>
+
 ### Modes
 
 As of this release, 13 modes are built-in.
@@ -127,11 +132,13 @@ As of this release, 13 modes are built-in.
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
 <a name="meleeModeNotes"/>
+
 ### Melee mode notes
 
 The logic is that of the Frame1, with the slight side B and parasol dashing nerfs removed. They can be added back in the code via a toggle.
 
 <a name="wfppModeNotes"/>
+
 ### Wired Fight Pad Pro mode logic
 
 With the Melee F1 DAC algorithm, Start is mapped to Home. L, R and Z are respectively mapped to ZL, ZR and R. -, +, L and Photo are inaccessible. The purpose of this mode is to allow playing on a PC setup with other people that are using vanilla Gamecube controllers through an adapter, as Slippi can't handle multiple adapters at once. There may be slight analog discrepancies occuring as a result of using the Standard Controller mode (max 1 tick).
@@ -151,6 +158,7 @@ In dedicated mode, Modifiers and LS/MS are repurposed. This means you can only a
 - MS and Start => Photo
 
 <a name="keyboardMappings"/>
+
 ### 8KRO Keyboard mappings
 
 Button mappings:
@@ -177,6 +185,7 @@ Button mappings:
 - A => v
 
 <a name="adapterModeInformation"/>
+
 ### Adapter mode information
 
 In adapter mode, upon connecting the Raspberry Pi Pico to your PC after uploading the software at hand onto it, the Raspberry Pi Pico will identify as a "WUP-028" i.e a Gamecube controller to USB adapter. Things will behave as if the Gamecube controller this board emulates was plugged in port 1. You need to use the "GameCube Adapter for Wii U" in the Slippi Controllers tab (which is the default). You don't need to configure anything.
@@ -190,6 +199,7 @@ Note that polling rate enforcements using the HIDUSBF filter driver that apply t
 Automated WinUSB installation is very experimental. If you encounter any driver related issue, please contact me.
 
 <a name="runtimeRemappingInformation"/>
+
 ### Runtime remapping information
 
 This project allows you to modify the default pin -> button mappings (i.e that of GpioToButtonSets::F1) in a persistent manner at runtime, i.e you don't need to download any development tools, modify the code and reprogram the board, follow these instructions once and your mappings will be changed forever and will persist even when you update the firmware.
@@ -232,6 +242,7 @@ Switches/buttons will have two pins. Connect one of them to Ground (daisy chaini
 Note that all "button" pin mappings can be modified later on using the runtime remapping feature, but the GameCube Data line can't and must be connected to GP28.
 
 <a name="troubleshooting"/>
+
 ### Troubleshooting
 
 Console mode/B/R don't work -> Did you connect pin 33 to ground ?
@@ -241,6 +252,7 @@ Nothing but B/R works -> Did you connect pin 38 to ground ?
 Only half/some of my buttons do anything -> Double-check your common ground between all of your buttons.
 
 <a name="contact"/>
+
 ### Contact
 
 Discord: Arte#9281
