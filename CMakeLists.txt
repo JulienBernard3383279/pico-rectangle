@@ -17,15 +17,12 @@ add_executable(
   src/main.cpp
   src/communication_protocols/joybus.cpp
   src/communication_protocols/usb.cpp
-  src/usb_configurations/gcc_to_usb_adapter.cpp
   src/usb_configurations/hid_with_triggers.cpp
   src/usb_configurations/keyboard_8kro.cpp
-  src/usb_configurations/wired_fight_pad_pro.cpp
   src/dac_algorithms/melee_F1.cpp
   src/dac_algorithms/project_plus_F1.cpp
   src/dac_algorithms/ultimate_F1.cpp
   src/dac_algorithms/set_of_8_keys.cpp
-  src/dac_algorithms/wired_fight_pad_pro_default.cpp
   src/gpio_to_button_sets/F1.cpp
   src/other/runtime_remapping_mode.cpp
 )

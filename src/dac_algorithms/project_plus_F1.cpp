@@ -146,7 +146,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         gcReport.dUp = bs.cUp;
         gcReport.dRight = bs.cRight;
     }
-    gcReport.dUp = gcReport.dUp || bs.ms;
+    gcReport.dUp = gcReport.dUp;
     gcReport.dDown = gcReport.dDown || (bs.ls && LSisDTaunt);
 
     /* Triggers */

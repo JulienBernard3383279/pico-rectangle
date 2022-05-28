@@ -46,7 +46,6 @@ const KeyMapping keyMappings[] = {
     { &F1::ButtonSet::x, 'j' },
     { &F1::ButtonSet::ls, 'i' },
     { &F1::ButtonSet::z, 'k' },
-    { &F1::ButtonSet::ms, 'o' },
     { &F1::ButtonSet::up, 'l' }
 };
 
