@@ -6,6 +6,7 @@
 - [Raspberry Pico Perks](#raspberryPicoPerks)
 - [How to program your board](#howToProgramYourBoard)
 - [Modes](#modes)
+- [Advised modes](#advisedModes)
 - [Melee mode notes](#meleeModeNotes)
 - [Wired Fight Pad Pro mode logic](#wfppModeNotes)
 - [8KRO Keyboard mappings](#keyboardMappings)
@@ -50,16 +51,6 @@ The modes of the firmware are modular based on this separation. A mode is the co
 You will access a given mode by holding a given button down while you plug-in the controller.
 
 A + B will refer from now on as a combination of a DAC conversion algorithm and a communication protocol(+usb config is protocol is USB).
-
-**The advised modes are the following**:
-- Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
-- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter
-- Playing Ult on Switch or PC => Ultimate + Adapter
-- Playing other PC games => HID + HID or 8KeysSet + Keyboard
-- Playing other games on Switch => WFPP + WFPP
-- Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
-
-Note that none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
 
 The code architecture follows the outline previously explained. The code is separated in `gpio_to_button_sets`, `dac_algorithms`, `usb_configurations`, `communication_protocols`.
 
@@ -130,6 +121,18 @@ As of this release, 13 modes are built-in.
 - GP0 (by default, Start) => 8KRO Keyboard (8 Keys set DAC algorithm + 8KRO Keyboard USB configuration). See lower for mapping.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
+
+<a name="advisedModes"/>
+
+**The advised modes are the following**:
+- Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
+- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter
+- Playing Ult on Switch or PC => Ultimate + Adapter
+- Playing other PC games => Melee + HID or 8KeysSet + Keyboard
+- Playing other games on Switch => WFPP + WFPP
+- Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
+
+Note that none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
 
 <a name="meleeModeNotes"/>
 
