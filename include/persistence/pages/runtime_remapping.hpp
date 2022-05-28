@@ -26,7 +26,6 @@ struct RuntimeRemapping {
         uint8_t cDownPin;
         uint8_t cRightPin;
         uint8_t upPin;
-        uint8_t msPin;
         uint8_t zPin;
         uint8_t lsPin;
         uint8_t xPin;

@@ -43,7 +43,7 @@ namespace Other {
             gpio_pull_up(pin);
         }
 
-        while (pinsPressedInOrder.size() != 20) {
+        while (pinsPressedInOrder.size() != 19) {
             uint32_t pressedPin = findPressed(eligiblePins);
             if ( pressedPin != -1) {
                 eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pressedPin](int i){return pressedPin==i;}));
@@ -53,7 +53,7 @@ namespace Other {
             }
         }
 
-        gpio_put(LED_PIN, 0);
+        //gpio_put(LED_PIN, 0);
 
         Persistence::Pages::RuntimeRemapping runtimeRemappingCheckout = Persistence::clone<Persistence::Pages::RuntimeRemapping>();
 
@@ -77,8 +77,7 @@ namespace Other {
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.xPin      = pinsPressedInOrder[15]; // X
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.lsPin     = pinsPressedInOrder[16]; // LS
         runtimeRemappingCheckout.f1GpioToButtonSetRemapping.zPin      = pinsPressedInOrder[17]; // Z
-        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.msPin     = pinsPressedInOrder[18]; // MS
-        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.upPin     = pinsPressedInOrder[19]; // Up
+        runtimeRemappingCheckout.f1GpioToButtonSetRemapping.upPin     = pinsPressedInOrder[18]; // Up
 
         Persistence::commit(runtimeRemappingCheckout);
 
