@@ -92,7 +92,7 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 - Download the latest release (on the right of the Github page)
 
-- Plug in your Raspberry Pico to your computer by holding pin GP26 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
+- Plug in your Raspberry Pico to your computer by holding pin GP16 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
 
 - The board should appear as an external drive. Put the .uf2 in there. The board should disconnect and be ready for use.
 
