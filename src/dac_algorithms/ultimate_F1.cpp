@@ -122,7 +122,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     Coords cxy;
     if (bs.mx && bs.my) cxy = coords(0.0, 0.0);
     else if (cVertical && cHorizontal) cxy = coords(0.7, 0.7);
-    else if (cHorizontal) cxy = bs.mx ? coords(0.8375, readUp ? 0.3125 : -0.3125) : coords(1.0, 0.0);
+    else if (cHorizontal) cxy = bs.mx ? coords(0.7, readUp ? 0.7 : -0.7) : coords(1.0, 0.0);
     else if (cVertical) cxy = coords(0.0, 1.0);
     else cxy = coords(0.0, 0.0);
 
