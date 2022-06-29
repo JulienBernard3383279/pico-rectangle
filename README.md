@@ -126,13 +126,13 @@ As of this release, 13 modes are built-in.
 
 **The advised modes are the following**:
 - Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
-- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter
-- Playing Ult on Switch or PC => Ultimate + Adapter
+- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter mode
+- Playing Ult on Switch or PC => Ultimate + Adapter mode
 - Playing other PC games => Melee + HID or 8KeysSet + Keyboard
 - Playing other games on Switch => WFPP + WFPP
 - Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
 
-Note that none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
+Note that by "Adapter mode", I mean making the controller claim to be an adapter. You should never need to use a separate Gamecube to USB adapter. Also, none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
 
 <a name="meleeModeNotes"/>
 
