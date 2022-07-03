@@ -6,6 +6,7 @@
 - [Raspberry Pico Perks](#raspberryPicoPerks)
 - [How to program your board](#howToProgramYourBoard)
 - [Modes](#modes)
+- [Advised modes](#advisedModes)
 - [Melee mode notes](#meleeModeNotes)
 - [Wired Fight Pad Pro mode logic](#wfppModeNotes)
 - [8KRO Keyboard mappings](#keyboardMappings)
@@ -51,16 +52,6 @@ You will access a given mode by holding a given button down while you plug-in th
 
 A + B will refer from now on as a combination of a DAC conversion algorithm and a communication protocol(+usb config is protocol is USB).
 
-**The advised modes are the following**:
-- Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
-- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter
-- Playing Ult on Switch or PC => Ultimate + Adapter
-- Playing other PC games => HID + HID or 8KeysSet + Keyboard
-- Playing other games on Switch => WFPP + WFPP
-- Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
-
-Note that none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
-
 The code architecture follows the outline previously explained. The code is separated in `gpio_to_button_sets`, `dac_algorithms`, `usb_configurations`, `communication_protocols`.
 
 If you want to modify or extend the firmware, you shouldn't need to modify `usb_configurations` unless you want to, say, add a button to the HID controller you're emulating. And you shouldn't ever need to modify `communication_protocols`. Modify `dac_algorithms` to change things such as coordinates, modify `gpio_to_button_sets` only if your firmware is so unlike the Frame1 default that your buttons have different names. (Ex more than 2 modifiers...)
@@ -101,7 +92,7 @@ If you want to prevent this electrically, use Schottky diodes, or power VSYS wit
 
 - Download the latest release (on the right of the Github page)
 
-- Plug in your Raspberry Pico to your computer by holding pin GP26 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
+- Plug in your Raspberry Pico to your computer by holding pin GP16 (the CRight button in the advised pinout) via USB (i.e BOOTSEL mode), or while holding the "BOOTSEL" white button on the board.
 
 - The board should appear as an external drive. Put the .uf2 in there. The board should disconnect and be ready for use.
 
@@ -131,6 +122,18 @@ As of this release, 13 modes are built-in.
 
 - Plugged into USB, nothing pressed => Melee GCC to USB adapter mode (Melee F1 DAC algorithm + Adapter USB configuration).
 
+<a name="advisedModes"/>
+
+**The advised modes are the following**:
+- Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
+- Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter mode
+- Playing Ult on Switch or PC => Ultimate + Adapter mode
+- Playing other PC games => Melee + HID or 8KeysSet + Keyboard
+- Playing other games on Switch => WFPP + WFPP
+- Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
+
+Note that by "Adapter mode", I mean making the controller claim to be an adapter. You should never need to use a separate Gamecube to USB adapter. Also, none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
+
 <a name="meleeModeNotes"/>
 
 ### Melee mode notes
@@ -145,7 +148,7 @@ This is a "Wired Fight Pad Pro":
 
 ![image](img/wfpp.png)
 
-With the Melee F1 DAC algorithm, Start is mapped to Home. L, R and Z are respectively mapped to ZL, ZR and R. -, +, L and Photo are inaccessible. The purpose of this mode is to allow playing on a PC setup with other people that are using vanilla Gamecube controllers through an adapter, as Slippi can't handle multiple adapters at once. There may be slight analog discrepancies occuring as a result of using the Standard Controller mode (max 1 tick).
+With the Melee F1 DAC algorithm, Start is mapped to +. L, R and Z are respectively mapped to ZL, ZR and R. -, Home, L and Photo are inaccessible. The purpose of this mode is to allow playing on a PC setup with other people that are using vanilla Gamecube controllers through an adapter, as Slippi can't handle multiple adapters at once. There may be slight analog discrepancies occuring as a result of using the Standard Controller mode (max 1 tick).
 
 In dedicated mode, Modifiers and LS/MS are repurposed. This means you can only access cardinals and diagonals on the control stick.
 - LS => L
