@@ -132,6 +132,8 @@ As of this release, 13 modes are built-in.
 - Playing other games on Switch => WFPP + WFPP
 - Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
 
+Configuring the HID means: selecting the Frame1 profile in top right corner of the configuration window (Controllers > Standard Controller > Configure), changing the selecfed device to "pico-rectangle - HID with triggers" and reconfiguring the Control stick Up/Down & C-Stick Up/Down inputs.
+
 Note that by "Adapter mode", I mean making the controller claim to be an adapter. You should never need to use a separate Gamecube to USB adapter. Also, none of the modes require driver installation; in particular the adapter mode will install WinUSB on plug-in. The adapter and WFPP modes are compatible with the Switch.
 
 <a name="meleeModeNotes"/>
