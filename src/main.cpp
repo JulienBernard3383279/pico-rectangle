@@ -88,14 +88,15 @@ int main() {
             });
         }
 
-        if (!gpio_get(6)) { // 9-GP6 : F1 / ultimate
+        if (!gpio_get(5)) { // 7-GP5 : F1 / melee
             CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
-                return DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+                return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
             });
         }
-        
-        // Else: F1 / Melee
-        CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()); });
+                // Else: F1 / Melee
+        CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){
+            return DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion());
+            });
     }
 
     // Else:
