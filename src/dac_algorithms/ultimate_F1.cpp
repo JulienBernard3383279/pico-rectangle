@@ -35,6 +35,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     
     GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
 
+    buttonSet.up = buttonSet.up || buttonSet.up2;
+
     GCReport gcReport = defaultGcReport;
 
     /* 2IP No reactivation */

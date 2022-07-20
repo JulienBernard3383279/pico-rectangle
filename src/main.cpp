@@ -52,7 +52,7 @@ int main() {
     #endif
     ;
 
-    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, 1, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -69,6 +69,8 @@ int main() {
     gpio_init(gcDataPin);
     gpio_set_dir(gcDataPin, GPIO_IN);
     gpio_pull_up(gcDataPin);
+
+    bool use2ndUp = !gpio_get(1);
 
     uint32_t origin = time_us_32();
     while ( time_us_32() - origin < 100'000 );
@@ -95,14 +97,14 @@ int main() {
         }
         
         // Else: F1 / Melee
-        CommunicationProtocols::Joybus::enterMode(gcDataPin, [](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()); });
+        CommunicationProtocols::Joybus::enterMode(gcDataPin, [&use2ndUp](){ return DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion(), use2ndUp); });
     }
 
     // Else:
 
     // 27 - GP21 - X - Melee / HID
-    if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([](){
-        USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([&use2ndUp](){
+        USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion(), use2ndUp));
     });
 
     // 29 - GP22 - Y - Ult / HID
@@ -131,8 +133,8 @@ int main() {
     });
 
     // 7 - GP5 - L: F1 / melee / wired_fight_pad_pro
-    if (!gpio_get(5)) USBConfigurations::WiredFightPadPro::enterMode([](){
-        USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    if (!gpio_get(5)) USBConfigurations::WiredFightPadPro::enterMode([&use2ndUp](){
+        USBConfigurations::WiredFightPadPro::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion(), use2ndUp));
     });
 
     // 6 - GP4 - Left: F1 / wired_fight_pad_pro_default / wired_fight_pad_pro
@@ -146,7 +148,7 @@ int main() {
     });
 
     // Default: F1 / melee / adapter
-    USBConfigurations::GccToUsbAdapter::enterMode([](){
-        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
+    USBConfigurations::GccToUsbAdapter::enterMode([&use2ndUp](){
+        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion(), use2ndUp));
     });
 }

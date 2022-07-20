@@ -37,7 +37,7 @@ extern ControllerReport hidReport;
 
 void actuateReportFromGCState(const GCReport &);
 
-void enterMode(void actuateReportFunc(void));
+void enterMode(std::function<void()> actuateReportFunc);
 
 }
 }

@@ -6,6 +6,8 @@
 
 #include "usb/common.hpp"
 
+#include <functional>
+
 namespace CommunicationProtocols
 {
 namespace USB
@@ -28,7 +30,7 @@ struct Configuration {
     uint16_t bcdDevice;
 
     uint8_t* hidReportPtr;
-    void (*reportActuationFunc)(void);
+    std::function<void()> reportActuationFunc;
 };
 
 void enterMode(Configuration, int headroomUs = 120);

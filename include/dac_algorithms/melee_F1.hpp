@@ -11,7 +11,7 @@ namespace MeleeF1 {
 extern bool banParasolDashing;
 extern bool banSlightSideB;
 
-GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet);
+GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet, bool use2ndUp);
 
 }
 }

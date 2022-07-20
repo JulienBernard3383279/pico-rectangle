@@ -67,7 +67,7 @@ void actuateReportFromGCState(const GCReport &gcReport) {
     hidReport.analogR = ((gcReport.analogR - 128) << 8) + 128; // That's a good question
 }
 
-void enterMode(void actuateReportFunc(void)) {
+void enterMode(std::function<void()> actuateReportFunc) {
 
     CommunicationProtocols::USB::Configuration usbConfiguration =
     {

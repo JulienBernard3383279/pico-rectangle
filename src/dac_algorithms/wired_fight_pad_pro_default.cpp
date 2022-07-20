@@ -23,6 +23,8 @@ uint8_t hatFromDpadValues(bool dLeft, bool dRight, bool dUp, bool dDown) {
 // MS is a modifier: MS+Start = Photo, MS+Left/Right/Up/Down = Dpad left/right/up/down
 void actuateWFPPReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
+    buttonSet.up = buttonSet.up || buttonSet.up2;
+
     bool left = buttonSet.left && !(buttonSet.ms);
     bool right = buttonSet.right && !(buttonSet.ms);
     bool up = buttonSet.up && !(buttonSet.ms);

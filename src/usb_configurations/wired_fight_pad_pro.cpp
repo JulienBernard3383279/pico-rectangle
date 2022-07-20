@@ -52,7 +52,8 @@ void actuateReportFromGCState(GCReport gcReport) {
     hidReport.cyStick = -gcReport.cyStick;
 }
 
-void enterMode(void (*actuateReportFunc)(void)) {
+void enterMode(std::function<void()> actuateReportFunc) {
+    
     CommunicationProtocols::USB::Configuration WFPPUSBConfiguration =
     {
         .inEpMaxPacketSize = 64,

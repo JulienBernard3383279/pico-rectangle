@@ -52,7 +52,8 @@ void actuateReportFromGCState(GCReport gcReport) {
     hidReport.portReports[0].analogR = gcReport.analogR; // between console & USB
 }
 
-void enterMode(void (*actuateReportFunc)(void)) {
+void enterMode(std::function<void()> actuateReportFunc) {
+
     CommunicationProtocols::USB::Configuration AdapterUSBConfiguration =
     {
         .inEpMaxPacketSize = 37,

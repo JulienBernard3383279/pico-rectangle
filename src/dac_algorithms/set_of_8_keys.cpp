@@ -53,7 +53,8 @@ const KeyMapping keyMappings[] = {
     { &F1::ButtonSet::ls,     USBConfigurations::Keyboard8KRO::keyIdFromLowerCaseLetter('i') },
     { &F1::ButtonSet::z,      USBConfigurations::Keyboard8KRO::keyIdFromLowerCaseLetter('k') },
     { &F1::ButtonSet::ms,     USBConfigurations::Keyboard8KRO::keyIdFromLowerCaseLetter('o') },
-    { &F1::ButtonSet::up,     USBConfigurations::Keyboard8KRO::keyIdFromLowerCaseLetter('l') }
+    { &F1::ButtonSet::up,     USBConfigurations::Keyboard8KRO::keyIdFromLowerCaseLetter('l') },
+    { &F1::ButtonSet::up2,    0x20  } // 3
 };
 
 void appendKey(char key, int& index) {

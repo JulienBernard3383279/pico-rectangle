@@ -35,7 +35,7 @@ extern WFPPReport hidReport;
 
 void actuateReportFromGCState(GCReport);
 
-void enterMode(void actuateReportFunc(void));
+void enterMode(std::function<void()> actuateReportFunc);
 
 }
 }
