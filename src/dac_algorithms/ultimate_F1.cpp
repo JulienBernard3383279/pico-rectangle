@@ -94,14 +94,18 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         }
         else xy = coords(0.7,0.7);
     }
+    // Tweaked the effect of modifiers on horizontal movement
     else if (horizontal) {
         if (bs.mx == bs.my) xy = coords(1.0, 0.0);
-        else if (bs.mx) xy =  coords(0.5, 0.0); // 0.6625 -> 0.5 + removed ledgedash facilitation
-        else xy = coords(0.3375, 0.0); // No slight side B, unchanged besides that
+        else if (bs.mx) xy =  coords(0.667, 0.0); // 0.5 => 0.667 
+        // matched other rectangles walk speed on Ultimate (fastest walk possible without ledgeslip)
+        // now pressing L/R + MX + B enables tilt input for side B (Palutena close Explosive Flame, Samus homing missiles, etc)
+        else xy = coords(0.319, 0.0); // matched other rectangles walk speed on Ultimate (slowest walk possible)
     }
     else if (vertical) {
         if (bs.mx == bs.my) xy = coords(0.0, 1.0);
         else if (bs.mx) xy=coords(0.0, 0.2875); // 0.5375 -> 0.2875 (unlike Crane's code)
+        // TODO: setup the values to enable crouching on platforms (?)
         else xy = coords(0.0, 0.6375); // 0.7375 -> 0.6375 <- very weird. To test.
     }
     else {
@@ -122,7 +126,10 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     Coords cxy;
     if (bs.mx && bs.my) cxy = coords(0.0, 0.0);
     else if (cVertical && cHorizontal) cxy = coords(0.7, 0.7);
-    else if (cHorizontal) cxy = bs.mx ? coords(0.8375, readUp ? 0.3125 : -0.3125) : coords(1.0, 0.0);
+    else if (cHorizontal) cxy = bs.mx ? coords(0.7, 0.7) : bs.my ? coords(0.7, -0.7) : coords(1.0, 0.0); 
+    // angled up side tilt/aerial activated by mx + CLeft/CRight. Angled down side tilt/aerial activated by my + CLeft/CRight
+    // the previous angles didn't work and angled down side tilt was activated with MX + UP + L/RCstick 
+    // having MY for angled down side tilt is more intuitive but also avoids messing up fast falled aerials for character that can angle side aerials (MinMin, Richter)
     else if (cVertical) cxy = coords(0.0, 1.0);
     else cxy = coords(0.0, 0.0);
 
