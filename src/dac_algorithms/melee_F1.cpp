@@ -36,11 +36,11 @@ Coords coords(float xFloat, float yFloat) {
 
 GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet, bool use2ndUp) {
     
+    if (use2ndUp) buttonSet.up = buttonSet.up2;
+
     GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
 
     GCReport gcReport = defaultGcReport;
-
-    if (use2ndUp) buttonSet.up = buttonSet.up2;
 
     /* 2IP No reactivation */
     

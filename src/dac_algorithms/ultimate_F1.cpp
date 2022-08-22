@@ -33,9 +33,9 @@ Coords coords(float xFloat, float yFloat) {
 
 GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     
-    GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
-
     buttonSet.up = buttonSet.up || buttonSet.up2;
+
+    GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
 
     GCReport gcReport = defaultGcReport;
 
