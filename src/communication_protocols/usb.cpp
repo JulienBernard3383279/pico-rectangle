@@ -845,7 +845,7 @@ namespace CommunicationProtocols
 namespace USB
 {
 
-void enterMode(Configuration config, int headroomUs) {
+void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
     /* Initialize structures */
 
     // Always same size, always usb_dt, always interrupt, always bInterval1, the variables here are whether the 2nd endpoint is id 1 or 2, and the max packet sizes
@@ -991,14 +991,26 @@ void enterMode(Configuration config, int headroomUs) {
 
     usb_start_transfer(usb_get_endpoint_configuration(ep_out_addr()), nullptr, config.outEpMaxPacketSize); // Get ready to receive something and do absolutely nothing with it
 
-    uint32_t target;
+    /* Setup rumble */
 
     gpio_init(rumblePin);
     gpio_set_dir(rumblePin, GPIO_OUT);
-    
-    while (1) {
+}
 
-        while (!ep1_in_handler_happened); // TODO More clever algorithm ?
+void enterMode(Configuration config, int headroomUs) {
+    inner_enterMode(config.configNoFunc, headroomUs);
+
+    uint32_t target;
+
+    int counter = 0;
+    uint32_t accu20 = 0;
+    uint32_t accu70 = 0;
+    uint32_t prevHandlerHappenedTimestamp;
+    uint32_t currentHandlerHappenedTimestamp;
+
+    int choice = 0; // 1 PC 2 Switch
+
+    while (1) {
         ep1_in_handler_happened = false;
 
         // Wait until n us before 1000-x us after completion of the previous ep1 transfer
@@ -1008,10 +1020,62 @@ void enterMode(Configuration config, int headroomUs) {
         // Note: for wup-028 mode, actuate func call always takes 8.25 to 9.6us        
         config.reportActuationFunc();
 
-        usb_start_transfer(usb_get_endpoint_configuration(ep_in_addr()), config.hidReportPtr, config.inEpActualPacketSize);
-        
+        usb_start_transfer(usb_get_endpoint_configuration(ep_in_addr()), config.configNoFunc.hidReportPtr, config.configNoFunc.inEpActualPacketSize);
     }
+}
 
+void enterMode(ConfigurationNoFunc configNoFunc, FuncsDOP funcsDOP, int headroomUs) {
+    inner_enterMode(configNoFunc, headroomUs);
+
+    uint32_t target;
+
+    int counter = 0;
+    uint32_t accu20 = 0;
+    uint32_t accu70 = 0;
+    uint32_t prevHandlerHappenedTimestamp;
+    uint32_t currentHandlerHappenedTimestamp;
+
+    int choice = 0; // 1 PC 2 Switch
+
+    while (1) {
+
+        while (!ep1_in_handler_happened); // TODO More clever algorithm ?
+
+        {
+            prevHandlerHappenedTimestamp = currentHandlerHappenedTimestamp;
+            currentHandlerHappenedTimestamp = systick_hw->cvr;
+            uint32_t diff = (currentHandlerHappenedTimestamp > prevHandlerHappenedTimestamp ? 0x01000000 : 0)
+                + (prevHandlerHappenedTimestamp - currentHandlerHappenedTimestamp); // cvr goes down, if underflow (prev=0 -> current=0x01000000), compensate
+            
+            if (counter < 70) {
+                counter++;
+                if (counter <= 20) {
+                    accu20 += diff;
+                }
+                if (counter <= 70) {
+                    accu70 += diff;
+                }
+                if (counter == 70) {
+                    choice = ((accu70 - accu20)/50. > 5 * 1'000'000) ? 2 : 1;
+                }
+            }
+        }
+        ep1_in_handler_happened = false;
+
+        // Wait until n us before 1000-x us after completion of the previous ep1 transfer
+        target = systick_hw->cvr - (1000-headroomUs)*us;
+        while ((target - systick_hw->cvr) & 0x00800000);
+
+        // Note: for wup-028 mode, actuate func call always takes 8.25 to 9.6us        
+        if (choice == 1) {
+            funcsDOP.reportActuationFuncPC();
+        }
+        else if (choice == 2) {
+            funcsDOP.reportActuationFuncSwitch();
+        }
+
+        usb_start_transfer(usb_get_endpoint_configuration(ep_in_addr()), configNoFunc.hidReportPtr, configNoFunc.inEpActualPacketSize);
+    }
 }
 
 }

@@ -104,8 +104,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     }
     else if (vertical) {
         if (bs.mx == bs.my) xy = coords(0.0, 1.0);
-        else if (bs.mx) xy=coords(0.0, 0.2875); // 0.5375 -> 0.2875 (unlike Crane's code)
-        // TODO: setup the values to enable crouching on platforms (?)
+        else if (bs.mx) xy=coords(0.0, 0.5375);
         else xy = coords(0.0, 0.6375); // 0.7375 -> 0.6375 <- very weird. To test.
     }
     else {
