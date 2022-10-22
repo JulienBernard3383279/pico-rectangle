@@ -71,22 +71,24 @@ void enterMode(void actuateReportFunc(void)) {
 
     CommunicationProtocols::USB::Configuration usbConfiguration =
     {
-        .inEpMaxPacketSize = 64,
-        .inEpActualPacketSize = 15,
-        .outEpMaxPacketSize = 64,
-        .epOutId = 2,
-        .descriptorStrings = descriptor_strings,
-        .descriptorStringsLen = descriptor_strings_len,
-        .hid = true,
-        .bcdHID = 0x0110,
-        .hidReportDescriptor = hidReportDescriptor,
-        .hidReportDescriptorLen = hidReportDescriptorLen,
-        .useWinUSB = false,
-        .VID = 0x121D,
-        .PID = 0x1112,
-        .bcdDevice = 0x100,
+        .configNoFunc = {
+            .inEpMaxPacketSize = 64,
+            .inEpActualPacketSize = 15,
+            .outEpMaxPacketSize = 64,
+            .epOutId = 2,
+            .descriptorStrings = descriptor_strings,
+            .descriptorStringsLen = descriptor_strings_len,
+            .hid = true,
+            .bcdHID = 0x0110,
+            .hidReportDescriptor = hidReportDescriptor,
+            .hidReportDescriptorLen = hidReportDescriptorLen,
+            .useWinUSB = false,
+            .VID = 0x121D,
+            .PID = 0x1112,
+            .bcdDevice = 0x100,
 
-        .hidReportPtr = (uint8_t*)&hidReport,
+            .hidReportPtr = (uint8_t*)&hidReport
+        },
         .reportActuationFunc = actuateReportFunc
     };
 

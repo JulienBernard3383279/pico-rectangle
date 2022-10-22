@@ -38,22 +38,24 @@ const char *descriptor_strings[descriptor_strings_len] = {
 void enterMode(void (*actuateReportFunc)(void)) {
     CommunicationProtocols::USB::Configuration Keyboard8KROUSBConfiguration =
     {
-        .inEpMaxPacketSize = 64,
-        .inEpActualPacketSize = 8,
-        .outEpMaxPacketSize = 64,
-        .epOutId = 1,
-        .descriptorStrings = descriptor_strings,
-        .descriptorStringsLen = descriptor_strings_len,
-        .hid = true,
-        .bcdHID = 0x0111,
-        .hidReportDescriptor = keyboard_hid_report_descriptor,
-        .hidReportDescriptorLen = keyboard_hid_report_descriptor_len,
-        .useWinUSB = false,
-        .VID = 0x121D, // ("H"1D) TODO Pick a sensible VID - any HID VID/PID will do
-        .PID = 0x1111,
-        .bcdDevice = 0x100,
+        .configNoFunc = {
+            .inEpMaxPacketSize = 64,
+            .inEpActualPacketSize = 8,
+            .outEpMaxPacketSize = 64,
+            .epOutId = 1,
+            .descriptorStrings = descriptor_strings,
+            .descriptorStringsLen = descriptor_strings_len,
+            .hid = true,
+            .bcdHID = 0x0111,
+            .hidReportDescriptor = keyboard_hid_report_descriptor,
+            .hidReportDescriptorLen = keyboard_hid_report_descriptor_len,
+            .useWinUSB = false,
+            .VID = 0x121D, // ("H"1D) TODO Pick a sensible VID - any HID VID/PID will do
+            .PID = 0x1111,
+            .bcdDevice = 0x100,
 
-        .hidReportPtr = hidReport,
+            .hidReportPtr = hidReport
+        },
         .reportActuationFunc = actuateReportFunc
     };
 

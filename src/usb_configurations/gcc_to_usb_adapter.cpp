@@ -55,22 +55,24 @@ void actuateReportFromGCState(GCReport gcReport) {
 void enterMode(void (*actuateReportFunc)(void)) {
     CommunicationProtocols::USB::Configuration AdapterUSBConfiguration =
     {
-        .inEpMaxPacketSize = 37,
-        .inEpActualPacketSize = 37,
-        .outEpMaxPacketSize = 5,
-        .epOutId = 2,
-        .descriptorStrings = descriptor_strings,
-        .descriptorStringsLen = descriptor_strings_len,
-        .hid = true,
-        .bcdHID = 0x0110,
-        .hidReportDescriptor = WUP_028_hid_report_descriptor,
-        .hidReportDescriptorLen = WUP_028_hid_report_descriptor_len,
-        .useWinUSB = true,
-        .VID = 0x057E, // Nintendo VID
-        .PID = 0x0337, // WUP-028 PID
-        .bcdDevice = 0x102, // Use different bcdDevice as the normal WUP-028, which is 0x0100
+        .configNoFunc = {
+            .inEpMaxPacketSize = 37,
+            .inEpActualPacketSize = 37,
+            .outEpMaxPacketSize = 5,
+            .epOutId = 2,
+            .descriptorStrings = descriptor_strings,
+            .descriptorStringsLen = descriptor_strings_len,
+            .hid = true,
+            .bcdHID = 0x0110,
+            .hidReportDescriptor = WUP_028_hid_report_descriptor,
+            .hidReportDescriptorLen = WUP_028_hid_report_descriptor_len,
+            .useWinUSB = true,
+            .VID = 0x057E, // Nintendo VID
+            .PID = 0x0337, // WUP-028 PID
+            .bcdDevice = 0x102, // Use different bcdDevice as the normal WUP-028, which is 0x0100
 
-        .hidReportPtr = (uint8_t*)&hidReport,
+            .hidReportPtr = (uint8_t*)&hidReport,
+        },
         .reportActuationFunc = actuateReportFunc
     };
 

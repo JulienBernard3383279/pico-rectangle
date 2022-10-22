@@ -55,22 +55,24 @@ void actuateReportFromGCState(GCReport gcReport) {
 void enterMode(void (*actuateReportFunc)(void)) {
     CommunicationProtocols::USB::Configuration WFPPUSBConfiguration =
     {
-        .inEpMaxPacketSize = 64,
-        .inEpActualPacketSize = 8,
-        .outEpMaxPacketSize = 64,
-        .epOutId = 1,
-        .descriptorStrings = descriptor_strings,
-        .descriptorStringsLen = descriptor_strings_len,
-        .hid = true,
-        .bcdHID = 0x0100,
-        .hidReportDescriptor = WFPP_hid_report_descriptor,
-        .hidReportDescriptorLen = WFPP_hid_report_descriptor_len,
-        .useWinUSB = false,
-        .VID = 0x0E6F,
-        .PID = 0x0185,
-        .bcdDevice = 0x1077, // Use different bcdDevice as the normal one (0x0077)
+        .configNoFunc = {
+            .inEpMaxPacketSize = 64,
+            .inEpActualPacketSize = 8,
+            .outEpMaxPacketSize = 64,
+            .epOutId = 1,
+            .descriptorStrings = descriptor_strings,
+            .descriptorStringsLen = descriptor_strings_len,
+            .hid = true,
+            .bcdHID = 0x0100,
+            .hidReportDescriptor = WFPP_hid_report_descriptor,
+            .hidReportDescriptorLen = WFPP_hid_report_descriptor_len,
+            .useWinUSB = false,
+            .VID = 0x0E6F,
+            .PID = 0x0185,
+            .bcdDevice = 0x1077, // Use different bcdDevice as the normal one (0x0077)
 
-        .hidReportPtr = (uint8_t*)&hidReport,
+            .hidReportPtr = (uint8_t*)&hidReport
+        },
         .reportActuationFunc = actuateReportFunc
     };
 

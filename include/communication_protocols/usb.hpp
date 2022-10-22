@@ -1,9 +1,6 @@
 #ifndef COMMUNICATION_PROTOCOLS__USB_HPP
 #define COMMUNICATION_PROTOCOLS__USB_HPP
 
-#ifndef USB__LOWLEVEL_H
-#define USB__LOWLEVEL_H
-
 #include "usb/common.hpp"
 
 namespace CommunicationProtocols
@@ -11,7 +8,7 @@ namespace CommunicationProtocols
 namespace USB
 {
 
-struct Configuration {
+struct ConfigurationNoFunc {
     uint16_t inEpMaxPacketSize;
     uint16_t inEpActualPacketSize;
     uint16_t outEpMaxPacketSize;
@@ -28,15 +25,22 @@ struct Configuration {
     uint16_t bcdDevice;
 
     uint8_t* hidReportPtr;
+};
+
+struct Configuration {
+    ConfigurationNoFunc configNoFunc;
     void (*reportActuationFunc)(void);
 };
 
+struct FuncsDOP {
+    void (*reportActuationFuncPC)(void);
+    void (*reportActuationFuncSwitch)(void);
+};
+
 void enterMode(Configuration, int headroomUs = 120);
+void enterMode(ConfigurationNoFunc, FuncsDOP, int headroomUs = 120);
 
 }
 }
-
-
-#endif
 
 #endif
