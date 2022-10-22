@@ -23,6 +23,7 @@ struct ConfigurationNoFunc {
     uint16_t VID;
     uint16_t PID;
     uint16_t bcdDevice;
+    bool xinput;
 
     uint8_t* hidReportPtr;
 };

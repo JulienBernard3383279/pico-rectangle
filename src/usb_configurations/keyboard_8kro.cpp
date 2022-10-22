@@ -53,6 +53,7 @@ void enterMode(void (*actuateReportFunc)(void)) {
             .VID = 0x121D, // ("H"1D) TODO Pick a sensible VID - any HID VID/PID will do
             .PID = 0x1111,
             .bcdDevice = 0x100,
+            .xinput = false,
 
             .hidReportPtr = hidReport
         },

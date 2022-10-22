@@ -8,6 +8,7 @@
 #include "global.hpp"
 // Include the structs
 #include "communication_protocols/usb/common.hpp"
+#include "communication_protocols/usb/xinput.hpp"
 // USB register definitions from pico-sdk
 #include "hardware/regs/usb.h"
 // USB hardware struct definitions from pico-sdk
@@ -147,6 +148,7 @@ const usb_endpoint_descriptor ep0_in = {
 };
 
 bool useHID = false;
+bool useXInput = false;
 
 uint8_t *hid_report_descriptor;
 uint16_t hid_report_descriptor_len;
@@ -177,7 +179,7 @@ struct t_ext_comp_desc {
 	extended_compatibility_interface_descriptor ecid;
 } __attribute__((packed));
 
-const t_ext_comp_desc extendedCompatibilityIdFeatureDescriptor =
+const t_ext_comp_desc extendedCompatibilityIdFeatureDescriptorWinUSB =
 {
 	40, // length
 	0x0100, // bcdVersion
@@ -193,7 +195,21 @@ const t_ext_comp_desc extendedCompatibilityIdFeatureDescriptor =
 	}
 };
 
-
+const t_ext_comp_desc extendedCompatibilityIdFeatureDescriptorXInput =
+{
+	40,
+	0x0100,
+	EXTENDED_COMPATIBILITY_ID,
+	1,
+	{0, 0, 0, 0, 0, 0, 0},
+	{
+        0,
+        0x01,
+        {0x58, 0x55, 0x53, 0x42, 0x31, 0x30, 0x00, 0x00 }, // "XUSB10\0\0"
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0}
+	}
+};
 
 
 
@@ -345,7 +361,7 @@ uint8_t ep0InRemainsBufferSwap[255];
  * @param buf, the data buffer to send. Only applicable if the endpoint is TX
  * @param len, the length of the data in buf (this example limits max len to one packet - 64 bytes)
  */
-void usb_start_transfer(usb_endpoint_configuration *ep, uint8_t *buf, uint16_t len) {
+void usb_start_transfer(usb_endpoint_configuration *ep, const uint8_t *buf, uint16_t len) {
 
     bool isEp0In = usb_get_endpoint_configuration(ep0_in_addr()) == ep;
 
@@ -436,6 +452,11 @@ void usb_handle_config_descriptor(volatile usb_setup_packet *pkt) {
             buf += sizeof(usb_hid_descriptor);
         }
 
+        if (useXInput) {
+            memcpy((void*)buf, xInputUnknownDescriptor.data(), sizeof(xInputUnknownDescriptor));
+            buf += sizeof(xInputUnknownDescriptor);
+        }
+
         const usb_endpoint_configuration *ep = dev_config.endpoints;
 
         // Copy all the endpoint descriptors starting from EP1
@@ -502,7 +523,12 @@ void usb_handle_string_descriptor(volatile usb_setup_packet *pkt) {
  */
 void usb_handle_extended_compatibility_descriptor(volatile usb_setup_packet *pkt) {
     log_uart0("usb_handle_extended_compatibility_descriptor\n");
-    usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), (uint8_t *) &extendedCompatibilityIdFeatureDescriptor, min(sizeof(t_ext_comp_desc), pkt->wLength));
+    if (useXInput) {
+        usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), (uint8_t *) &extendedCompatibilityIdFeatureDescriptorXInput, min(sizeof(t_ext_comp_desc), pkt->wLength));
+    }
+    else {
+        usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), (uint8_t *) &extendedCompatibilityIdFeatureDescriptorWinUSB, min(sizeof(t_ext_comp_desc), pkt->wLength));
+    }
 }
 
 void usb_handle_hid_report_descriptor(volatile usb_setup_packet *pkt) {
@@ -572,7 +598,7 @@ void usb_handle_setup_packet(void) {
     usb_get_endpoint_configuration(ep0_in_addr())->next_pid = 1u;
 
     /* Setup packet responses overrides */
-    if (useWinUSB &&
+    if ((useWinUSB || useXInput) &&
         req_direction == USB_DIR_IN &&
         req_type == USB_REQ_TYPE_TYPE_VENDOR &&
         req_recipient == USB_REQ_TYPE_RECIPIENT_DEVICE &&
@@ -581,6 +607,35 @@ void usb_handle_setup_packet(void) {
         log_uart0("usb_handle_compatibility_descriptor\n");
         usb_handle_extended_compatibility_descriptor(pkt);
     }
+    // <XInput>
+    else if ( useXInput &&
+        pkt->bmRequestType == 0xc1 &&
+        pkt->bRequest == 1 &&
+        pkt->wValue == 0x0100 &&
+        pkt->wIndex == 0x0000 &&
+        pkt->wLength == 20
+    ) {
+        usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), xInputSpecificControlRequestResponse1, pkt->wLength);
+    }
+    else if ( useXInput &&
+        pkt->bmRequestType == 0xc1 &&
+        pkt->bRequest == 1 &&
+        pkt->wValue == 0x0000 &&
+        pkt->wIndex == 0x0000 &&
+        pkt->wLength == 8
+    ) {
+        usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), xInputSpecificControlRequestResponse2, pkt->wLength);
+    }
+    else if ( useXInput &&
+        pkt->bmRequestType == 0xc0 &&
+        pkt->bRequest == 1 &&
+        pkt->wValue == 0x0000 &&
+        pkt->wIndex == 0x0000 &&
+        pkt->wLength == 4
+    ) {
+        usb_start_transfer(usb_get_endpoint_configuration(ep0_in_addr()), xInputSpecificControlRequestResponse3, pkt->wLength);
+    }
+    // </XInput>
     else if (
         req_direction == USB_DIR_IN &&
         req_type == USB_REQ_TYPE_STANDARD &&
@@ -741,12 +796,9 @@ void ep_in_handler(uint8_t *buf, uint16_t len) {
 
 void ep_out_handler(uint8_t *buf, uint16_t len) {
     if (len==5) {
-        gpio_put(rumblePin, !!buf[1]);
-        /*for (int i = 0; i<4; i++) {
-            setRumble(i, buf[i+1]!=0);
-        }*/
+        gpio_put(rumblePin, !!buf[1]); //TODO XInput support
     }
-    usb_start_transfer(usb_get_endpoint_configuration(ep_out_addr()), NULL, 5); //TODO Do something about the 5
+    usb_start_transfer(usb_get_endpoint_configuration(ep_out_addr()), NULL, 5);
 }
 
 /**
@@ -873,6 +925,7 @@ void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
 
     // Parameters here are the bcdHID, the HID descriptor, and the HID descriptor length, plus whether we're using HID (could be inferred, TODO later)
     useHID = config.hid;
+    useXInput = config.xinput;
     hid_descriptor = {
         .bLength = 0x09,
         .bDescriptorType = 0x21,
@@ -890,9 +943,9 @@ void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
         .bLength         = sizeof(usb_device_descriptor),
         .bDescriptorType = USB_DT_DEVICE,
         .bcdUSB          = 0x0200, //* USB 2.0 device (actually 1.1 but 2.0 identification necessary for WCID)
-        .bDeviceClass    = 0,      // Specified in interface descriptor
-        .bDeviceSubClass = 0,      // No subclass
-        .bDeviceProtocol = 0,      // No protocol
+        .bDeviceClass    = (uint8_t)(config.xinput ? 0xFF : 0),      // Specified in interface descriptor
+        .bDeviceSubClass = (uint8_t)(config.xinput ? 0xFF : 0),      // No subclass
+        .bDeviceProtocol = (uint8_t)(config.xinput ? 0xFF : 0),      // No protocol
         .bMaxPacketSize0 = 64,     // Max packet size for ep0
         .idVendor        = config.VID,       // USB vendor ID
         .idProduct       = config.PID,       // USB product ID
@@ -910,9 +963,9 @@ void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
         .bInterfaceNumber   = 0,
         .bAlternateSetting  = 0,
         .bNumEndpoints      = 2,    // Always 2 endpoints
-        .bInterfaceClass    = (config.hid ? (uint8_t)0x03 : (uint8_t)0xff), // 3 = HID class, 255 = Vendor class
-        .bInterfaceSubClass = 0,
-        .bInterfaceProtocol = 0,
+        .bInterfaceClass    = (uint8_t)(config.hid ? (uint8_t)0x03 : (uint8_t)0xff), // 3 = HID class, 255 = Vendor class
+        .bInterfaceSubClass = (uint8_t)(config.xinput ? 0x5du : 0u),
+        .bInterfaceProtocol = (uint8_t)(config.xinput ? 0x01u : 0u),
         .iInterface         = 0
     };
 
@@ -923,11 +976,12 @@ void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
         .wTotalLength    = (uint16_t)(sizeof(usb_configuration_descriptor) +
                             sizeof(usb_interface_descriptor) +
                             (config.hid ? sizeof(usb_hid_descriptor) : 0) +
+                            (config.xinput ? sizeof(xInputUnknownDescriptor) : 0) +
                             2 * sizeof(usb_endpoint_descriptor)),
         .bNumInterfaces  = 1,
         .bConfigurationValue = 1, // Configuration 1
         .iConfiguration = 0,      // No string
-        .bmAttributes = 0xe0,     // attributes: self powered-device, remote wakeup
+        .bmAttributes = (uint8_t)(config.xinput ? 0x80 : 0xe0), // xinput -> attributes: bus-powered device, else self powered-device, remote wakeup
         .bMaxPower = 0xFA         // 500ma
     };
 

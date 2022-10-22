@@ -70,6 +70,7 @@ void enterMode(void (*actuateReportFunc)(void)) {
             .VID = 0x057E, // Nintendo VID
             .PID = 0x0337, // WUP-028 PID
             .bcdDevice = 0x102, // Use different bcdDevice as the normal WUP-028, which is 0x0100
+            .xinput = false,
 
             .hidReportPtr = (uint8_t*)&hidReport,
         },
@@ -96,6 +97,7 @@ void enterMode(void (*actuateReportFuncPC)(void), void (*actuateReportFuncSwitch
         .VID = 0x057E, // Nintendo VID
         .PID = 0x0337, // WUP-028 PID
         .bcdDevice = 0x102, // Use different bcdDevice as the normal WUP-028, which is 0x0100
+        .xinput = false,
 
         .hidReportPtr = (uint8_t*)&hidReport
     };

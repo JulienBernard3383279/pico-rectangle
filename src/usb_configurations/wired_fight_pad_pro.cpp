@@ -70,6 +70,7 @@ void enterMode(void (*actuateReportFunc)(void)) {
             .VID = 0x0E6F,
             .PID = 0x0185,
             .bcdDevice = 0x1077, // Use different bcdDevice as the normal one (0x0077)
+            .xinput = false,
 
             .hidReportPtr = (uint8_t*)&hidReport
         },

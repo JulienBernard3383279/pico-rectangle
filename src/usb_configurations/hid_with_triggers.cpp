@@ -86,6 +86,7 @@ void enterMode(void actuateReportFunc(void)) {
             .VID = 0x121D,
             .PID = 0x1112,
             .bcdDevice = 0x100,
+            .xinput = false,
 
             .hidReportPtr = (uint8_t*)&hidReport
         },

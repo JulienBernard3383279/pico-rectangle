@@ -11,6 +11,7 @@
 #include "dac_algorithms/ultimate_F1.hpp"
 #include "dac_algorithms/set_of_8_keys.hpp"
 #include "dac_algorithms/wired_fight_pad_pro_default.hpp"
+#include "dac_algorithms/xbox_360.hpp"
 
 #include "gpio_to_button_sets/F1.hpp"
 
@@ -18,6 +19,7 @@
 #include "usb_configurations/hid_with_triggers.hpp"
 #include "usb_configurations/keyboard_8kro.hpp"
 #include "usb_configurations/wired_fight_pad_pro.hpp"
+#include "usb_configurations/xbox_360.hpp"
 
 #include "communication_protocols/joybus.hpp"
 
@@ -52,7 +54,7 @@ int main() {
     #endif
     ;
 
-    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
+    std::vector<uint8_t> modePins = { 22, 21, 20, 16, 17, 14, 7, 6, 5, 4, 2, keyboardPin }; // DO NOT USE PIN GP15
 
     for (uint8_t modePin : modePins) {
         gpio_init(modePin);
@@ -100,6 +102,11 @@ int main() {
 
     // Else:
     
+    // 19 - GP14 - A - Xbox360/Xbox360 (aka XInput)
+    if (!gpio_get(21)) USBConfigurations::Xbox360::enterMode([](){
+        DACAlgorithms::Xbox360::actuateXbox360Report(GpioToButtonSets::F1::defaultConversion());
+    });
+
     // 27 - GP21 - X - Melee / HID
     if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([](){
         USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
