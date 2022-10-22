@@ -99,7 +99,7 @@ int main() {
     }
 
     // Else:
-
+    
     // 27 - GP21 - X - Melee / HID
     if (!gpio_get(21)) USBConfigurations::HidWithTriggers::enterMode([](){
         USBConfigurations::HidWithTriggers::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));

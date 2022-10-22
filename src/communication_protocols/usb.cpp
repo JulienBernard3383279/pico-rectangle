@@ -1056,7 +1056,7 @@ void enterMode(ConfigurationNoFunc configNoFunc, FuncsDOP funcsDOP, int headroom
                     accu70 += diff;
                 }
                 if (counter == 70) {
-                    choice = ((accu70 - accu20)/50. > 5 * 1'000'000) ? 2 : 1;
+                    choice = ((accu70 - accu20)/50. > 5*1'000*us) ? 2 : 1;
                 }
             }
         }

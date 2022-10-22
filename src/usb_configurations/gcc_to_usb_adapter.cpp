@@ -105,7 +105,7 @@ void enterMode(void (*actuateReportFuncPC)(void), void (*actuateReportFuncSwitch
         .reportActuationFuncPC = actuateReportFuncPC,
         .reportActuationFuncSwitch = actuateReportFuncSwitch
     };
-
+    
     CommunicationProtocols::USB::enterMode(adapterUSBConfiguration, funcsDOP);
 }
 
