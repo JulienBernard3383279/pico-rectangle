@@ -146,7 +146,8 @@ int main() {
     });
 
     // Default: F1 / melee / adapter
-    USBConfigurations::GccToUsbAdapter::enterMode([](){
-        USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));
-    });
+    USBConfigurations::GccToUsbAdapter::enterMode(
+        [](){USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::MeleeF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));},
+        [](){USBConfigurations::GccToUsbAdapter::actuateReportFromGCState(DACAlgorithms::UltimateF1::getGCReport(GpioToButtonSets::F1::defaultConversion()));}
+        );
 }

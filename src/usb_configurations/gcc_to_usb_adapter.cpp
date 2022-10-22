@@ -53,7 +53,7 @@ void actuateReportFromGCState(GCReport gcReport) {
 }
 
 void enterMode(void (*actuateReportFunc)(void)) {
-    CommunicationProtocols::USB::Configuration AdapterUSBConfiguration =
+    CommunicationProtocols::USB::Configuration adapterUSBConfiguration =
     {
         .configNoFunc = {
             .inEpMaxPacketSize = 37,
@@ -76,7 +76,37 @@ void enterMode(void (*actuateReportFunc)(void)) {
         .reportActuationFunc = actuateReportFunc
     };
 
-    CommunicationProtocols::USB::enterMode(AdapterUSBConfiguration);
+    CommunicationProtocols::USB::enterMode(adapterUSBConfiguration);
+}
+
+void enterMode(void (*actuateReportFuncPC)(void), void (*actuateReportFuncSwitch)(void)) {
+    CommunicationProtocols::USB::ConfigurationNoFunc adapterUSBConfiguration =
+    {
+        .inEpMaxPacketSize = 37,
+        .inEpActualPacketSize = 37,
+        .outEpMaxPacketSize = 5,
+        .epOutId = 2,
+        .descriptorStrings = descriptor_strings,
+        .descriptorStringsLen = descriptor_strings_len,
+        .hid = true,
+        .bcdHID = 0x0110,
+        .hidReportDescriptor = WUP_028_hid_report_descriptor,
+        .hidReportDescriptorLen = WUP_028_hid_report_descriptor_len,
+        .useWinUSB = true,
+        .VID = 0x057E, // Nintendo VID
+        .PID = 0x0337, // WUP-028 PID
+        .bcdDevice = 0x102, // Use different bcdDevice as the normal WUP-028, which is 0x0100
+
+        .hidReportPtr = (uint8_t*)&hidReport
+    };
+
+    CommunicationProtocols::USB::FuncsDOP funcsDOP =
+    {
+        .reportActuationFuncPC = actuateReportFuncPC,
+        .reportActuationFuncSwitch = actuateReportFuncSwitch
+    };
+
+    CommunicationProtocols::USB::enterMode(adapterUSBConfiguration, funcsDOP);
 }
 
 }

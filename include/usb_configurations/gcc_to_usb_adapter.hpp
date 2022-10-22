@@ -48,6 +48,7 @@ extern AdapterReport hidReport;
 void actuateReportFromGCState(GCReport);
 
 void enterMode(void actuateReportFunc(void));
+void enterMode(void (*actuateReportFuncPC)(void), void (*actuateReportFuncSwitch)(void));
 
 }
 }
