@@ -13,10 +13,15 @@ bool right_wasPressed = false;
 bool up_wasPressed = false;
 bool down_wasPressed = false;
 
+#if ULT_2IP_WITH_REAC
+bool right_isTheMostRecentPressed = false;
+bool up_isTheMostRecentPressed = false;
+#else
 bool left_outlawUntilRelease = false;
 bool right_outlawUntilRelease = false;
 bool up_outlawUntilRelease = false;
 bool down_outlawUntilRelease = false;
+#endif
 
 struct Coords {
     uint8_t x;
@@ -37,7 +42,29 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     GCReport gcReport = defaultGcReport;
 
-    /* 2IP No reactivation */
+#if ULT_2IP_WITH_REAC
+    /* 2IP with reactivation */
+    
+    if (bs.right && !right_wasPressed) right_isTheMostRecentPressed=true;
+    if (bs.left && !left_wasPressed) right_isTheMostRecentPressed=false;
+    if (bs.up && !up_wasPressed) up_isTheMostRecentPressed=true;
+    if (bs.down && !down_wasPressed) up_isTheMostRecentPressed=false;
+ 
+    left_wasPressed = bs.left;
+    right_wasPressed = bs.right;
+    up_wasPressed = bs.up;
+    down_wasPressed = bs.down;
+ 
+    if (bs.left && bs.right) {
+        if (right_isTheMostRecentPressed) bs.left = false;
+        else bs.right = false;
+    }
+    if (bs.down && bs.up) {
+        if (up_isTheMostRecentPressed) bs.down = false;
+        else bs.up = false;
+    }
+#else
+    /* 2IP no reactivation */
     
     if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
     if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
@@ -58,7 +85,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     if (right_outlawUntilRelease) bs.right=false;
     if (up_outlawUntilRelease) bs.up=false;
     if (down_outlawUntilRelease) bs.down=false;
-    
+#endif
     /* Stick */
 
     bool vertical = bs.up || bs.down;
