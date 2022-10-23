@@ -103,7 +103,7 @@ int main() {
     // Else:
     
     // 19 - GP14 - A - Xbox360/Xbox360 (aka XInput)
-    if (!gpio_get(21)) USBConfigurations::Xbox360::enterMode([](){
+    if (!gpio_get(14)) USBConfigurations::Xbox360::enterMode([](){
         DACAlgorithms::Xbox360::actuateXbox360Report(GpioToButtonSets::F1::defaultConversion());
     });
 
