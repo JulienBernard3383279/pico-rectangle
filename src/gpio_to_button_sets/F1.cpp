@@ -92,6 +92,9 @@ ButtonSet defaultConversion() {
     // Custom Jamie - LS is MX2
     f1ButtonSet.mx = f1ButtonSet.mx || f1ButtonSet.ls;
     f1ButtonSet.ls = 0;
+    // Custom Jamie - LS is MX2
+    f1ButtonSet.mx = f1ButtonSet.mx || f1ButtonSet.y;
+    f1ButtonSet.y = 0;
     
     return f1ButtonSet;
 }
