@@ -89,10 +89,7 @@ ButtonSet defaultConversion() {
         f1ButtonSet.*(pinMapping.ptrToMember) = !(inputSnapshot & (1 << (pinMapping.pin)));
     }
 
-    // Custom Jamie - LS is MX2
-    f1ButtonSet.mx = f1ButtonSet.mx || f1ButtonSet.ls;
-    f1ButtonSet.ls = 0;
-    // Custom Jamie - LS is MX2
+    // Custom Jamie - Y is MX2
     f1ButtonSet.mx = f1ButtonSet.mx || f1ButtonSet.y;
     f1ButtonSet.y = 0;
     
