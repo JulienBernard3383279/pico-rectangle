@@ -888,7 +888,9 @@ void usb_device_init() {
 
 
 
-
+void await_time32us(uint32_t target) {
+    while ( (time_us_32() - target) & (1 << 31) );
+}
 
 /* INITIALIZATION */
 
@@ -1037,10 +1039,6 @@ void inner_enterMode(ConfigurationNoFunc config, int headroomUs) {
     usb_device_init();
     while (!configured);
 
-    /* Configure SysTick timer */
-
-    systick_hw->csr = (1 << 2) | (1 << 0);
-
     /* Start communications */
 
     usb_start_transfer(usb_get_endpoint_configuration(ep_out_addr()), nullptr, config.outEpMaxPacketSize); // Get ready to receive something and do absolutely nothing with it
@@ -1065,11 +1063,19 @@ void enterMode(Configuration config, int headroomUs) {
     int choice = 0; // 1 PC 2 Switch
 
     while (1) {
+        while (!ep1_in_handler_happened) {
+            if ((int32_t)(time_us_32() - target - headroomUs) > 150) {
+                target += 1000;
+                goto skip_wait_oneFunc;
+            }
+        }
         ep1_in_handler_happened = false;
+        target = time_us_32() + 1000 - headroomUs;
 
-        // Wait until n us before 1000-x us after completion of the previous ep1 transfer
-        target = systick_hw->cvr - (1000-headroomUs)*us;
-        while ((target - systick_hw->cvr) & 0x00800000);
+        skip_wait_oneFunc:
+ 
+         // Wait until n us before 1000-x us after completion of the previous ep1 transfer
+        await_time32us(target);
 
         // Note: for wup-028 mode, actuate func call always takes 8.25 to 9.6us        
         config.reportActuationFunc();
@@ -1093,7 +1099,19 @@ void enterMode(ConfigurationNoFunc configNoFunc, FuncsDOP funcsDOP, int headroom
 
     while (1) {
 
-        while (!ep1_in_handler_happened); // TODO More clever algorithm ?
+        while (!ep1_in_handler_happened) {
+            if (counter == 70 && (int32_t)(time_us_32() - target - headroomUs) > 150) {
+                target += 1000;
+                goto skip_wait_twoFuncs;
+            }
+        }
+        ep1_in_handler_happened = false;
+        target = time_us_32() + 1000 - headroomUs;
+
+        skip_wait_twoFuncs:
+ 
+         // Wait until n us before 1000-x us after completion of the previous ep1 transfer
+        await_time32us(target);
 
         {
             prevHandlerHappenedTimestamp = currentHandlerHappenedTimestamp;
@@ -1114,11 +1132,10 @@ void enterMode(ConfigurationNoFunc configNoFunc, FuncsDOP funcsDOP, int headroom
                 }
             }
         }
-        ep1_in_handler_happened = false;
 
         // Wait until n us before 1000-x us after completion of the previous ep1 transfer
-        target = systick_hw->cvr - (1000-headroomUs)*us;
-        while ((target - systick_hw->cvr) & 0x00800000);
+        //target = systick_hw->cvr - (1000-headroomUs)*us;
+        //while ((target - systick_hw->cvr) & 0x00800000);
 
         // Note: for wup-028 mode, actuate func call always takes 8.25 to 9.6us        
         if (choice == 1) {
