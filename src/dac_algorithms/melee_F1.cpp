@@ -72,45 +72,45 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     Coords xy;
 
-    if (vertical && horizontal) {
-        if (bs.l || bs.r) {
-            if (bs.mx == bs.my) xy = coords(0.7, readUp ? 0.7 : 0.6875);
-            else if (bs.mx) xy = coords(0.6375, 0.375);
-            else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85);
+    if (vertical && horizontal) {                                                           // if diagonal input
+        if (bs.l || bs.r) {                                                                     // if L or R are held (for shield drop / wavedash)
+            if (bs.mx == bs.my) xy = coords(0.7, readUp ? 0.7 : 0.6875);                        // if MX and MY are BOTH released OR held (default)
+            else if (bs.mx) xy = coords(0.6375, 0.375);                                         // else if only MX is held
+            else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85); // else if only MY is held
         }
-        else if (bs.b && (bs.mx != bs.my)) {
-            if (bs.mx) {
-                if (bs.cDown) xy = coords(0.9125, 0.45);
-                else if (bs.cLeft) xy = coords(0.85, 0.525);
-                else if (bs.cUp) xy = coords(0.7375, 0.5375);
+        else if (bs.b && (bs.mx != bs.my)) {                                                // else if B AND exactly one of MX/MY is held
+            if (bs.mx) {                                                                        // if MX is held
+                if (bs.cDown) xy = coords(0.9125, 0.45);                                            // account for c-stick inputs
+                else if (bs.cLeft) xy = coords(0.85, 0.525);                                        
+                else if (bs.cUp) xy = coords(0.7375, 0.5375);                               
                 else if (bs.cRight) xy = coords(0.6375, 0.5375);
                 else xy = coords(0.9125, 0.3875);
             }
-            else {
-                if (bs.cDown) xy = coords(0.45, 0.875);
+            else {                                                                              // if MY is held
+                if (bs.cDown) xy = coords(0.45, 0.875);                                             // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(0.525, 0.85);
                 else if (bs.cUp) xy = coords(0.5875, 0.8);
                 else if (bs.cRight) xy = coords(0.5875, 0.7125);
                 else xy = coords(0.3875, 0.9125);
             }
         }
-        else if (bs.mx != bs.my) {
-            if (bs.mx) {
-                if (bs.cDown) xy = coords(0.7, 0.3625);
+        else if (bs.mx != bs.my) {                                                          //else if exactly one of MX/MY is held (B is not held)
+            if (bs.mx) {                                                                        // if MX is held
+                if (bs.cDown) xy = coords(0.7, 0.3625);                                             // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(0.7875, 0.4875);
                 else if (bs.cUp) xy = coords(0.7, 0.5125);
                 else if (bs.cRight) xy = coords(0.6125, 0.525);
                 else xy = coords(0.7375, 0.3125);
             }
-            else {
-                if (bs.cDown) xy = coords(0.3625, 0.7);
+            else {                                                                              // if MY is held
+                if (bs.cDown) xy = coords(0.3625, 0.7);                                             // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(0.4875, 0.7875);
                 else if (bs.cUp) xy = coords(0.5125, 0.7);
                 else if (bs.cRight) xy = coords(0.6375, 0.7625);
                 else xy = coords(0.3125, 0.7375);
             }
         }
-        else xy = coords(0.7,0.7);
+        else xy = coords(0.7,0.7);                                                              // diagonal inputs with no modifiers
     }
     else if (horizontal) {
         if (bs.mx == bs.my) xy = coords(1.0, 0.0);
