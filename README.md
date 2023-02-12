@@ -1,8 +1,3 @@
-# Note from fork creator
-This is a fork of Arte's excellent pico-rectangle firmware with specific changes made for Melee Sheik.
-If you have any money or praise to give, they should certainly go to Arte and not me. You are welcome to use this firmware for personal use (more details under "legal inormation and license").
-
-
 # Frame1/B0XX layout style public-source digital controller software for the Raspberry Pi Pico (v1.0)
 
 - [Legal information and license](#legalInformationAndLicense)
