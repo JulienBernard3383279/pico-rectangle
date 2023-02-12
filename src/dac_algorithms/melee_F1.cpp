@@ -73,59 +73,62 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     Coords xy;
 
-    if (vertical && horizontal) {                                                           // if diagonal input
-        if (bs.l || bs.r) {                                                                     // if L or R are held (for shield drop / wavedash)
-            if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);                        // if MX and MY are BOTH released OR held (default)
-            else if (bs.mx) xy = coords(MODX_D_SHIELD_X, MODX_D_SHIELD_Y);                                         // else if only MX is held
-            else xy = (banParasolDashing && readUp) ? coords(MODY_D_SHIELD_BANPARADASH_X, MODY_D_SHIELD_BANPARADASH_Y) : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y); // else if only MY is held
+    if (vertical && horizontal) {                                                                                       // if diagonal input
+        if (bs.l || bs.r) {                                                                                                 // if L or R are held (for shield drop / wavedash)
+            if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);                   // if MX and MY are BOTH released OR held (default)
+            else if (bs.mx) xy = coords(MODX_D_SHIELD_X, MODX_D_SHIELD_Y);                                                  // else if only MX is held
+            else xy = (banParasolDashing && readUp) ? coords(MODY_D_SHIELD_BANPARADASH_X, MODY_D_SHIELD_BANPARADASH_Y)      // else if only MY is held and parasol-dashing is banned
+                : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y);                                                                     // else parasol-dashing not banned
         }
-        else if (bs.b && (bs.mx != bs.my)) {                                                // else if B AND exactly one of MX/MY is held
-            if (bs.mx) {                                                                        // if MX is held
-                if (bs.cDown) xy = coords(MODX_D_CD_B_X, MODX_D_CD_B_Y);                                            // account for c-stick inputs
+        else if (bs.b && (bs.mx != bs.my)) {                                                                            // else if B AND exactly one of MX/MY is held
+            if (bs.mx) {                                                                                                    // if MX is held
+                if (bs.cDown) xy = coords(MODX_D_CD_B_X, MODX_D_CD_B_Y);                                                        // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(MODX_D_CL_B_X, MODX_D_CL_B_Y);                                        
                 else if (bs.cUp) xy = coords(MODX_D_CU_B_X, MODX_D_CU_B_Y);                               
                 else if (bs.cRight) xy = coords(MODX_D_CR_B_X, MODX_D_CR_B_Y);
                 else xy = coords(MODX_DIAG_B_X, MODX_DIAG_B_Y);
             }
-            else {                                                                              // if MY is held
-                if (bs.cDown) xy = coords(MODY_D_CD_B_X, MODY_D_CD_B_Y);                                             // account for c-stick inputs
+            else {                                                                                                          // if MY is held
+                if (bs.cDown) xy = coords(MODY_D_CD_B_X, MODY_D_CD_B_Y);                                                        // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(MODY_D_CL_B_X, MODY_D_CL_B_Y);
                 else if (bs.cUp) xy = coords(MODY_D_CU_B_X, MODY_D_CU_B_Y);
                 else if (bs.cRight) xy = coords(MODY_D_CR_B_X, MODY_D_CR_B_Y);
                 else xy = coords(MODY_DIAG_B_X, MODY_DIAG_B_Y);
             }
         }
-        else if (bs.mx != bs.my) {                                                          //else if exactly one of MX/MY is held (B is not held)
-            if (bs.mx) {                                                                        // if MX is held
-                if (bs.cDown) xy = coords(MODX_D_CD_X, MODX_D_CD_Y);                                             // account for c-stick inputs
+        else if (bs.mx != bs.my) {                                                                                      //else if exactly one of MX/MY is held (B is not held)
+            if (bs.mx) {                                                                                                    // if MX is held
+                if (bs.cDown) xy = coords(MODX_D_CD_X, MODX_D_CD_Y);                                                            // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(MODX_D_CL_X, MODX_D_CL_Y);
                 else if (bs.cUp) xy = coords(MODX_D_CU_X, MODX_D_CU_Y);
                 else if (bs.cRight) xy = coords(MODX_D_CR_X, MODX_D_CR_Y);
                 else xy = coords(MODX_DIAG_X, MODX_DIAG_Y);
             }
-            else {                                                                              // if MY is held
-                if (bs.cDown) xy = coords(MODY_D_CD_X, MODY_D_CD_Y);                                             // account for c-stick inputs
+            else {                                                                                                      // if MY is held
+                if (bs.cDown) xy = coords(MODY_D_CD_X, MODY_D_CD_Y);                                                        // account for c-stick inputs
                 else if (bs.cLeft) xy = coords(MODY_D_CL_X, MODY_D_CL_Y);
                 else if (bs.cUp) xy = coords(MODY_D_CU_X, MODY_D_CU_Y);
                 else if (bs.cRight) xy = coords(MODY_D_CR_X, MODY_D_CR_Y);
                 else xy = coords(MODY_DIAG_X, MODY_DIAG_Y);
             }
         }
-        else xy = coords(DIAGONAL_X, DIAGONAL_Y);                                                              // diagonal inputs with no modifiers
+        else xy = coords(DIAGONAL_X, DIAGONAL_Y);                                                                       // diagonal inputs with no modifiers
     }
-    else if (horizontal) {
-        if (bs.mx == bs.my) xy = coords(HORIZONTAL_X, HORIZONTAL_Y);
-        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ? coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODX_H_X, MODX_H_Y);
-        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ? coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODY_H_X, MODY_H_Y);
+    else if (horizontal) {                                                                                          // horizontal inputs
+        if (bs.mx == bs.my) xy = coords(HORIZONTAL_X, HORIZONTAL_Y);                                                    // if BOTH MX and MY are pressed or not pressed
+        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ?                                                     // if only MX is pressed
+            coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODX_H_X, MODX_H_Y);                                                // MX/MY does not apply if both left+right are pressed
+        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ?                                     // if only MY is pressed
+            coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODY_H_X, MODY_H_Y);                                                // (see note on MX/MY above) + account for possible slight side-b ban
         // Read the original rectangleInput to bypass SOCD
     }
-    else if (vertical) {
-        if (bs.mx == bs.my) xy = coords(VERTICAL_X, VERTICAL_Y);
-        else if (bs.mx) xy=coords(MODX_V_X, MODX_V_Y);
-        else xy = coords(MODY_V_X, MODY_V_Y);
+    else if (vertical) {                                                                                            // vertical inputs
+        if (bs.mx == bs.my) xy = coords(VERTICAL_X, VERTICAL_Y);                                                        // if BOTH MX and MY are pressed or not pressed
+        else if (bs.mx) xy=coords(MODX_V_X, MODX_V_Y);                                                                  // if only MX is pressed
+        else xy = coords(MODY_V_X, MODY_V_Y);                                                                           // if only MY is pressed
     }
     else {
-        xy = coords(NEUTRAL_X, NEUTRAL_Y);
+        xy = coords(NEUTRAL_X, NEUTRAL_Y);                                                                          // neutral inputs
     }
 
     if (horizontal && !readRight) xy.x = oppositeCoord(xy.x);
@@ -141,11 +144,12 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     Coords cxy;
 
-    if (bs.mx && bs.my) cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);
-    else if (cVertical && cHorizontal) cxy = coords(C_DIAGONAL_X, C_DIAGONAL_Y);
-    else if (cHorizontal) cxy = bs.mx ? coords(C_MODX_FSMASH_X, readUp ? C_MODX_FSMASH_Y : -C_MODX_FSMASH_Y) : coords(C_HORIZONTAL_X, C_HORIZONTAL_Y);
-    else if (cVertical) cxy = coords(C_VERTICAL_X, C_VERTICAL_Y);
-    else cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);
+    if (bs.mx && bs.my) cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);                                                     // ignore c-stick if both MX and MY are pressed
+    else if (cVertical && cHorizontal) cxy = coords(C_DIAGONAL_X, C_DIAGONAL_Y);                                    // diagonal c-stick values
+    else if (cHorizontal) cxy = bs.mx ? coords(C_MODX_FSMASH_X, readUp ? C_MODX_FSMASH_Y : -C_MODX_FSMASH_Y)        // horizontal C-stick + angled FSMASH using control stick+MX
+        : coords(C_HORIZONTAL_X, C_HORIZONTAL_Y);
+    else if (cVertical) cxy = coords(C_VERTICAL_X, C_VERTICAL_Y);                                                   // vertical c-stick
+    else cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);                                                                    // neutral c-stick
 
     if (cHorizontal && bs.cLeft) cxy.x = oppositeCoord(cxy.x);
     if (cVertical && bs.cDown) cxy.y = oppositeCoord(cxy.y);
@@ -162,8 +166,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     }
 
     /* Triggers */
-    gcReport.analogL = bs.l ? SHIELD_FULL : bs.ms ? SHIELD_MID : bs.ls ? SHIELD_LIGHT : SHIELD_NONE;
-    gcReport.analogR = bs.r ? SHIELD_FULL : SHIELD_NONE;
+    gcReport.analogL = bs.l ? SHIELD_FULL : bs.ms ? SHIELD_MID : bs.ls ? SHIELD_LIGHT : SHIELD_NONE;                // check L + MS + LS for analog L value
+    gcReport.analogR = bs.r ? SHIELD_FULL : SHIELD_NONE;                                                            // analog R value always full shield or zero
 
     /* Buttons */
     gcReport.a = bs.a;
