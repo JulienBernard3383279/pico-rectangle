@@ -5,7 +5,7 @@
 namespace DACAlgorithms {
 namespace MeleeF1 {
 
-#define coord(x) ((uint8_t)(128. + 80.*x + 0.5))
+#define coord(x) ((uint8_t)(NEUTRAL_OFFSET + MAX_OFFSET*x + 0.5))
 #define oppositeCoord(x) -((uint8_t)x)
 
 bool banParasolDashing = false;
@@ -76,8 +76,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     if (vertical && horizontal) {                                                           // if diagonal input
         if (bs.l || bs.r) {                                                                     // if L or R are held (for shield drop / wavedash)
             if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);                        // if MX and MY are BOTH released OR held (default)
-            else if (bs.mx) xy = coords(0.6375, 0.375);                                         // else if only MX is held
-            else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85); // else if only MY is held
+            else if (bs.mx) xy = coords(MODX_D_SHIELD_X, MODX_D_SHIELD_Y);                                         // else if only MX is held
+            else xy = (banParasolDashing && readUp) ? coords(MODY_D_SHIELD_NOPARADASH_X, MODY_D_SHIELD_NOPARADASH_Y) : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y); // else if only MY is held
         }
         else if (bs.b && (bs.mx != bs.my)) {                                                // else if B AND exactly one of MX/MY is held
             if (bs.mx) {                                                                        // if MX is held
@@ -141,11 +141,11 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     Coords cxy;
 
-    if (bs.mx && bs.my) cxy = coords(0.0, 0.0);
-    else if (cVertical && cHorizontal) cxy = coords(0.525, 0.85);
-    else if (cHorizontal) cxy = bs.mx ? coords(0.8375, readUp ? 0.3125 : -0.3125) : coords(1.0, 0.0);
-    else if (cVertical) cxy = coords(0.0, 1.0);
-    else cxy = coords(0.0, 0.0);
+    if (bs.mx && bs.my) cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);
+    else if (cVertical && cHorizontal) cxy = coords(C_DIAGONAL_X, C_DIAGONAL_Y);
+    else if (cHorizontal) cxy = bs.mx ? coords(C_MODX_FSMASH_X, readUp ? C_MODX_FSMASH_Y : -C_MODX_FSMASH_Y) : coords(C_HORIZONTAL_X, C_HORIZONTAL_Y);
+    else if (cVertical) cxy = coords(C_VERTICAL_X, C_VERTICAL_Y);
+    else cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);
 
     if (cHorizontal && bs.cLeft) cxy.x = oppositeCoord(cxy.x);
     if (cVertical && bs.cDown) cxy.y = oppositeCoord(cxy.y);

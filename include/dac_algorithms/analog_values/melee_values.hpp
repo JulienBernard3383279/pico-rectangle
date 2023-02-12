@@ -3,10 +3,13 @@
 
 // define analog stick output values
 
-#define MAXOFFSET 80
-#define NEUTRAL 128
+#define MAX_OFFSET 80.
+#define NEUTRAL_OFFSET 128.
 
 // max values
+#define NEUTRAL_X 0.0
+#define NEUTRAL_Y 0.0
+
 #define HORIZONTAL_X 1.0
 #define HORIZONTAL_Y 0.0
 
@@ -15,9 +18,6 @@
 
 #define DIAGONAL_X 0.7
 #define DIAGONAL_Y 0.7
-
-#define NEUTRAL_X 0.0
-#define NEUTRAL_Y 0.0
 
 // shield drop
 #define DIAG_SHIELD_X 0.7
@@ -75,10 +75,6 @@
 #define MODX_D_SHIELD_X 0.6375
 #define MODX_D_SHIELD_Y 0.375
 
-// angled fsmash
-#define MODX_FSMASH_X 0.85
-#define MODX_FSMASH_Y 0.525
-
 // modY
 // tilts//////////////////////////////////
 #define MODY_H_X 0.3375
@@ -127,10 +123,29 @@
 #define MODY_D_CR_B_Y 0.7125
 
 // wavedash//////////////////////////////////////////
-#define MODY_D_SHIELD_X 0.5
-#define MODY_D_SHIELD_Y 0.85
+#define MODY_D_SHIELD_NOPARADASH_X 0.5
+#define MODY_D_SHIELD_NOPARADASH_Y 0.85
 
-////////////////////////////////////////////////////////////////
+#define MODY_D_SHIELD_X 0.475
+#define MODY_D_SHIELD_Y 0.875
+
+// c-stick////////////////////////////////////////////////////
+#define C_NEUTRAL_X 0.0
+#define C_NEUTRAL_Y 0.0
+
+#define C_HORIZONTAL_X 1.0
+#define C_HORIZONTAL_Y 0.0
+
+#define C_VERTICAL_X 0.0
+#define C_VERTICAL_Y 1.0
+
+#define C_DIAGONAL_X 0.525
+#define C_DIAGONAL_Y 0.85
+
+#define C_MODX_FSMASH_X 0.8375
+#define C_MODX_FSMASH_Y 0.3125
+
+// shield//////////////////////////////////////////////////////////////
 #define SHIELD_FULL 140
 #define SHIELD_MID 94
 #define SHIELD_LIGHT 49
