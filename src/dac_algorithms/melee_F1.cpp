@@ -77,7 +77,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         if (bs.l || bs.r) {                                                                     // if L or R are held (for shield drop / wavedash)
             if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);                        // if MX and MY are BOTH released OR held (default)
             else if (bs.mx) xy = coords(MODX_D_SHIELD_X, MODX_D_SHIELD_Y);                                         // else if only MX is held
-            else xy = (banParasolDashing && readUp) ? coords(MODY_D_SHIELD_NOPARADASH_X, MODY_D_SHIELD_NOPARADASH_Y) : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y); // else if only MY is held
+            else xy = (banParasolDashing && readUp) ? coords(MODY_D_SHIELD_BANPARADASH_X, MODY_D_SHIELD_BANPARADASH_Y) : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y); // else if only MY is held
         }
         else if (bs.b && (bs.mx != bs.my)) {                                                // else if B AND exactly one of MX/MY is held
             if (bs.mx) {                                                                        // if MX is held

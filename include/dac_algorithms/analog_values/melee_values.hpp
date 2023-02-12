@@ -123,11 +123,11 @@
 #define MODY_D_CR_B_Y 0.7125
 
 // wavedash//////////////////////////////////////////
-#define MODY_D_SHIELD_NOPARADASH_X 0.5
-#define MODY_D_SHIELD_NOPARADASH_Y 0.85
+#define MODY_D_SHIELD_BANPARADASH_X 0.475
+#define MODY_D_SHIELD_BANPARADASH_Y 0.875
 
-#define MODY_D_SHIELD_X 0.475
-#define MODY_D_SHIELD_Y 0.875
+#define MODY_D_SHIELD_X 0.5
+#define MODY_D_SHIELD_Y 0.85
 
 // c-stick////////////////////////////////////////////////////
 #define C_NEUTRAL_X 0.0
