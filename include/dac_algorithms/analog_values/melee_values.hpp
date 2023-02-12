@@ -16,9 +16,13 @@
 #define DIAGONAL_X 0.7
 #define DIAGONAL_Y 0.7
 
+#define NEUTRAL_X 0.0
+#define NEUTRAL_Y 0.0
+
 // shield drop
 #define DIAG_SHIELD_X 0.7
-#define DIAG_SHIELD_Y 0.6875
+#define DIAG_SHIELD_Y_UP 0.7
+#define DIAG_SHIELD_Y_DN 0.6875
 
 // modX
 // tilts
@@ -55,7 +59,7 @@
 #define MODX_DIAG_B_X 0.9125
 #define MODX_DIAG_B_Y 0.3875
 
-#define MODX_D_CD_B_X 0.825
+#define MODX_D_CD_B_X 0.9125
 #define MODX_D_CD_B_Y 0.45
 
 #define MODX_D_CL_B_X 0.85
@@ -111,7 +115,7 @@
 #define MODY_DIAG_B_Y 0.9125
 
 #define MODY_D_CD_B_X 0.45
-#define MODY_D_CD_B_Y 0.825
+#define MODY_D_CD_B_Y 0.875
 
 #define MODY_D_CL_B_X 0.525
 #define MODY_D_CL_B_Y 0.85
@@ -127,7 +131,9 @@
 #define MODY_D_SHIELD_Y 0.85
 
 ////////////////////////////////////////////////////////////////
-#define SHIELD_MID 95
-#define SHIELD_LIGHT 50
+#define SHIELD_FULL 140
+#define SHIELD_MID 94
+#define SHIELD_LIGHT 49
+#define SHIELD_NONE 0
 
 #endif

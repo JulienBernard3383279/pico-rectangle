@@ -1,4 +1,5 @@
 #include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/analog_values/melee_values.hpp"
 #include "communication_protocols/joybus.hpp"
 
 namespace DACAlgorithms {
@@ -74,57 +75,57 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     if (vertical && horizontal) {                                                           // if diagonal input
         if (bs.l || bs.r) {                                                                     // if L or R are held (for shield drop / wavedash)
-            if (bs.mx == bs.my) xy = coords(0.7, readUp ? 0.7 : 0.6875);                        // if MX and MY are BOTH released OR held (default)
+            if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);                        // if MX and MY are BOTH released OR held (default)
             else if (bs.mx) xy = coords(0.6375, 0.375);                                         // else if only MX is held
             else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85); // else if only MY is held
         }
         else if (bs.b && (bs.mx != bs.my)) {                                                // else if B AND exactly one of MX/MY is held
             if (bs.mx) {                                                                        // if MX is held
-                if (bs.cDown) xy = coords(0.9125, 0.45);                                            // account for c-stick inputs
-                else if (bs.cLeft) xy = coords(0.85, 0.525);                                        
-                else if (bs.cUp) xy = coords(0.7375, 0.5375);                               
-                else if (bs.cRight) xy = coords(0.6375, 0.5375);
-                else xy = coords(0.9125, 0.3875);
+                if (bs.cDown) xy = coords(MODX_D_CD_B_X, MODX_D_CD_B_Y);                                            // account for c-stick inputs
+                else if (bs.cLeft) xy = coords(MODX_D_CL_B_X, MODX_D_CL_B_Y);                                        
+                else if (bs.cUp) xy = coords(MODX_D_CU_B_X, MODX_D_CU_B_Y);                               
+                else if (bs.cRight) xy = coords(MODX_D_CR_B_X, MODX_D_CR_B_Y);
+                else xy = coords(MODX_DIAG_B_X, MODX_DIAG_B_Y);
             }
             else {                                                                              // if MY is held
-                if (bs.cDown) xy = coords(0.45, 0.875);                                             // account for c-stick inputs
-                else if (bs.cLeft) xy = coords(0.525, 0.85);
-                else if (bs.cUp) xy = coords(0.5875, 0.8);
-                else if (bs.cRight) xy = coords(0.5875, 0.7125);
-                else xy = coords(0.3875, 0.9125);
+                if (bs.cDown) xy = coords(MODY_D_CD_B_X, MODY_D_CD_B_Y);                                             // account for c-stick inputs
+                else if (bs.cLeft) xy = coords(MODY_D_CL_B_X, MODY_D_CL_B_Y);
+                else if (bs.cUp) xy = coords(MODY_D_CU_B_X, MODY_D_CU_B_Y);
+                else if (bs.cRight) xy = coords(MODY_D_CR_B_X, MODY_D_CR_B_Y);
+                else xy = coords(MODY_DIAG_B_X, MODY_DIAG_B_Y);
             }
         }
         else if (bs.mx != bs.my) {                                                          //else if exactly one of MX/MY is held (B is not held)
             if (bs.mx) {                                                                        // if MX is held
-                if (bs.cDown) xy = coords(0.7, 0.3625);                                             // account for c-stick inputs
-                else if (bs.cLeft) xy = coords(0.7875, 0.4875);
-                else if (bs.cUp) xy = coords(0.7, 0.5125);
-                else if (bs.cRight) xy = coords(0.6125, 0.525);
-                else xy = coords(0.7375, 0.3125);
+                if (bs.cDown) xy = coords(MODX_D_CD_X, MODX_D_CD_Y);                                             // account for c-stick inputs
+                else if (bs.cLeft) xy = coords(MODX_D_CL_X, MODX_D_CL_Y);
+                else if (bs.cUp) xy = coords(MODX_D_CU_X, MODX_D_CU_Y);
+                else if (bs.cRight) xy = coords(MODX_D_CR_X, MODX_D_CR_Y);
+                else xy = coords(MODX_DIAG_X, MODX_DIAG_Y);
             }
             else {                                                                              // if MY is held
-                if (bs.cDown) xy = coords(0.3625, 0.7);                                             // account for c-stick inputs
-                else if (bs.cLeft) xy = coords(0.4875, 0.7875);
-                else if (bs.cUp) xy = coords(0.5125, 0.7);
-                else if (bs.cRight) xy = coords(0.6375, 0.7625);
-                else xy = coords(0.3125, 0.7375);
+                if (bs.cDown) xy = coords(MODY_D_CD_X, MODY_D_CD_Y);                                             // account for c-stick inputs
+                else if (bs.cLeft) xy = coords(MODY_D_CL_X, MODY_D_CL_Y);
+                else if (bs.cUp) xy = coords(MODY_D_CU_X, MODY_D_CU_Y);
+                else if (bs.cRight) xy = coords(MODY_D_CR_X, MODY_D_CR_Y);
+                else xy = coords(MODY_DIAG_X, MODY_DIAG_Y);
             }
         }
-        else xy = coords(0.7,0.7);                                                              // diagonal inputs with no modifiers
+        else xy = coords(DIAGONAL_X, DIAGONAL_Y);                                                              // diagonal inputs with no modifiers
     }
     else if (horizontal) {
-        if (bs.mx == bs.my) xy = coords(1.0, 0.0);
-        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ? coords(1.0, 0.0) : coords(0.6625, 0.0);
-        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ? coords(1.0, 0.0) : coords(0.3375, 0.0);
+        if (bs.mx == bs.my) xy = coords(HORIZONTAL_X, HORIZONTAL_Y);
+        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ? coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODX_H_X, MODX_H_Y);
+        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ? coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODY_H_X, MODY_H_Y);
         // Read the original rectangleInput to bypass SOCD
     }
     else if (vertical) {
-        if (bs.mx == bs.my) xy = coords(0.0, 1.0);
-        else if (bs.mx) xy=coords(0.0, 0.5375);
-        else xy = coords(0.0, 0.7375);
+        if (bs.mx == bs.my) xy = coords(VERTICAL_X, VERTICAL_Y);
+        else if (bs.mx) xy=coords(MODX_V_X, MODX_V_Y);
+        else xy = coords(MODY_V_X, MODY_V_Y);
     }
     else {
-        xy = coords(0.0, 0.0);
+        xy = coords(NEUTRAL_X, NEUTRAL_Y);
     }
 
     if (horizontal && !readRight) xy.x = oppositeCoord(xy.x);
@@ -161,8 +162,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     }
 
     /* Triggers */
-    gcReport.analogL = bs.l ? 140 : bs.ms ? 94 : bs.ls ? 49 : 0;
-    gcReport.analogR = bs.r ? 140 : 0;
+    gcReport.analogL = bs.l ? SHIELD_FULL : bs.ms ? SHIELD_MID : bs.ls ? SHIELD_LIGHT : SHIELD_NONE;
+    gcReport.analogR = bs.r ? SHIELD_FULL : SHIELD_NONE;
 
     /* Buttons */
     gcReport.a = bs.a;
