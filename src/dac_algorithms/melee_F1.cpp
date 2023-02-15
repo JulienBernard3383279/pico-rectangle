@@ -11,6 +11,8 @@ namespace MeleeF1 {
 bool banParasolDashing = false;
 bool banSlightSideB = false;
 
+bool neutralSOCD = true;
+
 // 2 IP declarations
 bool left_wasPressed = false;
 bool right_wasPressed = false;
@@ -42,33 +44,42 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     GCReport gcReport = defaultGcReport;
 
     /* 2IP No reactivation */
-    
-    if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
-    if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
-    if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
-    if (down_wasPressed && bs.up && bs.down && !up_wasPressed) down_outlawUntilRelease=true;
 
-    if (!bs.left) left_outlawUntilRelease=false;
-    if (!bs.right) right_outlawUntilRelease=false;
-    if (!bs.up) up_outlawUntilRelease=false;
-    if (!bs.down) down_outlawUntilRelease=false;
+    if(!neutralSOCD){    
+        if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
+        if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
+        if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
+        if (down_wasPressed && bs.up && bs.down && !up_wasPressed) down_outlawUntilRelease=true;
 
-    left_wasPressed = bs.left;
-    right_wasPressed = bs.right;
-    up_wasPressed = bs.up;
-    down_wasPressed = bs.down;
+        if (!bs.left) left_outlawUntilRelease=false;
+        if (!bs.right) right_outlawUntilRelease=false;
+        if (!bs.up) up_outlawUntilRelease=false;
+        if (!bs.down) down_outlawUntilRelease=false;
 
-    if (left_outlawUntilRelease) bs.left=false;
-    if (right_outlawUntilRelease) bs.right=false;
-    if (up_outlawUntilRelease) bs.up=false;
-    if (down_outlawUntilRelease) bs.down=false;
-    
+        left_wasPressed = bs.left;
+        right_wasPressed = bs.right;
+        up_wasPressed = bs.up;
+        down_wasPressed = bs.down;
+
+        if (left_outlawUntilRelease) bs.left=false;
+        if (right_outlawUntilRelease) bs.right=false;
+        if (up_outlawUntilRelease) bs.up=false;
+        if (down_outlawUntilRelease) bs.down=false;
+    }
     /* Stick */
 
-    bool vertical = bs.up || bs.down;
-    bool readUp = bs.up;
+    bool vertical, horizontal;
 
-    bool horizontal = bs.left || bs.right;
+    if(neutralSOCD) {
+        vertical = bs.up ^ bs.down;
+        horizontal = bs.left ^ bs.right;
+    }
+    else {
+        vertical = bs.up || bs.down;
+        horizontal = bs.left || bs.right;
+    }
+
+    bool readUp = bs.up;
     bool readRight = bs.right;
 
     Coords xy;
