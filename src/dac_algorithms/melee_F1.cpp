@@ -11,7 +11,7 @@ namespace MeleeF1 {
 bool banParasolDashing = false;
 bool banSlightSideB = false;
 
-bool neutralSOCD = true;
+bool neutralSOCD = false;
 
 // 2 IP declarations
 bool left_wasPressed = false;
