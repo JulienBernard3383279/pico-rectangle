@@ -1,6 +1,6 @@
 # Frame1/B0XX layout style public-source digital controller software for the Raspberry Pi Pico (v1.2.4)
 
-This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers and communicate over the Joybus (Gamecube/Wii) and USB protocols and using various conversion logics, namely at least Melee, P+, Ultimate, generic controller and generic keyboard.
+This is a modular, runtime-remappable and easily extensible digital controller software for the Raspberry Pi Pico, that can identify as various controllers such as a GCC to USB adapter, an Xbox controller, a Switch pro-like controller, a generic controller and keyboard and communicate over the Joybus (Gamecube/Wii) and USB protocols and using various conversion logics, namely at least Melee, P+, Ultimate.
 
 - [Legal information and license](#legalInformationAndLicense)
 - [Firmware explanation](#firmwareexplanation)  
