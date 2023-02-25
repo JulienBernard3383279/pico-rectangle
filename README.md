@@ -1,4 +1,4 @@
-# Frame1/B0XX layout style public-source digital controller software for the Raspberry Pi Pico (v1.0)
+# Frame1/B0XX layout style public-source digital controller software for the Raspberry Pi Pico (v1.2.4)
 
 - [Legal information and license](#legalInformationAndLicense)
 - [Firmware explanation](#firmwareexplanation)  
