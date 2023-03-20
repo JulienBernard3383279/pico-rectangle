@@ -41,6 +41,23 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     GpioToButtonSets::F1::ButtonSet bs = buttonSet; // Alterable copy
 
     GCReport gcReport = defaultGcReport;
+    
+    // Enforce neutral SOCD to test
+    if (bs.left && bs.right) {
+
+        bs.left = false;
+
+        bs.right = false;
+
+    }
+
+    if (bs.down && bs.up) {
+
+        bs.down = false;
+
+        bs.up = false;
+
+    }
 
 #if ULT_2IP_WITH_REAC
     /* 2IP with reactivation */
