@@ -77,3 +77,15 @@ jobs:
         name: pico_rectangle_${{ github.sha }}.uf2
         path: ${{github.workspace}}/build/pico_rectangle.uf2
         if-no-files-found: error
+    - name: Upload firmware (Ult with 2IP No Reactivation SOCD) artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pico_rectangle_ult_2ip_no_reac_socd_${{ github.sha }}.uf2
+        path: ${{github.workspace}}/build/pico_rectangle_ULT_2IP_WITH_REAC.uf2
+        if-no-files-found: error
+    - name: Upload firmware (Ult with Neutral SOCD) artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pico_rectangle_ult_neutral_socd_${{ github.sha }}.uf2
+        path: ${{github.workspace}}/build/pico_rectangle_ULT_NEUTRAL.uf2
+        if-no-files-found: error
