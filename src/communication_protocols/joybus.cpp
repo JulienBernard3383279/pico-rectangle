@@ -64,11 +64,21 @@ bool stallRevertOnce = false;
 bool revertModeNextPoll = false;
 ProtocolUpgradeCommand previousProtocolUpgradeCommand = ProtocolUpgradeCommand::NONE;
 uint8_t currentProtocolId = 0;
+uint8_t previousProtocolId = 0;
 //bool mult5crc1011bmode = false;
 
 PIO pio;
 uint32_t offset;
 pio_sm_config config;
+
+void setProtocolId(uint8_t protocolId) {
+    previousProtocolId = currentProtocolId;
+    currentProtocolId = protocolId;
+    sm_config_set_clkdiv(&config, protocolId == 1 ? 1 : 5);
+}
+void revertProtocolChange() {
+    setProtocolId(previousProtocolId);
+}
 
 CRC::Parameters<uint16_t, 16> crcParameters() {
     CRC::Parameters<uint16_t, 16> parameters;
@@ -230,7 +240,7 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
                             switch (command) {
                                 case ProtocolUpgradeCommand::OLD_PROTOCOL_UPGRADE_REQUEST:
                                     respondMetacommOK();
-                                    currentProtocolId = protocolId;
+                                    setProtocolId(protocolId);
                                     stallRevertOnce = true;
                                     revertModeNextPoll = true;
                                     previousProtocolUpgradeCommand = command;
@@ -277,7 +287,7 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
         }
 
         if (!stallRevertOnce && revertModeNextPoll) {
-            currentProtocolId = 1-currentProtocolId; // Will have to do better if it ever supports more than 2
+            revertProtocolChange();
             previousProtocolUpgradeCommand = ProtocolUpgradeCommand::NONE;
         }
         stallRevertOnce = false;
