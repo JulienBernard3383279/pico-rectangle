@@ -181,10 +181,12 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
 
         if (buffer[0] == 0) { // Probe
             uint8_t probeResponse[3] = { 0x09, 0x00, 0x03 };
+            if (checkForErrors(1)) goto command_rejected;
             respond(probeResponse, 3);
         }
         else if (buffer[0] == 0x41) { // Origin (NOT 0x81)
             gpio_put(25, 1);
+            if (checkForErrors(1)) goto command_rejected;
             uint8_t originResponse[10] = { 0x00, 0x80, 128, 128, 128, 128, 0, 0, 0, 0 };
             // Here we don't wait because convertToPio takes time
             respondNoWait(originResponse, 10);
@@ -192,6 +194,9 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
         else if (buffer[0] == 0x40) { // Maybe poll //TODO Check later inputs...
             buffer[1] = pio_sm_get_blocking(pio, 0);
             buffer[2] = pio_sm_get_blocking(pio, 0);
+
+            if (checkForErrors(3)) goto command_rejected;
+
             gpio_put(rumblePin, buffer[2] & 1);
 
             GCReport gcReport = func();
@@ -204,6 +209,8 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
             for (uint16_t i = 0; i<metaCommLen; i++) {
                 buffer[i+2] = pio_sm_get_blocking(pio, 0); //TODO Needs some timeout...
             }
+            if (checkForErrors(1+metaCommLen)) goto command_rejected;
+
             const uint8_t* metaBuf = buffer.data() + 2;
             if (metaCommLen == 0) { // Capabilities request
                 uint8_t categoriesRequest[1] = { 1 << (uint8_t)MetacommCategory::PROTOCOL_UPGRADES }; // Only support protocol upgrades so far
@@ -262,6 +269,7 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
             }
         }
         else {
+            command_rejected:
             pio_sm_set_enabled(pio, 0, false);
             sleep_us(400);
             pio_sm_init(pio, 0, offset+save_offset_inmode, &config);
