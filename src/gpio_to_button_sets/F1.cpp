@@ -43,7 +43,9 @@ const PinMapping pinMappings[] = {
 bool remapped;
 
 const PinMapping remappedPinMappings[] = {
+    #if !USE_UART0
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.startPin, &ButtonSet::start },
+#endif
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.rightPin, &ButtonSet::right },
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.downPin, &ButtonSet::down },
     { Persistence::read<Persistence::Pages::RuntimeRemapping>()->f1GpioToButtonSetRemapping.leftPin, &ButtonSet::left },
@@ -81,7 +83,7 @@ ButtonSet defaultConversion() {
 
     if (!init) initDefaultConversion();
 
-    if (remapped) gpio_put(LED_PIN, 1);
+    //if (remapped) gpio_put(LED_PIN, 1);
     
     ButtonSet f1ButtonSet;
 
