@@ -30,8 +30,9 @@ add_executable(
   src/dac_algorithms/xbox_360.cpp
   src/gpio_to_button_sets/F1.cpp
   src/other/runtime_remapping_mode.cpp
+  src/logging.cpp
 )
-target_compile_definitions(pico_rectangle PRIVATE ULT_2IP_WITH_REAC=0)
+target_compile_definitions(pico_rectangle PRIVATE ULT_2IP_WITH_REAC=0 USE_UART0=1)
 pico_generate_pio_header(pico_rectangle ${CMAKE_CURRENT_LIST_DIR}/pio/my_pio.pio)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_LIST_DIR}/generated/my_pio.pio.h
         DEPENDS ${CMAKE_CURRENT_LIST_DIR}/my_pio.pio
@@ -61,8 +62,9 @@ add_executable(
   src/dac_algorithms/xbox_360.cpp
   src/gpio_to_button_sets/F1.cpp
   src/other/runtime_remapping_mode.cpp
+  src/logging.cpp
 )
-target_compile_definitions(pico_rectangle_ult_2ip_with_reac PRIVATE ULT_2IP_WITH_REAC=1)
+target_compile_definitions(pico_rectangle_ult_2ip_with_reac PRIVATE ULT_2IP_WITH_REAC=1 USE_UART0=1)
 pico_generate_pio_header(pico_rectangle_ult_2ip_with_reac ${CMAKE_CURRENT_LIST_DIR}/pio/my_pio.pio)
 add_custom_command(OUTPUT ${CMAKE_CURRENT_LIST_DIR}/generated/my_pio.pio.h
         DEPENDS ${CMAKE_CURRENT_LIST_DIR}/my_pio.pio

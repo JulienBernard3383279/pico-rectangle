@@ -39,7 +39,7 @@ int main() {
 
     #if USE_UART0
     // Initialise UART 0
-    uart_init(uart0, 115200);
+    uart_init(uart0, 576000);
  
     // Set the GPIO pin mux to the UART - 0 is TX, 1 is RX
     gpio_set_function(0, GPIO_FUNC_UART);
