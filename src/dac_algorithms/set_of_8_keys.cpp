@@ -68,7 +68,6 @@ void actuate8KeysReport(F1::ButtonSet buttonSet) {
     int index=0;
     for (KeyMapping keyMapping : keyMappings) {
         if (buttonSet.*(keyMapping.ptrToMember)) {
-            gpio_put(25, 1);
             log_uart0_int(keyMapping.key); log_uart0(" ");
             appendKey(keyMapping.key, index);
         }
