@@ -69,29 +69,31 @@ std::array<uint8_t, 257> buffer{}; // 2 + 255 ;_;
 bool stallRevertOnce = false;
 bool revertModeNextPoll = false;
 ProtocolUpgradeCommand previousProtocolUpgradeCommand = ProtocolUpgradeCommand::NONE;
-uint8_t currentProtocolId = 0;
-uint8_t previousProtocolId = 0;
+GCDataCommunicationProtocols currentProtocolId = GCDataCommunicationProtocols::NATIVE;
+GCDataCommunicationProtocols previousProtocolId = GCDataCommunicationProtocols::NATIVE;
 //bool mult5crc1011bmode = false;
 
 PIO pio;
 uint32_t offset;
 pio_sm_config config;
 
-void setProtocolId(uint8_t protocolId) {
-    previousProtocolId = currentProtocolId;
-    currentProtocolId = protocolId;
-    sm_config_set_clkdiv(&config, protocolId == 1 ? 1 : 5);
-
-    log_uart("Upgrading protocol from "); log_uart_uint(previousProtocolId); log_uart(" to "); log_uart_uint(currentProtocolId); log_uart("\n");
+void setProtocolId(GCDataCommunicationProtocols protocolId) {
 
     pio_sm_set_enabled(pio, 0, false);
+
+    previousProtocolId = currentProtocolId;
+    currentProtocolId = protocolId;
+    sm_config_set_clkdiv(&config, protocolId == GCDataCommunicationProtocols::MULT5_CRC16 ? 1 : 5);
+
+    log_uart("Changing protocol from "); log_uart_uint((uint8_t)previousProtocolId); log_uart(" to "); log_uart_uint((uint8_t)currentProtocolId); log_uart("\n");
+
     pio_sm_init(pio, 0, offset+save_offset_inmode, &config);
     pio_sm_set_enabled(pio, 0, true);
 }
 
 void revertProtocolChange() {
-    setProtocolId(previousProtocolId);
-    log_uart("Reverting protocol change from "); log_uart_uint(currentProtocolId); log_uart(" to "); log_uart_uint(previousProtocolId); log_uart("\n");
+    log_uart("Reverting protocol change.\n");
+    setProtocolId(previousProtocolId); //Todo don't set previous to current
 }
 
 CRC::Parameters<uint16_t, 16> crcParameters() {
@@ -107,7 +109,7 @@ CRC::Parameters<uint16_t, 16> crcParameters() {
     return parameters;
 }
 
-void respond(const uint8_t* data, const int len, int waitUs=6) {
+void respond(const uint8_t* data, const int len, int waitUs=10) {
 
     std::unique_ptr<uint8_t[]> data2;
     int len2;
@@ -115,14 +117,13 @@ void respond(const uint8_t* data, const int len, int waitUs=6) {
     std::unique_ptr<uint32_t[]> result;
     int resultLen;
     
-    if (currentProtocolId == 0) {
+    if (currentProtocolId == GCDataCommunicationProtocols::NATIVE) {
         len2 = len;
         data2 = std::make_unique<uint8_t[]>(len2);
         for (int i = 0; i<len; i++) {
             data2[i] = data[i];
         }
         resultLen = len/2 + 1;
-        result = std::make_unique<uint32_t[]>(resultLen);
     }
     else { // == 1
         len2 = len + 2;
@@ -134,10 +135,12 @@ void respond(const uint8_t* data, const int len, int waitUs=6) {
         uint16_t r = CRC::Calculate((const void*)data, len, crc);
         memcpy((void*)(data2.get() + len), (const void*)(&r), 2);
 
+        log_uart_uint(time_us_32()); log_uart(" Computing CRC for array:\n"); log_uart_array(data, len); log_uart("CRC: "); log_uart_uint(r); log_uart("\n");
+        
         resultLen = len/2 + 2;
-        result = std::make_unique<uint32_t[]>(resultLen);
     }
 
+    result = std::make_unique<uint32_t[]>(resultLen);
     convertToPio(data2.get(), len2, result.get(), resultLen);
     if (waitUs != 0) sleep_us(waitUs); // 3.75us into the bit before end bit => 6.25 to wait if the end-bit is 5us long
 
@@ -147,6 +150,8 @@ void respond(const uint8_t* data, const int len, int waitUs=6) {
     pio_sm_set_enabled(pio, 0, true);
 
     for (int i = 1; i<resultLen; i++) pio_sm_put_blocking(pio, 0, result[i]);
+
+    log_uart("Sent: "); log_uart_array(result.get(), resultLen);
 }
 
 void respondNoWait(uint8_t* data, int len) { // Not = 0 because branching code for waits = ??
@@ -156,16 +161,21 @@ void respondNoWait(uint8_t* data, int len) { // Not = 0 because branching code f
 void respondMetacommKO() {
     uint8_t KO[1] = { 0x03 };
     respond(KO, 1);
+    log_uart_uint(time_us_32()); log_uart(" Responding KO\n");
 }
 
 void respondMetacommOK() {
     uint8_t OK[1] = { 0x3f };
     respond(OK, 1);
+    log_uart_uint(time_us_32()); log_uart(" Responding OK\n");
 }
 
 // returns true = error detected
 bool checkForErrors(size_t commandLen) {
-    if (currentProtocolId == 0) return false;
+    if (currentProtocolId == GCDataCommunicationProtocols::NATIVE) return false;
+
+    log_uart_uint(time_us_32()); log_uart(" Checking for errors:\n");
+    log_uart_array(buffer.data(), commandLen);
 
     gpio_put(25, 1);
 
@@ -174,6 +184,11 @@ bool checkForErrors(size_t commandLen) {
 
     buffer[commandLen] = pio_sm_get_blocking(pio, 0);
     buffer[commandLen+1] = pio_sm_get_blocking(pio, 0);
+
+    log_uart("Computed: "); log_uart_uint(result); log_uart("\n");
+    uint16_t transmitted;
+    memcpy(&transmitted, buffer.data()+commandLen, 2);
+    log_uart("Transmitted: "); log_uart_uint(transmitted); log_uart("\n");
 
     return memcmp(&result, buffer.data()+commandLen, 2) != 0;// != *(uint16_t*)(buffer.data()+commandLen);
 }
@@ -206,7 +221,19 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
     
     //TODO The whole no wait thing is kinda hacky...
 
+    uint32_t keepaliveTimestamp = time_us_32();
     while (true) {
+
+        log_uart_flush();
+
+        if (pio_sm_is_rx_fifo_empty(pio, 0)) {
+            if (time_us_32() - keepaliveTimestamp > 1'000'000) {
+                keepaliveTimestamp = time_us_32();
+                logf_uart("Keepalive\n");
+            }
+            continue;
+        }
+
         buffer[0] = pio_sm_get_blocking(pio, 0);
 
         if (buffer[0] == 0) { // Probe
@@ -233,7 +260,7 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
             respondNoWait((uint8_t*)(&gcReport), 8);
         }
         else if (buffer[0] == 0x3c) { // Metacomms
-            log_uart("Metacomms command\n");
+            log_uart_uint(time_us_32()); log_uart(" Metacomms command\n");
             //TODO Ideally shouldn't be right in the communication protocol file but it's gonna be tough responding through a call
             const uint8_t metaCommLen = buffer[1] = pio_sm_get_blocking(pio, 0);
             log_uart("len ");log_uart_uint(buffer[1]); log_uart(": ");
@@ -243,7 +270,7 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
             }
             log_uart("\n");
             if (checkForErrors(2+metaCommLen)) {
-                logf_uart("Metacomms command\n");
+                log_uart_uint(time_us_32()); log_uart(" Command rejected\n");
                 goto command_rejected; // Respond with something to let it know it was a CRC related rejection or just timeout ?
             }
 
@@ -252,54 +279,56 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
             if (metaCommLen == 0) { // Capabilities request
                 uint8_t categoriesRequest[1] = { 1 << (uint8_t)MetacommCategory::PROTOCOL_UPGRADES }; // Only support protocol upgrades so far
                 respond(categoriesRequest, 1);
-                logf_uart("Capabilities request\n");
+                log_uart_uint(time_us_32()); log_uart(" Capabilities request\n");
             }
             else {
-                const uint8_t postCategoryLen = metaCommLen - 1;
                 switch ((MetacommCategory)metaBuf[0]) {
                     case MetacommCategory::PROTOCOL_UPGRADES:
-                        if (postCategoryLen == 0) { // List supported protocols
+                        if (metaCommLen == 1) { // List supported protocols
                             uint8_t canDoProtocol1[2] = { 1, (1 << (uint8_t)GCDataCommunicationProtocols::NATIVE) | (1 << (uint8_t)GCDataCommunicationProtocols::MULT5_CRC16) };  // len 1, protocol 1 => bit 1; protocol 0 is default joybus
                             respond(canDoProtocol1, 2);
                         }
-                        else if (postCategoryLen>=2 && metaBuf[1] < 2) { // [command] [protocol#]
-                            ProtocolUpgradeCommand command = (ProtocolUpgradeCommand)metaBuf[0];
-                            uint8_t protocolId = metaBuf[1];
+                        else if (metaCommLen>=3 && metaBuf[2] < 2) { // [command] [protocol#]
+                            ProtocolUpgradeCommand command = (ProtocolUpgradeCommand)metaBuf[1];
+                            GCDataCommunicationProtocols protocolId = (GCDataCommunicationProtocols) metaBuf[2];
                             switch (command) {
                                 case ProtocolUpgradeCommand::OLD_PROTOCOL_UPGRADE_REQUEST:
                                     respondMetacommOK();
-                                    setProtocolId(protocolId);
                                     stallRevertOnce = true;
                                     revertModeNextPoll = true;
                                     previousProtocolUpgradeCommand = command;
-                                    logf_uart("Old protocol upgrade request\n");
+                                    log_uart_uint(time_us_32()); log_uart(" Old protocol upgrade request\n");
+                                    log_uart_uint(time_us_32()); log_uart("\n");
+                                    sleep_us(100); //TODO Here to prevent cutting the respond OK short
+                                    setProtocolId(protocolId);
+                                    log_uart_uint(time_us_32()); log_uart(" Exited setting protocol\n");
                                     break;
                                 case ProtocolUpgradeCommand::NEW_PROTOCOL_UPGRADE_REQUEST:
                                     if (previousProtocolUpgradeCommand == ProtocolUpgradeCommand::OLD_PROTOCOL_UPGRADE_REQUEST) {
                                         respondMetacommOK();
                                         stallRevertOnce = true;
-                                        logf_uart("New protocol upgrade request accepted\n");
+                                        log_uart_uint(time_us_32()); log_uart(" New protocol upgrade request accepted\n");
                                     }
                                     else {
                                         respondMetacommKO();
-                                        logf_uart("New protocol upgrade request rejected\n");
+                                        log_uart_uint(time_us_32()); log_uart(" New protocol upgrade request rejected\n");
                                     }
                                     break;
                                 case ProtocolUpgradeCommand::UPGRADE_ACCEPTED_BY_HOST:
                                     if (previousProtocolUpgradeCommand == ProtocolUpgradeCommand::NEW_PROTOCOL_UPGRADE_REQUEST) {
                                         respondMetacommOK();
                                         revertModeNextPoll = false;
-                                        logf_uart("Protocol upgrade accepted by host accepted\n");
+                                        log_uart_uint(time_us_32()); log_uart(" Protocol upgrade accepted by host accepted\n");
                                     }
                                     else {
                                         respondMetacommKO(); // This won't abort the protocol change (uh oh)
-                                        logf_uart("Protocol upgrade accepted by host rejected\n");
+                                        log_uart_uint(time_us_32()); log_uart(" Protocol upgrade accepted by host rejected\n");
                                     }
                                     previousProtocolUpgradeCommand = ProtocolUpgradeCommand::NONE;
                                     break;
                                 default:
                                     respondMetacommKO();
-                                    logf_uart("Unknown metacomms command rejected\n");
+                                    log_uart_uint(time_us_32()); log_uart(" Unknown metacomms command rejected\n");
                             }
                         }
                         else {
@@ -314,15 +343,14 @@ void enterMode(int dataPin, std::function<GCReport()> func) {
         }
         else {
             command_rejected:
-            pio_sm_set_enabled(pio, 0, false);
+            log_uart_uint(time_us_32()); log_uart(" Command rejected: buffer[0]="); log_uart_uint(buffer[0]); log_uart("\n");
             sleep_us(400);
-            pio_sm_init(pio, 0, offset+save_offset_inmode, &config);
-            pio_sm_set_enabled(pio, 0, true);
         }
 
         if (!stallRevertOnce && revertModeNextPoll) {
             revertProtocolChange();
             previousProtocolUpgradeCommand = ProtocolUpgradeCommand::NONE;
+            revertModeNextPoll = false;
         }
         stallRevertOnce = false;
     }
