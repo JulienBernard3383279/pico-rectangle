@@ -31,17 +31,23 @@ namespace Other {
 
         std::vector<uint32_t> eligiblePins { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 26, 27};
         std::vector<uint32_t> pinsPressedInOrder {};
-
-        sleep_ms(3000);
-
-        gpio_put(LED_PIN, 1);
-        int led = 1;
-
+        
         for (uint32_t pin : eligiblePins) {
             gpio_init(pin);
             gpio_set_dir(pin, GPIO_IN);
             gpio_pull_up(pin);
         }
+
+        sleep_ms(2000);
+        for (int pin : eligiblePins) {
+            if (!gpio_get(pin)) {
+                eligiblePins.erase(std::remove_if(eligiblePins.begin(), eligiblePins.end(), [pin](int i){return pin==i;}));
+            }
+        }
+        sleep_ms(1000);
+
+        gpio_put(LED_PIN, 1);
+        int led = 1;
 
         while (pinsPressedInOrder.size() != 20) {
             uint32_t pressedPin = findPressed(eligiblePins);
