@@ -81,15 +81,20 @@ ButtonSet defaultConversion() {
 
     if (!init) initDefaultConversion();
 
-    if (remapped) gpio_put(LED_PIN, 1);
+    //if (remapped) gpio_put(LED_PIN, 1);
     
     ButtonSet f1ButtonSet;
 
     uint32_t inputSnapshot = sio_hw->gpio_in;
+    
+    uint32_t light = 0;
 
     for (PinMapping pinMapping : remapped ? remappedPinMappings : pinMappings) {
         f1ButtonSet.*(pinMapping.ptrToMember) = !(inputSnapshot & (1 << (pinMapping.pin)));
+        light ^= f1ButtonSet.*(pinMapping.ptrToMember) ? 1 : 0;
     }
+
+    gpio_put(LED_PIN, light);
 
     return f1ButtonSet;
 }
