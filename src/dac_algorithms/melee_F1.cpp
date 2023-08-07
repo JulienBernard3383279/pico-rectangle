@@ -110,7 +110,7 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
                 else xy = coords(0.3125, 0.7375);
             }
         }
-        else xy = coords(0.7,0.7);
+        else xy = coords(0.7125,0.6875);
     }
     else if (horizontal) {
         if (bs.mx == bs.my) xy = coords(1.0, 0.0);
