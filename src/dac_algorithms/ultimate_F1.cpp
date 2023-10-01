@@ -63,6 +63,17 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
         if (up_isTheMostRecentPressed) bs.down = false;
         else bs.up = false;
     }
+#elif ULT_NEUTRAL
+    /* Neutral SOCD */
+    if (bs.left && bs.right) {
+        bs.left = false;
+        bs.right = false;
+    }
+
+    if (bs.down && bs.up) {
+        bs.down = false;
+        bs.up = false;
+    }
 #else
     /* 2IP no reactivation */
     
