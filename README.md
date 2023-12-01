@@ -110,6 +110,8 @@ As of this release, 13 modes are built-in.
 
 - Not plugged into USB => Console mode (Melee F1 DAC algorithm + Joybus), unless you press GP2 or GP7 (by default Right and MY), in which case you enter P+ mode, or GP6 (by default MX), in which case you enter Ultimate mode. If you're not plugged into USB, you enter this mode.
 
+- GP14 / GP13 (by default, A / CLeft) resp. => XInput controller with generic XInput / Melee logic resp.
+
 - GP21 / GP22 / GP10 (by default, X/Y/LS) resp. => HID controller with Melee / Ult / P+ logic resp.
 
 - GP7 / GP6 (by default, MY/MX) => P+ / Ult resp. GCC to USB adapter mode (P+/Ult DAC algorithm + Adapter USB configuration).
@@ -128,7 +130,7 @@ As of this release, 13 modes are built-in.
 - Playing Melee resp. P+ on console => Melee resp. P+ + Joybus
 - Playing Melee resp. P+ on PC => Melee resp. P+ + Adapter mode
 - Playing Ult on Switch or PC => Ultimate + Adapter mode
-- Playing other PC games => Melee + HID or 8KeysSet + Keyboard
+- Playing other PC games => XInput or 8KeysSet + Keyboard
 - Playing other games on Switch => WFPP + WFPP
 - Playing Melee/P+ on PC on the same setup as someone using a Gamecube controller and therefore an adapter => Melee/P+ + HID & configure the HID
 
