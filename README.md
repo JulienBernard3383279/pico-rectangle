@@ -255,6 +255,8 @@ Switches/buttons will have two pins. Connect one of them to Ground (daisy chaini
 
 Note that all "button" pin mappings can be modified later on using the runtime remapping feature, but the GameCube Data line can't and must be connected to GP28.
 
+The Rumble data pin is mapped to GP11. DO NOT CONNECT THIS DIRECTLY TO A GC RUMBLE MOTOR. The voltage/current required to drive said motor could seriously damage your pico. This pin should be fed to a motor-driver circuit if rumble is desired.
+
 <a name="troubleshooting"/>
 
 ### Troubleshooting
