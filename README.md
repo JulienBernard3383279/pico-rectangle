@@ -20,13 +20,9 @@ This is a modular, runtime-remappable and easily extensible digital controller s
 
 <a name="legalInformationAndLicense"/>
 
-This project is free to use for personal use; i.e for use with controllers you build and use yourself, usually referred to as "DIY controllers".
+This project is free to use in 'digital' game controllers (colloquially known as fightsticks or rectangles).
 
-You may not sell devices with this firmware uploaded or suggest to people to use this firmware with a device you sell, past the first 50 devices sold.
-You may not upload this firmware onto a device you've bought that didn't come with a license for it.
-
-You may not use parts of this firmware in another firmware used for anything but personal use, and may not redistribute parts of this firmware under a license that waives this requirement.
-Should you want to use this firmware or parts of this firmware commercially, contact me.
+Should you want to use this firmware or parts of this firmware commercially for anything else, contact me.
 
 ### LEGAL INFORMATION
 
