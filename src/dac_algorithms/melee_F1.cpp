@@ -1,14 +1,17 @@
 #include "dac_algorithms/melee_F1.hpp"
+#include "dac_algorithms/analog_values/melee_values.hpp"
 #include "communication_protocols/joybus.hpp"
 
 namespace DACAlgorithms {
 namespace MeleeF1 {
 
-#define coord(x) ((uint8_t)(128. + 80.*x + 0.5))
+#define coord(x) ((uint8_t)(NEUTRAL_OFFSET + MAX_OFFSET*x + 0.5))
 #define oppositeCoord(x) -((uint8_t)x)
 
 bool banParasolDashing = false;
 bool banSlightSideB = false;
+
+bool neutralSOCD = false;
 
 // 2 IP declarations
 bool left_wasPressed = false;
@@ -41,90 +44,102 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     GCReport gcReport = defaultGcReport;
 
     /* 2IP No reactivation */
-    
-    if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
-    if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
-    if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
-    if (down_wasPressed && bs.up && bs.down && !up_wasPressed) down_outlawUntilRelease=true;
 
-    if (!bs.left) left_outlawUntilRelease=false;
-    if (!bs.right) right_outlawUntilRelease=false;
-    if (!bs.up) up_outlawUntilRelease=false;
-    if (!bs.down) down_outlawUntilRelease=false;
+    if(!neutralSOCD){    
+        if (left_wasPressed && bs.left && bs.right && !right_wasPressed) left_outlawUntilRelease=true;
+        if (right_wasPressed && bs.left && bs.right && !left_wasPressed) right_outlawUntilRelease=true;
+        if (up_wasPressed && bs.up && bs.down && !down_wasPressed) up_outlawUntilRelease=true;
+        if (down_wasPressed && bs.up && bs.down && !up_wasPressed) down_outlawUntilRelease=true;
 
-    left_wasPressed = bs.left;
-    right_wasPressed = bs.right;
-    up_wasPressed = bs.up;
-    down_wasPressed = bs.down;
+        if (!bs.left) left_outlawUntilRelease=false;
+        if (!bs.right) right_outlawUntilRelease=false;
+        if (!bs.up) up_outlawUntilRelease=false;
+        if (!bs.down) down_outlawUntilRelease=false;
 
-    if (left_outlawUntilRelease) bs.left=false;
-    if (right_outlawUntilRelease) bs.right=false;
-    if (up_outlawUntilRelease) bs.up=false;
-    if (down_outlawUntilRelease) bs.down=false;
-    
+        left_wasPressed = bs.left;
+        right_wasPressed = bs.right;
+        up_wasPressed = bs.up;
+        down_wasPressed = bs.down;
+
+        if (left_outlawUntilRelease) bs.left=false;
+        if (right_outlawUntilRelease) bs.right=false;
+        if (up_outlawUntilRelease) bs.up=false;
+        if (down_outlawUntilRelease) bs.down=false;
+    }
     /* Stick */
 
-    bool vertical = bs.up || bs.down;
-    bool readUp = bs.up;
+    bool vertical, horizontal;
 
-    bool horizontal = bs.left || bs.right;
+    if(neutralSOCD) {
+        vertical = bs.up ^ bs.down;
+        horizontal = bs.left ^ bs.right;
+    }
+    else {
+        vertical = bs.up || bs.down;
+        horizontal = bs.left || bs.right;
+    }
+
+    bool readUp = bs.up;
     bool readRight = bs.right;
 
     Coords xy;
 
-    if (vertical && horizontal) {
-        if (bs.l || bs.r) {
-            if (bs.mx == bs.my) xy = coords(0.7, readUp ? 0.7 : 0.6875);
-            else if (bs.mx) xy = coords(0.6375, 0.375);
-            else xy = (banParasolDashing && readUp) ? coords(0.475, 0.875) : coords(0.5, 0.85);
+    if (vertical && horizontal) {    
+        if (bs.l || bs.r) {                                                                                          
+            if (bs.mx == bs.my) xy = coords(DIAG_SHIELD_X, readUp ? DIAG_SHIELD_Y_UP : DIAG_SHIELD_Y_DN);               
+            else if (bs.mx) xy = coords(MODX_D_SHIELD_X, MODX_D_SHIELD_Y);                                               
+            else xy = (banParasolDashing && readUp) ? 
+                coords(MODY_D_SHIELD_BANPARADASH_X, MODY_D_SHIELD_BANPARADASH_Y) : coords(MODY_D_SHIELD_X, MODY_D_SHIELD_Y);                                                                 
         }
-        else if (bs.b && (bs.mx != bs.my)) {
-            if (bs.mx) {
-                if (bs.cDown) xy = coords(0.9125, 0.45);
-                else if (bs.cLeft) xy = coords(0.85, 0.525);
-                else if (bs.cUp) xy = coords(0.7375, 0.5375);
-                else if (bs.cRight) xy = coords(0.6375, 0.5375);
-                else xy = coords(0.9125, 0.3875);
+        else if (bs.b && (bs.mx != bs.my)) {                      
+            if (bs.mx) {                                                                    
+                if (bs.cDown) xy = coords(MODX_D_CD_B_X, MODX_D_CD_B_Y);                                             
+                else if (bs.cLeft) xy = coords(MODX_D_CL_B_X, MODX_D_CL_B_Y);                                        
+                else if (bs.cUp) xy = coords(MODX_D_CU_B_X, MODX_D_CU_B_Y);                               
+                else if (bs.cRight) xy = coords(MODX_D_CR_B_X, MODX_D_CR_B_Y);
+                else xy = coords(MODX_DIAG_B_X, MODX_DIAG_B_Y);
             }
-            else {
-                if (bs.cDown) xy = coords(0.45, 0.875);
-                else if (bs.cLeft) xy = coords(0.525, 0.85);
-                else if (bs.cUp) xy = coords(0.5875, 0.8);
-                else if (bs.cRight) xy = coords(0.5875, 0.7125);
-                else xy = coords(0.3875, 0.9125);
-            }
-        }
-        else if (bs.mx != bs.my) {
-            if (bs.mx) {
-                if (bs.cDown) xy = coords(0.7, 0.3625);
-                else if (bs.cLeft) xy = coords(0.7875, 0.4875);
-                else if (bs.cUp) xy = coords(0.7, 0.5125);
-                else if (bs.cRight) xy = coords(0.6125, 0.525);
-                else xy = coords(0.7375, 0.3125);
-            }
-            else {
-                if (bs.cDown) xy = coords(0.3625, 0.7);
-                else if (bs.cLeft) xy = coords(0.4875, 0.7875);
-                else if (bs.cUp) xy = coords(0.5125, 0.7);
-                else if (bs.cRight) xy = coords(0.6375, 0.7625);
-                else xy = coords(0.3125, 0.7375);
+            else {                                                                                                  
+                if (bs.cDown) xy = coords(MODY_D_CD_B_X, MODY_D_CD_B_Y);                                         
+                else if (bs.cLeft) xy = coords(MODY_D_CL_B_X, MODY_D_CL_B_Y);
+                else if (bs.cUp) xy = coords(MODY_D_CU_B_X, MODY_D_CU_B_Y);
+                else if (bs.cRight) xy = coords(MODY_D_CR_B_X, MODY_D_CR_B_Y);
+                else xy = coords(MODY_DIAG_B_X, MODY_DIAG_B_Y);
             }
         }
-        else xy = coords(0.7,0.7);
+        else if (bs.mx != bs.my) {                                                                      
+            if (bs.mx) {                                                                                     
+                if (bs.cDown) xy = coords(MODX_D_CD_X, MODX_D_CD_Y);                         
+                else if (bs.cLeft) xy = coords(MODX_D_CL_X, MODX_D_CL_Y);
+                else if (bs.cUp) xy = coords(MODX_D_CU_X, MODX_D_CU_Y);
+                else if (bs.cRight) xy = coords(MODX_D_CR_X, MODX_D_CR_Y);
+                else xy = coords(MODX_DIAG_X, MODX_DIAG_Y);
+            }
+            else {                                                                          
+                if (bs.cDown) xy = coords(MODY_D_CD_X, MODY_D_CD_Y);                                      
+                else if (bs.cLeft) xy = coords(MODY_D_CL_X, MODY_D_CL_Y);
+                else if (bs.cUp) xy = coords(MODY_D_CU_X, MODY_D_CU_Y);
+                else if (bs.cRight) xy = coords(MODY_D_CR_X, MODY_D_CR_Y);
+                else xy = coords(MODY_DIAG_X, MODY_DIAG_Y);
+            }
+        }
+        else xy = coords(DIAGONAL_X, DIAGONAL_Y);                                                       
     }
-    else if (horizontal) {
-        if (bs.mx == bs.my) xy = coords(1.0, 0.0);
-        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ? coords(1.0, 0.0) : coords(0.6625, 0.0);
-        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ? coords(1.0, 0.0) : coords(0.3375, 0.0);
+    else if (horizontal) {                                                                  
+        if (bs.mx == bs.my) xy = coords(HORIZONTAL_X, HORIZONTAL_Y);                                 
+        else if (bs.mx) xy =  (buttonSet.left && buttonSet.right) ?                                    
+            coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODX_H_X, MODX_H_Y);                           
+        else xy = ((banSlightSideB && bs.b) || buttonSet.left && buttonSet.right) ?                
+            coords(HORIZONTAL_X, HORIZONTAL_Y) : coords(MODY_H_X, MODY_H_Y);                
         // Read the original rectangleInput to bypass SOCD
     }
-    else if (vertical) {
-        if (bs.mx == bs.my) xy = coords(0.0, 1.0);
-        else if (bs.mx) xy=coords(0.0, 0.5375);
-        else xy = coords(0.0, 0.7375);
+    else if (vertical) {                                                                   
+        if (bs.mx == bs.my) xy = coords(VERTICAL_X, VERTICAL_Y);                       
+        else if (bs.mx) xy=coords(MODX_V_X, MODX_V_Y);                             
+        else xy = coords(MODY_V_X, MODY_V_Y);                                   
     }
     else {
-        xy = coords(0.0, 0.0);
+        xy = coords(NEUTRAL_X, NEUTRAL_Y);                                
     }
 
     if (horizontal && !readRight) xy.x = oppositeCoord(xy.x);
@@ -140,11 +155,12 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
 
     Coords cxy;
 
-    if (bs.mx && bs.my) cxy = coords(0.0, 0.0);
-    else if (cVertical && cHorizontal) cxy = coords(0.525, 0.85);
-    else if (cHorizontal) cxy = bs.mx ? coords(0.8375, readUp ? 0.3125 : -0.3125) : coords(1.0, 0.0);
-    else if (cVertical) cxy = coords(0.0, 1.0);
-    else cxy = coords(0.0, 0.0);
+    if (bs.mx && bs.my) cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);                            
+    else if (cVertical && cHorizontal) cxy = coords(C_DIAGONAL_X, C_DIAGONAL_Y);                  
+    else if (cHorizontal) cxy = bs.mx ? coords(C_MODX_FSMASH_X, readUp ? C_MODX_FSMASH_Y : -C_MODX_FSMASH_Y) 
+        : coords(C_HORIZONTAL_X, C_HORIZONTAL_Y);
+    else if (cVertical) cxy = coords(C_VERTICAL_X, C_VERTICAL_Y);    
+    else cxy = coords(C_NEUTRAL_X, C_NEUTRAL_Y);            
 
     if (cHorizontal && bs.cLeft) cxy.x = oppositeCoord(cxy.x);
     if (cVertical && bs.cDown) cxy.y = oppositeCoord(cxy.y);
@@ -161,8 +177,8 @@ GCReport getGCReport(GpioToButtonSets::F1::ButtonSet buttonSet) {
     }
 
     /* Triggers */
-    gcReport.analogL = bs.l ? 140 : bs.ms ? 94 : bs.ls ? 49 : 0;
-    gcReport.analogR = bs.r ? 140 : 0;
+    gcReport.analogL = bs.l ? SHIELD_FULL : bs.ms ? SHIELD_MID : bs.ls ? SHIELD_LIGHT : SHIELD_NONE;          
+    gcReport.analogR = bs.r ? SHIELD_FULL : SHIELD_NONE;                                                 
 
     /* Buttons */
     gcReport.a = bs.a;
